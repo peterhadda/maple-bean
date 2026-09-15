@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maya · Maple Hollow</title>
+<style>
+:root{--paper:#f6f2ec;--navy:#1f3354;--ink:#34302d;--muted:#857a72;--line:#e4dad0;--maple:#b3443a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,sans-serif}
+#app{position:fixed;inset:0;display:flex}
+#side{width:350px;flex:none;padding:26px 28px 22px;display:flex;flex-direction:column;gap:16px;background:var(--paper);border-right:1px solid var(--line);overflow:auto}
+#stage{position:relative;flex:1;min-width:0;background:linear-gradient(180deg,#e5dcd7 0%,#ded3ce 58%,#d6c9c2 74%,#d9cdc6 100%)}
+#stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none}
+body.bare #side,body.bare .hud{display:none}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{flex:none}
+.wordmark{font-family:Georgia,"Times New Roman",serif;color:var(--navy);font-size:30px;line-height:1;letter-spacing:.2px;display:flex;align-items:center;gap:6px}
+.tag{font-family:Georgia,serif;color:var(--navy);font-size:14px;letter-spacing:1.4px;margin-top:5px;opacity:.85}
+.title{display:flex;align-items:flex-end;gap:10px;margin-top:6px}
+.maya{font-family:"Segoe Script","Brush Script MT","Lucida Handwriting",cursive;color:var(--navy);font-size:58px;line-height:1;transform:rotate(-4deg);margin-left:2px}
+.meta{font-size:15px;color:var(--navy);padding-bottom:10px}
+.meta b{font-weight:600}
+.quote{font-family:"Segoe Script","Brush Script MT",cursive;color:#3d4a63;font-size:15px;line-height:1.5;margin:-4px 0 0 4px}
+h3{margin:4px 0 8px;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--navy);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:6px;padding:5px 11px 5px 7px;border:1px solid var(--line);border-radius:20px;background:#fffaf5;font-size:13px}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 6px}
+.sw{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--muted)}
+.sw i{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 -3px 6px rgba(0,0,0,.12),0 1px 2px rgba(60,40,30,.2)}
+.foot{margin-top:auto;font-size:10.5px;letter-spacing:2px;color:var(--navy);opacity:.75;display:flex;justify-content:space-between}
+.hud{position:absolute;left:0;right:0;bottom:22px;display:flex;justify-content:center;gap:14px;flex-wrap:wrap;pointer-events:none;padding:0 16px}
+.group{pointer-events:auto;display:flex;gap:4px;padding:5px;background:rgba(246,242,236,.86);border:1px solid rgba(31,51,84,.12);border-radius:14px;box-shadow:0 4px 18px rgba(80,55,40,.12);backdrop-filter:blur(6px)}
+.group span{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;align-self:center;padding:0 8px 0 6px}
+.group button{font:600 13px "Segoe UI",system-ui,sans-serif;color:var(--navy);background:transparent;border:0;border-radius:9px;padding:8px 13px;cursor:pointer}
+.group button:hover{background:rgba(31,51,84,.07)}
+.group button.on{background:var(--navy);color:#f6f2ec}
+.hint{position:absolute;top:18px;right:22px;font-size:12px;color:#8d8079;letter-spacing:.3px}
+.label{position:absolute;top:18px;left:22px;font-size:11px;letter-spacing:1.8px;color:var(--navy);opacity:.7;text-transform:uppercase;font-weight:700}
+#loading{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;pointer-events:none;transition:opacity .7s ease}
+#loading .lt{font-family:Georgia,"Times New Roman",serif;color:var(--navy);font-size:15px;letter-spacing:1.5px}
+#loading svg{animation:sway 1.6s ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-10deg)}to{transform:rotate(10deg)}}
+#loading.done{opacity:0}
+body.bare #loading{display:none}
+@media (max-width:760px){#app{flex-direction:column}#side{width:auto;max-height:42vh;border-right:0;border-bottom:1px solid var(--line)}.hint{display:none}}
+</style>
+</head>
+<body>
+<script>/* hide UI chrome before the module loads: review shots (still=1 without ui=1) are character-only */
+(function(){var h=location.hash;if(/(^|[#&])still=1/.test(h)&&!/(^|[#&])ui=1/.test(h))document.body.classList.add('bare');})();</script>
+<div id="app">
+  <aside id="side">
+    <div class="brand">
+      <svg width="58" height="46" viewBox="0 0 58 46" aria-hidden="true">
+        <g fill="#1f3354">
+          <path d="M8 44 L8 36 L2 36 L8 26 L4 26 L10 15 L7 15 L12 5 L17 15 L14 15 L20 26 L16 26 L22 36 L16 36 L16 44 Z"/>
+          <path d="M42 44 L42 37 L37 37 L43 28 L40 28 L46 18 L43 18 L48 9 L53 18 L50 18 L56 28 L53 28 L58 37 L53 37 L53 44 Z"/>
+          <path d="M17 44 L17 29 L29 19 L41 29 L41 44 Z"/>
+        </g>
+        <rect x="25.5" y="33" width="7" height="11" fill="#f6f2ec"/>
+        <rect x="20" y="30" width="4" height="4" fill="#f6f2ec"/><rect x="34" y="30" width="4" height="4" fill="#f6f2ec"/>
+      </svg>
+      <div>
+        <div class="wordmark">Maple Hollow
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#b3443a" d="M12 1 L13.6 5.2 L16 4 L15.2 8.6 L19.5 6.8 L18.6 9.6 L22 10.5 L17.8 13.8 L18.8 15.6 L13.2 15 L12.8 22 L11.2 22 L10.8 15 L5.2 15.6 L6.2 13.8 L2 10.5 L5.4 9.6 L4.5 6.8 L8.8 8.6 L8 4 L10.4 5.2 Z"/></svg>
+        </div>
+        <div class="tag">People make the story.</div>
+      </div>
+    </div>
+    <div class="title">
+      <div class="maya">Maya</div>
+      <svg width="20" height="18" viewBox="0 0 20 18" style="margin-bottom:26px" aria-hidden="true"><path d="M10 16 C3 11 1 7 3.5 4 C5.5 1.6 8.6 2.4 10 5 C11.4 2.4 14.5 1.6 16.5 4 C19 7 17 11 10 16 Z" fill="none" stroke="#c9453d" stroke-width="1.8"/></svg>
+    </div>
+    <div class="meta"><b>Young Adult</b> &nbsp;|&nbsp; Age 20</div>
+    <a href="/" style="color:#1f3354">← Back to the café</a><div class="quote">"Same world.<br>&nbsp;&nbsp;&nbsp;Different stories."</div>
+    <div>
+      <h3>Traits</h3>
+      <div class="chips">
+        <div class="chip"><svg width="16" height="16" viewBox="0 0 20 18"><path d="M10 17 C2 11 0 7 2.8 3.6 C5 1 8.6 1.8 10 4.6 C11.4 1.8 15 1 17.2 3.6 C20 7 18 11 10 17 Z" fill="#d8474a"/></svg>Friendly</div>
+        <div class="chip"><svg width="16" height="16" viewBox="0 0 20 20"><path d="M10 2 C15 2 18.5 5 18.5 9 C18.5 13 15 16 10 16 C9 16 8 15.9 7 15.6 L3 18 L4 14.3 C2.4 13 1.5 11.1 1.5 9 C1.5 5 5 2 10 2 Z" fill="#2f5f9e"/><circle cx="6.5" cy="9" r="1.2" fill="#fff"/><circle cx="10" cy="9" r="1.2" fill="#fff"/><circle cx="13.5" cy="9" r="1.2" fill="#fff"/></svg>Outgoing</div>
+        <div class="chip"><svg width="16" height="16" viewBox="0 0 20 20" fill="#1f3354"><ellipse cx="10" cy="13.5" rx="4.6" ry="3.8"/><ellipse cx="4" cy="8.5" rx="1.9" ry="2.4"/><ellipse cx="16" cy="8.5" rx="1.9" ry="2.4"/><ellipse cx="7.4" cy="4.4" rx="1.9" ry="2.5"/><ellipse cx="12.6" cy="4.4" rx="1.9" ry="2.5"/></svg>Animal Lover</div>
+      </div>
+    </div>
+    <div>
+      <h3>Color palette</h3>
+      <div class="swatches">
+        <div class="sw"><i style="background:#d68d69"></i>Skin</div>
+        <div class="sw"><i style="background:#38241d"></i>Hair</div>
+        <div class="sw"><i style="background:#6d3c21"></i>Eyes</div>
+        <div class="sw"><i style="background:#d26c62"></i>Lips</div>
+        <div class="sw"><i style="background:#ea8e87"></i>Blush</div>
+        <div class="sw"><i style="background:#f4e6d9"></i>Top</div>
+        <div class="sw"><i style="background:#597191"></i>Jeans</div>
+        <div class="sw"><i style="background:#f0e2d7"></i>Shoes</div>
+      </div>
+    </div>
+    <div class="foot"><span>MAPLE HOLLOW</span><span>A BRIGHTER TOMORROW.</span></div>
+  </aside>
+  <main id="stage">
+    <div id="loading"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path fill="#b3443a" d="M12 1 L13.6 5.2 L16 4 L15.2 8.6 L19.5 6.8 L18.6 9.6 L22 10.5 L17.8 13.8 L18.8 15.6 L13.2 15 L12.8 22 L11.2 22 L10.8 15 L5.2 15.6 L6.2 13.8 L2 10.5 L5.4 9.6 L4.5 6.8 L8.8 8.6 L8 4 L10.4 5.2 Z"/></svg><div class="lt">Maya is getting ready…</div></div>
+    <div class="label hud" style="bottom:auto;justify-content:flex-start">Character turnaround</div>
+    <div class="hint hud" style="bottom:auto;left:auto;justify-content:flex-end">Drag to orbit · scroll to zoom</div>
+    <div class="hud">
+      <div class="group" id="views"><span>View</span>
+        <button data-v="front">Front</button><button data-v="34">3/4</button><button data-v="side">Side</button><button data-v="back">Back</button><button data-v="face">Face</button><button data-v="profile">Profile</button>
+      </div>
+      <div class="group" id="exprs"><span>Expression</span>
+        <button data-e="neutral">Neutral</button><button data-e="happy">Happy</button><button data-e="wink">Wink</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "/node_modules/three/build/three.module.js",
+  "three/addons/": "/node_modules/three/examples/jsm/"
+} }
+</script>
+<script type="module" src="/studio.js"></script>
+</body></html>
