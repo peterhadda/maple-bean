@@ -5,7 +5,7 @@ function pivot(rotation,x,y,z){return translation(x,y,z).multiply(rotation).mult
 
 // Bind-space transforms shared by Maya and every cafe resident. Foot targets
 // drive a two-segment leg; arms have their own shoulder and elbow pivots.
-export function poseMatrices({sit=0,walk=0,wave=0,phase=0,time=0,seatHeight=.54,male=false}={}){
+export function poseMatrices({sit=0,walk=0,wave=0,sip=0,phase=0,time=0,seatHeight=.54,male=false}={}){
   const stride=.23*walk*(1-sit);
   // Rise over the planted foot instead of holding a crouch for the whole step.
   const reach=Math.cos(phase)*stride;
@@ -28,11 +28,12 @@ export function poseMatrices({sit=0,walk=0,wave=0,phase=0,time=0,seatHeight=.54,
     const foot=shin.clone().multiply(pivot(new Matrix4().makeRotationX(-hip-knee),side*.085,.04,0));
     legs.push({thigh,shin,foot});
     const raised=side>0?wave:0;
+    const drinking=side>0?sip:0;
     const shoulderY=1.222,shoulderX=side*.128*(male?1.52:1);
     const swing=-Math.cos(p)*.24*walk*(1-sit)-.10*sit;
-    const shoulderRotation=new Matrix4().makeRotationZ(side*.65*raised).multiply(new Matrix4().makeRotationX(swing));
+    const shoulderRotation=new Matrix4().makeRotationZ(side*.65*raised+1.2*drinking).multiply(new Matrix4().makeRotationX(swing*(1-drinking)-.425*drinking));
     const upper=root.clone().multiply(pivot(shoulderRotation,shoulderX,shoulderY,-.02));
-    const elbowRotation=new Matrix4().makeRotationZ(side*(2.12+.15*Math.sin(time*7))*raised).multiply(new Matrix4().makeRotationX(-.40*sit-.12*walk*(1-sit))).multiply(new Matrix4().makeRotationY(side*1.25*raised));
+    const elbowRotation=new Matrix4().makeRotationZ(side*(2.12+.15*Math.sin(time*7))*raised).multiply(new Matrix4().makeRotationX((-.40*sit-.12*walk*(1-sit))*(1-drinking)-2.225*drinking)).multiply(new Matrix4().makeRotationY(side*1.25*raised));
     const lower=upper.clone().multiply(pivot(elbowRotation,side*.16*(male?1.34:1),1.035,0));
     arms.push({upper,lower});
   }

@@ -246,7 +246,7 @@ for i,words in enumerate(['BOOK CLUB','MAKE A FRIEND','SUNDAY JAZZ']):
     text('Community note '+str(i),words,(x,6.69,2.26),.07,pine)
 text('Lounge wall title','STAY A LITTLE LONGER',(6.9,6.83,3.06),.20,pine)
 text('Reading wall title','TAKE A BOOK. LEAVE A STORY.',(-6.9,6.82,3.28),.12,pine)
-station('mara','Say hello to Mara','talk',-4.7,3.3,-4.7,2.6,math.pi)
+station('mara','Say hello to Mara','talk',-4.7,5.75,-4.7,3.7,0)
 station('jules','Chat with Jules','talk',3.0,.2,2.15,.2,0)
 
 station('claire','Meet Claire','talk',-3.1,-1,-2.35,-1,0)

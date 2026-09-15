@@ -1,4 +1,15 @@
 // Shared by walking, click-to-walk, the server, and the regression checks.
+export function moveOnFloor(position,dx,dz,layout){
+  if(isWalkable(position.x+dx,position.z,layout))position.x+=dx;
+  if(isWalkable(position.x,position.z+dz,layout))position.z+=dz;
+}
+export function followRoute(position,route,dt,speed,layout){
+  if(!route.length)return;
+  const p=route[0],dx=p.x-position.x,dz=p.z-position.z,d=Math.hypot(dx,dz);
+  if(d<.04){route.shift();return;}
+  const step=Math.min(speed*dt,d);moveOnFloor(position,dx/d*step,dz/d*step,layout);
+}
+
 export function isWalkable(x, z, layout, radius = .24) {
   if (!Number.isFinite(x) || !Number.isFinite(z)) return false;
   const inside=Math.abs(x)<=layout.width/2-.35 && Math.abs(z)<=layout.depth/2-.35;

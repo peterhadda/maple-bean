@@ -54,22 +54,28 @@ model = model.replace('}), sleeveMat);\n  addMesh(taperedTube([P(0.176', "}), op
 model += r'''
 if (options.character === 'mara') {
   const apronMat = new THREE.MeshStandardMaterial({color:0xe6d9bc,roughness:.96,side:THREE.DoubleSide});
-  addMesh(gridSurface(16,20,(t,u,v)=>{
-    const y=lerp(.72,1.18,t),w=lerp(.14,.072,ss(.84,1.18,y)),x=(u-.5)*2*w;
-    return v.set(x,y,.106+.01*Math.sin(u*Math.PI));
-  }),apronMat);
-  const strap=[];for(let i=0;i<=30;i++){const a=i/30*Math.PI;strap.push(new V3(Math.cos(a)*.071,1.18+Math.sin(a)*.08,.079));}
-  addMesh(taperedTube(strap,{segments:30,radial:6,radius:()=>.007}),apronMat);
-  const pocket=addMesh(new THREE.BoxGeometry(.11,.075,.004),apronMat);pocket.position.set(0,.89,.121);
+  const apron=addMesh(gridSurface(30,32,(t,u,v)=>{
+    const y=lerp(.68,1.205,t),phi=(u-.5)*2.25;
+    const w=lerp(.19,.067,ss(.82,1.205,y)),d=lerp(.13,.095,ss(.88,1.20,y));
+    return v.set(Math.sin(phi)*w,y,Math.cos(phi)*d+.009+.006*Math.sin(u*20)*(1-t));
+  }),apronMat);apron.name='Mara fitted apron';
+  for(const sd of [-1,1])addMesh(taperedTube([new V3(sd*.055,1.20,.076),new V3(sd*.067,1.28,-.025),new V3(sd*.075,1.16,-.108)],{segments:28,radial:6,radius:()=>.009}),apronMat);
+  const belt=[];for(let i=0;i<40;i++){const a=i/40*Math.PI*2;belt.push(new V3(Math.sin(a)*.116,1.0,Math.cos(a)*.094));}
+  addMesh(taperedTube(belt,{segments:48,radial:6,closed:true,radius:()=>.009}),apronMat);
+  const pocket=addMesh(new THREE.BoxGeometry(.105,.068,.006),apronMat);pocket.position.set(0,.89,.145);
 }
 if (options.character === 'claire') {
-  const cardigan = new THREE.MeshPhysicalMaterial({color:0xdcb69e,normalMap:topRib,normalScale:new THREE.Vector2(.6,.6),roughness:1,sheen:.7,sheenColor:new THREE.Color(0xf5dfca),side:THREE.DoubleSide});
+  const cardigan = new THREE.MeshPhysicalMaterial({color:0xc8bba7,normalMap:topRib,normalScale:new THREE.Vector2(.3,.3),roughness:1,sheen:.5,sheenColor:new THREE.Color(0xf5dfca),side:THREE.DoubleSide});
   const gold=new THREE.MeshStandardMaterial({color:0xd9b56b,metalness:.7,roughness:.4});
   for(const sd of [-1,1]) {
-    const sleeve=addMesh(taperedTube([new V3(sd*.15,1.105,-.004),new V3(sd*.16,1.02,.01),new V3(sd*.18,.94,.02),new V3(sd*.184,.865,.03)],{segments:38,radial:16,radius:t=>.042+.008*Math.sin(t*23)}),cardigan);sleeve.userData={region:'arm',side:sd};
+    const sleeve=addMesh(taperedTube([new V3(sd*.145,1.14,-.014),new V3(sd*.16,1.048,-.004),new V3(sd*.178,.94,.016),new V3(sd*.185,.83,.028)],{segments:38,radial:16,radius:t=>.036+.006*Math.sin(t*Math.PI)+.0015*Math.sin(t*32)}),cardigan);sleeve.name='Claire cardigan sleeve';sleeve.userData={region:'arm',side:sd};
     addMesh(taperedTube([new V3(sd*.072,1.193,.052),new V3(sd*.079,1.246,-.014),new V3(sd*.076,1.202,-.077)],{segments:25,radial:8,radius:()=>.006}),topMat);
   }
-  addMesh(gridSurface(18,40,(t,u,v)=>{const s=u*2-1;return v.set(s*.18,lerp(.80+.14*Math.abs(s),1.01+.08*Math.abs(s),t),-.13-.022*(1-s*s)-.006*Math.cos(u*40));}),cardigan);
+  const jacket=addMesh(gridSurface(24,48,(t,u,v)=>{
+    const phi=lerp(.62,Math.PI*2-.62,u),y=lerp(.91,1.14,t);
+    const width=lerp(.145,.15,t),depth=lerp(.135,.105,t);
+    return v.set(Math.sin(phi)*width,y,Math.cos(phi)*depth-.008);
+  }),cardigan);jacket.name='Claire connected cardigan';
   for(let i=0;i<4;i++){const button=addMesh(new THREE.SphereGeometry(.0038,12,8),gold);button.position.set(0,1.08+i*.033,.086);}
   const chain=[];for(let i=0;i<=30;i++){const s=i/30*2-1;chain.push(new V3(s*.045,1.237+Math.abs(s)*.067,.065-.017*Math.abs(s)));}
   addMesh(taperedTube(chain,{segments:36,radial:5,radius:()=>.0013}),gold);
@@ -114,6 +120,10 @@ model = model.replace('  ring(0.975, 0.0035, 0.0022, contactMat);', "  ring(0.97
 
 animation = r'''
   const bound = bindBody(body);
+  const cup=new THREE.Group(),cupMat=new THREE.MeshStandardMaterial({color:0xefe1c9,roughness:.7});
+  const cupBody=new THREE.Mesh(new THREE.CylinderGeometry(.037,.029,.085,20),cupMat);cup.add(cupBody);
+  const coffee=new THREE.Mesh(new THREE.CircleGeometry(.032,20),new THREE.MeshStandardMaterial({color:0x41251c}));coffee.rotation.x=-Math.PI/2;coffee.position.y=.043;cup.add(coffee);
+  const handle=new THREE.Mesh(new THREE.TorusGeometry(.022,.006,8,16),cupMat);handle.position.x=.04;cup.add(handle);maya.add(cup);cup.visible=false;
   if (options.male) for (const entry of bound) {
     const p=entry.positions;
     for(let i=0;i<p.length;i+=3) {
@@ -122,12 +132,14 @@ animation = r'''
     }
   }
   const expressions={neutral:{smile:0,wink:0,blinkL:0,blinkR:0},happy:{smile:.85,wink:0,blinkL:0,blinkR:0},wink:{smile:.35,wink:.7,blinkL:1,blinkR:0}};
-  let sit=0,walk=0,wave=0,phase=0,lastPose='',nextBlink=2.5,blinkStart=-10;
+  let sit=0,walk=0,wave=0,sip=0,phase=options.phaseOffset||0,lastPose='',nextBlink=2.5+(options.phaseOffset||0),blinkStart=-10;
   function update(t=0,dt=.016,state={}) {
     const ease=state.still?1:1-Math.exp(-dt*9);
     sit+=((state.sitting?1:0)-sit)*ease;
     walk+=((state.walking?1:0)-walk)*ease;
-    wave+=((state.wave?1:0)-wave)*ease;
+    wave+=((state.wave&&!state.cup?1:0)-wave)*ease;
+    sip+=((state.sipping?1:state.cup?.22:0)-sip)*ease;
+    cup.visible=!!state.cup;
     phase+=dt*10.2*walk;
     const posePhase=state.still?1.2:phase;
     const target=expressions[state.expression]||expressions.neutral;
@@ -137,11 +149,12 @@ animation = r'''
     applyFaceState(state.still?0:bt>=0&&bt<1?Math.sin(Math.PI*bt):0);
     headGroup.rotation.set(0,state.still?0:.018*Math.sin(t*.6),0);
     const seatHeight=state.seatHeight??.54;
-    const poseKey=[sit.toFixed(3),walk.toFixed(3),wave.toFixed(3),seatHeight,walk>.002?posePhase.toFixed(3):'',wave>.002?t.toFixed(3):''].join(':');
+    const poseKey=[sit.toFixed(3),walk.toFixed(3),wave.toFixed(3),sip.toFixed(3),seatHeight,walk>.002?posePhase.toFixed(3):'',wave>.002?t.toFixed(3):''].join(':');
     if(poseKey!==lastPose){
       lastPose=poseKey;
-      const pose=poseMatrices({sit,walk,wave,phase:posePhase,time:t,seatHeight,male:options.male});
+      const pose=poseMatrices({sit,walk,wave,sip,phase:posePhase,time:t,seatHeight,male:options.male});
       applyPose(bound,pose);headGroup.position.y=HEAD_POS.y-pose.drop;
+      cup.position.set(options.male?.22:.192,.75,.07).applyMatrix4(pose.arms[1].lower);cup.rotation.x=-.4*sip;
     }
   }
   update(0,0,{still:true});

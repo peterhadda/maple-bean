@@ -357,10 +357,10 @@
       "label": "Say hello to Mara",
       "kind": "talk",
       "x": -4.7,
-      "z": -3.3,
+      "z": -5.75,
       "approach": [
         -4.7,
-        -2.6
+        -3.7
       ],
       "angle": 3.141592653589793,
       "seatHeight": 0.54

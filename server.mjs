@@ -62,7 +62,7 @@ const server=http.createServer(async(req,res)=>{
     if(!['GET','HEAD'].includes(req.method))return json(res,405,{error:'Method not allowed.'});
     const pathname=decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname);
     const file=path.resolve(root,'.'+pathname);
-    if(!file.startsWith(root)||pathname.split('/').some(s=>s.startsWith('.'))||!['/index.html','/maya.html','/studio.js','/maya-character.js','/app.js','/navigation.js','/animation.js','/characters.js','/style.css','/favicon.svg'].includes(pathname)&&!pathname.startsWith('/assets/')&&!pathname.startsWith('/node_modules/three/'))return json(res,404,{error:'Not found.'});
+    if(!file.startsWith(root)||pathname.split('/').some(s=>s.startsWith('.'))||!['/index.html','/maya.html','/studio.js','/maya-character.js','/app.js','/navigation.js','/animation.js','/characters.js','/cafe-life.js','/style.css','/favicon.svg'].includes(pathname)&&!pathname.startsWith('/assets/')&&!pathname.startsWith('/node_modules/three/'))return json(res,404,{error:'Not found.'});
     const info=await stat(file);if(!info.isFile())return json(res,404,{error:'Not found.'});
     res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Content-Length':info.size,'X-Content-Type-Options':'nosniff'});
     if(req.method==='HEAD')res.end();else createReadStream(file).pipe(res);

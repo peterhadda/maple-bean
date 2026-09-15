@@ -5,7 +5,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { createMaya } from './maya-character.js';
 import { cast } from './characters.js';
-import { isWalkable, findPath } from './navigation.js';
+import { isWalkable, findPath, moveOnFloor, followRoute } from './navigation.js';
+import {menu,buyDrink,sipDrink,resident,updateResident} from './cafe-life.js';
 
 const $=id=>document.getElementById(id), world=$('world');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -35,6 +36,11 @@ const fire=new THREE.PointLight(0xff9347,8,5,2);fire.position.set(8.6,.65,-4);sc
 new ResizeObserver(()=>{const w=world.clientWidth,h=world.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}).observe(world);
 
 let layout, maya, session, network, mode='overview', route=[], destination=null, seated=null, nearest=null, drink=null, sips=0, waveUntil=0;
+let wallet=readSaved('maple-bean-wallet',{coins:30,drink:null,sips:0}),sipUntil=0,talkingTo=null;
+if(!Number.isInteger(wallet?.coins)||wallet.coins<0||wallet.coins>1000||!Number.isInteger(wallet.sips)||wallet.sips<0||wallet.sips>3||wallet.drink&&!Object.hasOwn(menu,wallet.drink))wallet={coins:30,drink:null,sips:0};
+const regulars=[],occupiedSeats=new Set();
+function updatePocket(){drink=wallet.drink;sips=wallet.sips;$('coins').textContent=wallet.coins+' café coins';$('drink').textContent=drink?'☕ '+drink+' · '+sips+' sips':'☕ Nothing to rush.';$('sip').hidden=!drink;save('maple-bean-wallet',wallet);}
+updatePocket();
 const player=new THREE.Vector3(0,0,5.6), keys=new Set(), remote=new Map(), markers=[], beams=new THREE.Group();
 const pointer=new THREE.Vector2(), ray=new THREE.Raycaster(), plane=new THREE.Plane(new THREE.Vector3(0,1,0),0), point=new THREE.Vector3();
 let cameraTween=null, previousPlayer=player.clone();
@@ -84,6 +90,7 @@ $('enter').onclick=()=>cameraMode('walk');$('cafe-nav').onclick=()=>cameraMode('
 
 function openDialog(html){route=[];destination=null;keys.clear();$('dialog-content').innerHTML=html;$('dialog').showModal();}
 $('dialog-close').onclick=()=>$('dialog').close();
+$('dialog').addEventListener('close',()=>{talkingTo=null;renderer.domElement.focus();});
 $('dialog').addEventListener('click',e=>{if(e.target===$('dialog')){const r=$('dialog').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('dialog').close();}});
 async function stand(){
   if(!seated)return;
@@ -93,11 +100,16 @@ async function interact(station=nearest){
   if(seated){await stand();return;}if(!station)return;
   if(Math.hypot(player.x-station.approach[0],player.z-station.approach[1])>1.15){goTo(station.id);return;}
   if(station.kind==='seat'||station.kind==='read'){
+    const occupant=regulars.find(n=>n.life?.seat?.id===station.id);
+    if(occupant?.life.phase==='seated'){toast('That seat is occupied. Try another.');return;}
+    if(occupant){Object.assign(occupant.life,{seat:null,route:[],phase:'idle',timer:8,cup:false});}
     try{await api({action:'move',x:player.x,z:player.z,angle:maya.group.rotation.y});await api({action:'sit',seatId:station.id});seated=station;player.set(station.x,0,station.z);maya.group.rotation.y=station.angle;route=[];destination=null;$('activity').textContent=station.kind==='read'?'One more chapter…':'Settled in. No hurry.';toast(station.kind==='read'?'A quiet chapter, a warm cup. Press E or Esc to get up.':'Make yourself comfortable. Press E or Esc to stand.');}catch(e){toast(e.message);}
   }else if(station.kind==='coffee'){
-    openDialog('<div class="eyebrow">FRESHLY MADE · ON THE HOUSE FOR PLAYTESTING</div><h2>Your usual, or<br>something new?</h2><p>Mara has the kettle on. Choose a little comfort.</p><button class="menu-item" data-order="Maple latte"><span>Maple latte<small>Espresso · steamed milk · a little maple</small></span><b>Try it ↗</b></button><button class="menu-item" data-order="Forest tea"><span>Forest tea<small>Herbal · warming · unhurried</small></span><b>Try it ↗</b></button><button class="menu-item" data-order="Hot chocolate"><span>Hot chocolate<small>Dark cocoa · vanilla · soft milk foam</small></span><b>Try it ↗</b></button>');
-    document.querySelectorAll('[data-order]').forEach(b=>b.onclick=()=>{drink=b.dataset.order;sips=3;$('drink').textContent='☕ '+drink;$('sip').hidden=false;$('dialog').close();toast('Mara: “Here you go. Find your favourite spot.”');$('activity').textContent='A fresh '+drink.toLowerCase()+' in hand';});
+    openDialog('<div class="eyebrow">FRESHLY MADE · '+wallet.coins+' CAFÉ COINS</div><h2>Your usual, or<br>something new?</h2><p>Choose a little comfort. Each drink has three sips.</p>'+Object.entries(menu).map(([name,price])=>'<button class="menu-item" data-order="'+name+'"><span>'+name+'</span><b>'+price+' coins ↗</b></button>').join('')+'<button class="secondary" id="refill-wallet">Refill playtest wallet to 30 coins</button>');
+    $('refill-wallet').onclick=()=>{wallet.coins=30;updatePocket();$('dialog').close();toast('Playtest wallet refilled.');};
+    document.querySelectorAll('[data-order]').forEach(b=>b.onclick=()=>{try{wallet=buyDrink(wallet,b.dataset.order);updatePocket();$('dialog').close();toast('Mara: “Here you go. Find your favourite spot.”');$('activity').textContent='A fresh '+drink.toLowerCase()+' in hand';}catch(e){toast(e.message);}});
   }else{
+    talkingTo=station.id;
     if(station.id==='claire'){
       openDialog('<div class="eyebrow">CLAIRE · CREATIVE SOUL & COFFEE ENTHUSIAST</div><h2>A good day starts<br>with a little curiosity.</h2><p>“I brought my sketchbook. Something about this place makes ordinary afternoons feel like the start of a story. Want to keep me company?”</p><div class="dialog-actions"><button id="claire-hello">I’d love to</button><a class="secondary" href="/maya.html?character=claire">Meet Claire in the studio ↗</a></div>');
       $('claire-hello').onclick=()=>{waveUntil=performance.now()/1000+2.3;$('dialog').close();toast('Claire: “Perfect. I’ll save you a spot and a page.”');$('activity').textContent='A new friend in Maple Hollow';};return;
@@ -110,14 +122,14 @@ async function interact(station=nearest){
 $('interact-button').onclick=()=>interact();
 async function goTo(id){
   if(!layout)return;if(seated){await stand();if(seated)return;}
-  const station=layout.stations.find(s=>s.id===id);if(!station)return;
+  const station=layout.stations.find(s=>s.id===id);if(!station||station.unavailable){toast('They’ll be back in a little while.');return;}
   const path=findPath(player,{x:station.approach[0],z:station.approach[1]},layout);
   if(!path.length){toast('That route is tight. Walk closer and try again.');return;}
   destination=station;route=path;cameraMode('walk');$('activity').textContent='On the way · '+station.label;
 }
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>goTo(b.dataset.go));
 $('wave').onclick=()=>{waveUntil=performance.now()/1000+2.5;toast('A friendly hello!');};
-$('sip').onclick=()=>{if(!drink)return;waveUntil=performance.now()/1000+1.4;sips--;toast(sips?'A warm sip. Take your time.':'Last sip. That hit the spot.');if(!sips){drink=null;$('drink').textContent='☕ A lovely little pause.';$('sip').hidden=true;}};
+$('sip').onclick=()=>{if(!drink||sipUntil)return;sipUntil=performance.now()/1000+1.7;$('sip').disabled=true;toast('A warm sip. Take your time.');};
 
 const typing=()=>['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)||document.activeElement?.isContentEditable||$('dialog').open;
 addEventListener('keydown',e=>{
@@ -125,6 +137,7 @@ addEventListener('keydown',e=>{
   if(typing())return;
   if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){e.preventDefault();keys.add(e.code);route=[];destination=null;if(mode!=='walk')cameraMode('walk');if(seated)stand();}
   if(e.code==='KeyE'&&!e.repeat)interact();
+  if(e.code==='KeyR'&&!e.repeat)$('sip').click();
   if(e.code==='KeyF'&&!e.repeat)waveUntil=performance.now()/1000+2.5;
 });addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',()=>keys.clear());document.addEventListener('visibilitychange',()=>keys.clear());
 let down=null;
@@ -173,7 +186,7 @@ $('rename').onclick=()=>{openDialog('<div class="eyebrow">PULL UP A CHAIR</div><
 function connect(){
   network=new EventSource(`/events?id=${session.id}&token=${session.token}`);
   network.addEventListener('guests',e=>{
-    const guests=JSON.parse(e.data),ids=new Set();$('guest-count').textContent=`${guests.length} ${guests.length===1?'guest':'guests'} in the café`;
+    const guests=JSON.parse(e.data),ids=new Set();occupiedSeats.clear();for(const g of guests)if(g.seatId)occupiedSeats.add(g.seatId);$('guest-count').textContent=`${guests.length} ${guests.length===1?'guest':'guests'} in the café`;
     for(const guest of guests){if(guest.id===session.id)continue;ids.add(guest.id);let item=remote.get(guest.id);
       if(!item){const avatar=createMaya(cast.maya),marker=label(guest.name,new THREE.Vector3(guest.x,1.95,guest.z),'guest');item={avatar,marker,data:guest};scene.add(avatar.group);avatar.group.position.set(guest.x,0,guest.z);remote.set(guest.id,item);}item.data=guest;item.marker.el.textContent=guest.name;
     }
@@ -191,11 +204,10 @@ try{
   for(const station of layout.stations){
     const marker=label(station.kind==='coffee'?'☕ The coffee bar':station.id==='sofa'?'The living room':station.id==='reading'?'The reading nook':station.kind==='talk'?cast[station.id]?.name||'Guest':'Take a seat',new THREE.Vector3(station.x,station.kind==='talk'?2.05:1.3,station.z));marker.station=station;marker.el.onclick=()=>goTo(station.id);
   }
-  const regulars=[];
-  for(const [id,x,z,angle] of [['mara',-4.7,-3.3,0],['jules',3,-.2,-.7],['claire',-3.1,1.0,.35]]){
+  for(const [id,x,z,angle] of [['mara',-4.7,-5.75,0],['jules',3,-.2,-.7],['claire',-3.1,1.0,.35]]){
     $('load-message').textContent=`${cast[id].name} is pulling up a chair…`;
     await new Promise(resolve=>setTimeout(resolve,30));
-    const actor=createMaya(cast[id]);actor.group.position.set(x,0,z);actor.group.rotation.y=angle;scene.add(actor.group);regulars.push(actor);
+    const actor=createMaya({...cast[id],phaseOffset:id==='claire'?2.3:4.7});actor.group.position.set(x,0,z);actor.group.rotation.y=angle;scene.add(actor.group);regulars.push({id,actor,life:id==='mara'?null:resident(id,x,z,id==='claire'?12:25),clock:0});
   }
   session=await api({action:'join',name:readSaved('maple-bean-name','Maya')});$('player-name').textContent=session.name;connect();
   let last=performance.now(),lastNetwork=0,lastStats=0,frameCount=0;
@@ -208,16 +220,25 @@ try{
         camera.getWorldDirection(forward);forward.y=0;forward.normalize();right.crossVectors(forward,new THREE.Vector3(0,1,0));
         if(keys.has('KeyW')||keys.has('ArrowUp'))direction.add(forward);if(keys.has('KeyS')||keys.has('ArrowDown'))direction.sub(forward);
         if(keys.has('KeyD')||keys.has('ArrowRight'))direction.add(right);if(keys.has('KeyA')||keys.has('ArrowLeft'))direction.sub(right);
-      }else if(route.length){const p=route[0];direction.set(p.x-player.x,0,p.z-player.z);if(direction.length()<.09){route.shift();direction.set(0,0,0);if(!route.length&&destination){const s=destination;destination=null;interact(s);}}}
+      }else if(route.length){const before=player.clone();followRoute(player,route,dt,1.75,layout);direction.copy(player).sub(before);moving=direction.lengthSq()>.000001;if(moving){const angle=Math.atan2(direction.x,direction.z),diff=Math.atan2(Math.sin(angle-maya.group.rotation.y),Math.cos(angle-maya.group.rotation.y));maya.group.rotation.y+=diff*Math.min(1,dt*12);}direction.set(0,0,0);if(!route.length&&destination){const s=destination;destination=null;interact(s);}}
       if(direction.lengthSq()>.0001){direction.normalize();const speed=1.75*dt;
-        if(isWalkable(player.x+direction.x*speed,player.z,layout))player.x+=direction.x*speed;
-        if(isWalkable(player.x,player.z+direction.z*speed,layout))player.z+=direction.z*speed;
+        moveOnFloor(player,direction.x*speed,direction.z*speed,layout);
         moving=player.distanceToSquared(previousPlayer)>.000001;
         if(moving){const angle=Math.atan2(direction.x,direction.z),diff=Math.atan2(Math.sin(angle-maya.group.rotation.y),Math.cos(angle-maya.group.rotation.y));maya.group.rotation.y+=diff*Math.min(1,dt*12);$('activity').textContent='A little wander through the café';}
       }
     }
-    maya.group.position.copy(player);maya.update(t,dt,{walking:moving,sitting:!!seated,seatHeight:seated?.seatHeight??.54,wave:t<waveUntil,expression:seated||t<waveUntil?'happy':'neutral'});
-    for(const npc of regulars)npc.update(t,dt,{expression:'happy'});
+    maya.group.position.copy(player);maya.update(t,dt,{cup:!!drink,sipping:sipUntil>t,walking:moving,sitting:!!seated,seatHeight:seated?.seatHeight??.54,wave:t<waveUntil,expression:seated||t<waveUntil?'happy':'neutral'});
+    if(sipUntil&&t>=sipUntil){wallet=sipDrink(wallet);sipUntil=0;$('sip').disabled=false;updatePocket();toast(drink?'A little pause. '+sips+' sips left.':'Last sip. That hit the spot.');}
+    const occupied=new Set(occupiedSeats);if(seated)occupied.add(seated.id);for(const n of regulars)if(n.life?.seat)occupied.add(n.life.seat.id);
+    for(const n of regulars){
+      n.clock+=dt;const a=n.actor,l=n.life;
+      if(l){updateResident(l,dt,layout,occupied,player,talkingTo===n.id);if(l.seat)occupied.add(l.seat.id);a.group.position.set(l.x,0,l.z);a.group.rotation.y=l.angle;a.group.visible=l.visible;
+        const station=layout.stations.find(s=>s.id===n.id);station.x=l.x;station.z=l.z;station.approach=l.seat?[...l.seat.approach]:[l.x,l.z];station.unavailable=!l.visible;
+        const marker=markers.find(m=>m.station===station);marker.position.set(l.x,2.05,l.z);
+      }
+      // Cap background character deformation at 15 Hz; player input stays every frame.
+      if(n.clock>=1/15){a.update(t+(n.id==='claire'?2.3:4.7),n.clock,{walking:l?.walking,sitting:l?.phase==='seated',seatHeight:l?.seat?.seatHeight??.54,cup:l?.cup,sipping:l?.sipping,wave:!l&&t%17<1.4,expression:'happy'});n.clock=0;}
+    }
     for(const item of remote.values()){
       const d=item.data,avatar=item.avatar,old=avatar.group.position.clone();avatar.group.position.x=THREE.MathUtils.damp(avatar.group.position.x,d.x,12,dt);avatar.group.position.z=THREE.MathUtils.damp(avatar.group.position.z,d.z,12,dt);avatar.group.rotation.y=d.angle;avatar.update(t,dt,{sitting:!!d.seatId,seatHeight:layout.stations.find(s=>s.id===d.seatId)?.seatHeight??.54,walking:old.distanceTo(avatar.group.position)>.003});item.marker.position.copy(avatar.group.position).add(new THREE.Vector3(0,1.95,0));
     }
@@ -225,12 +246,12 @@ try{
     else if(mode==='walk'){const delta=player.clone().sub(previousPlayer);camera.position.add(delta);controls.target.add(delta);}
     previousPlayer.copy(player);controls.update();
     nearest=null;let best=1.2;
-    for(const s of layout.stations){const d=Math.hypot(player.x-s.approach[0],player.z-s.approach[1]);if(d<best){best=d;nearest=s;}}
-    $('interaction').hidden=!seated&&!nearest||mode!=='walk';$('interaction-text').textContent=seated?'Stay as long as you like.':nearest?.label||'';$('interact-button').textContent=seated?'Stand up':nearest?.kind==='coffee'?'See menu':nearest?.kind==='talk'?'Say hello':'Take a seat';
+    for(const s of layout.stations){if(s.unavailable)continue;const d=Math.hypot(player.x-s.approach[0],player.z-s.approach[1]);if(d<best){best=d;nearest=s;}}
+    $('interaction').hidden=!seated&&!nearest||mode!=='walk';$('interaction-text').textContent=seated?'Stay as long as you like.':nearest?.kind==='coffee'?'Order a drink':nearest?.kind==='talk'?'Talk to '+cast[nearest.id].name:nearest?.kind==='read'?'Read by the window':'Sit and relax';$('interact-button').textContent=seated?'Stand up':nearest?.kind==='coffee'?'Order':nearest?.kind==='talk'?'Talk':'Sit';
     for(const marker of markers){
       projected.copy(marker.position).project(camera);const s=marker.station;
-      const show=!s||mode==='plan'||mode==='overview'?(!s||['coffee','read','talk'].includes(s.kind)||s.id==='sofa'):camera.position.distanceTo(marker.position)<8;
-      marker.el.hidden=!show||projected.z>1||projected.z< -1||Math.abs(projected.x)>1.1||Math.abs(projected.y)>1.1;
+      const show=!s||mode==='plan'||(mode==='overview'?(['coffee','read','talk'].includes(s.kind)||s.id==='sofa'):camera.position.distanceTo(marker.position)<8);
+      marker.el.hidden=!!s?.unavailable||!show||projected.z>1||projected.z< -1||Math.abs(projected.x)>1.1||Math.abs(projected.y)>1.1;
       marker.el.style.left=(projected.x*.5+.5)*world.clientWidth+'px';marker.el.style.top=(-projected.y*.5+.5)*world.clientHeight+'px';marker.el.classList.toggle('near',!!s&&s===nearest);
     }
     fire.intensity=($('lighting').value==='evening'?20:8)*(1+.045*Math.sin(t*6)+.02*Math.sin(t*11));
