@@ -12,10 +12,13 @@ export function sipDrink(wallet){
   return {...wallet,sips:wallet.sips-1,drink:wallet.sips===1?null:wallet.drink};
 }
 
-export function resident(id,x,z,delay){return {id,x,z,angle:0,phase:'idle',timer:delay,route:[],seat:null,cup:false,sipping:false,walking:false,visible:true,visits:0};}
+export function resident(id,x,z,delay){return {id,x,z,angle:0,phase:'idle',timer:delay,route:[],seat:null,cup:false,sipping:false,walking:false,visible:true,visits:0,talking:false,studying:false};}
 // Local ambience only: reuse the café's pathfinding and movement, with staggered waits.
 export function updateResident(n,dt,layout,occupied,player,talking=false){
-  n.walking=false;n.sipping=false;
+  n.walking=false;n.sipping=false;n.talking=talking;
+  // Seated at the reading nook reads as "studying" for status/UI purposes (Phase 2+),
+  // without inventing a separate seated animation the current rig can't show.
+  n.studying=n.phase==='seated'&&['read','study'].includes(n.seat?.kind);
   if(talking)return;
   const coffee=layout.stations.find(s=>s.kind==='coffee');
   function go(target,next){n.route=findPath(n,target,layout);if(!n.route.length){n.timer=3;return false;}n.phase=next;return true;}
@@ -36,7 +39,7 @@ export function updateResident(n,dt,layout,occupied,player,talking=false){
   if(n.phase==='idle'||n.phase==='away'){
     n.visible=true;n.visits++;go({x:coffee.approach[0],z:coffee.approach[1]},'to-counter');
   }else if(n.phase==='ordering'){
-    const seats=layout.stations.filter(s=>['seat','read'].includes(s.kind)&&!occupied.has(s.id));
+    const seats=layout.stations.filter(s=>['seat','read','study'].includes(s.kind)&&!occupied.has(s.id));
     const seat=seats[(n.visits+(n.id==='claire'?3:0))%seats.length];
     if(!seat){n.timer=4;return;}
     n.cup=true;if(go({x:seat.approach[0],z:seat.approach[1]},'to-seat'))n.seat=seat;

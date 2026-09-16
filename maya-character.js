@@ -1124,6 +1124,9 @@ if (options.character === 'claire') {
     const bt=(t-blinkStart)/.20;
     applyFaceState(state.still?0:bt>=0&&bt<1?Math.sin(Math.PI*bt):0);
     headGroup.rotation.set(0,state.still?0:.018*Math.sin(t*.6),0);
+    // A cheap group-level breathing bob so idle/seated characters read as alive
+    // without touching the per-vertex pose cache below (walking has its own gait bob).
+    maya.position.y=state.still?0:Math.sin(t*1.55+(options.phaseOffset||0))*.006*(1-walk);
     const seatHeight=state.seatHeight??.54;
     const poseKey=[sit.toFixed(3),walk.toFixed(3),wave.toFixed(3),sip.toFixed(3),seatHeight,walk>.002?posePhase.toFixed(3):'',wave>.002?t.toFixed(3):''].join(':');
     if(poseKey!==lastPose){

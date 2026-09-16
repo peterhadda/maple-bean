@@ -239,6 +239,43 @@ for x in [-3.1,8.0]:
     station('window-'+str(x),'Watch Maple Hollow go by','seat',x-.95,-5.5,x-.95,-4.55,math.pi/2)
 for x,y in [(1,6.15),(-9,5.9),(9,-.4),(2.0,-6.35)]:plant(x,y,1.05)
 
+# Study nook: two individual desks in the quiet pocket right of the community
+# table, each with its own lamp and a shelf of books - somewhere to bring a
+# laptop rather than a whole party.
+def desk_lamp(x,y,z):
+    cyl('Desk lamp base',(x,y,z+.015),.05,.03,dark)
+    cyl('Desk lamp arm',(x,y,z+.13),.011,.20,brass)
+    bpy.ops.mesh.primitive_cone_add(vertices=16,radius1=.085,radius2=.03,depth=.10,location=(x,y,z+.275))
+    o=bpy.context.object;o.name='Desk lamp shade';o.rotation_euler.x=math.pi;o.data.materials.append(brass)
+    cyl('Desk lamp glow',(x,y,z+.235),.045,.015,glow)
+    ld=bpy.data.lights.new('Desk lamp light','POINT');ld.energy=14;ld.color=(1,.74,.46);ld.shadow_soft_size=.25
+    lo=bpy.data.objects.new('Desk lamp light',ld);scene.collection.objects.link(lo);lo.location=(x,y,z+.24)
+
+def charging_strip(x,y,z):
+    box('Charging strip',(x,y,z),(.20,.05,.02),dark,.005)
+    for dx in [-.06,0,.06]: box('Charging strip light',(x+dx,y-.018,z+.012),(.018,.018,.006),glow,0)
+
+def study_desk(prefix,x,y,chair_y,with_laptop=False):
+    box(prefix+' top',(x,y,.74),(.85,.55,.05),oak,.02)
+    for dx in [-.36,.36]:
+        for dy in [-.20,.20]: box(prefix+' leg',(x+dx,y+dy,.37),(.045,.045,.70),pine,.008)
+    chair(x,chair_y,math.pi,sage)
+    desk_lamp(x+.28,y+.16,.765)
+    charging_strip(x-.05,y+.19,.762)
+    if with_laptop:
+        box(prefix+' laptop',(x-.05,y-.05,.775),(.28,.20,.016),dark,.004)
+    else:
+        for j in range(3):
+            h=random.uniform(.15,.22)
+            box(prefix+' book',(x-.30+j*.09,y-.14,.765+h/2),(.08,.12,h),random.choice([pine,rust,ivory]),.004)
+    collision(x,y,.55,.5)
+
+study_desk('Study desk one',7.1,-2.0,-2.5)
+station('study-0','A quiet desk to focus','study',7.1,-2.5,7.1,-3.4,math.pi)
+study_desk('Study desk two',8.5,-2.0,-2.5,with_laptop=True)
+station('study-1','A quiet desk to focus','study',8.5,-2.5,8.5,-3.4,math.pi)
+plant(6.55,-1.35,.75)
+
 # Quiet storytelling details on the expanded walls.
 box('Community noticeboard',(4.7,6.78,2.13),(2.6,.10,1.05),oak)
 for i,words in enumerate(['BOOK CLUB','MAKE A FRIEND','SUNDAY JAZZ']):

@@ -31,9 +31,9 @@ test('expanded café destinations are reachable without crossing furniture',()=>
   }
   const glb=readFileSync(new URL('../assets/cafe.glb',import.meta.url));
   const nodes=JSON.parse(glb.subarray(20,20+glb.readUInt32LE(12)).toString()).nodes;
-  const tables=[[6.7,-3.55],[4,2],[-3.1,5.5],[8,5.5],[-7.4,-1.8],[.6,-1.8]];
+  const tables=[[6.7,-3.55],[4,2],[-3.1,5.5],[8,5.5],[-7.4,-1.8],[.6,-1.8],[7.1,2.0],[8.5,2.0]];
   const chairs=nodes.filter(n=>/^Chair (upholstered )?seat(?:\.|$)/.test(n.name));
-  assert.equal(chairs.length,14);
+  assert.equal(chairs.length,16);
   for(const chair of chairs){
     const back=nodes.find(n=>n.name===chair.name.replace('upholstered seat','curved back').replace('Chair seat','Chair back'));
     const [x,,z]=chair.translation;
@@ -67,5 +67,9 @@ test('local social playtest validates chat, names and seat reservations',async()
     assert.equal((await request({action:'chat',text:'Playtest hello'},a)).status,200);
     assert.equal((await request({action:'chat',text:'Again'},a)).status,429);
     assert.equal((await fetch(base+'/original/maya.html')).status,404);
+    assert.equal((await request({action:'move',x:seat.x,z:seat.z,angle:0,status:'studying'},a)).status,200);
+    assert.equal((await request({action:'emote',emote:'not-a-real-emote'},a)).status,400);
+    assert.equal((await request({action:'emote',emote:'wave'},a)).status,200);
+    assert.equal((await request({action:'emote',emote:'wave'},a)).status,429,'emotes are rate limited like chat');
   }finally{abortA.abort();abortB.abort();await eventA.body.cancel().catch(()=>{});await eventB.body.cancel().catch(()=>{});}
 });

@@ -3,3 +3,23 @@
 @media(max-height:820px){.welcome p{display:none}.welcome h1{margin:12px 0 17px}.welcome .primary{padding:11px 15px}}
 
 #coins{font:600 10px Segoe UI,sans-serif;color:#8b6741;margin-right:12px;white-space:nowrap}button:disabled{opacity:.5;cursor:default}@media(max-width:850px){footer{height:92px;flex-wrap:wrap;align-content:center;row-gap:8px}.pocket{display:flex;flex-wrap:wrap;align-items:center;gap:7px;flex:1}.pocket button{margin-left:4px}#coins{margin-right:3px}.chat-toggle{display:none}}
+#focus-presets button{background:#eef0e2}#focus-presets button.selected{background:var(--pine);color:#fff}
+#focus-custom{width:100px}
+#focus-time{font:54px/1 Georgia,serif;letter-spacing:-1px;color:var(--pine);text-align:center;margin:22px 0}
+#focus-active .dialog-actions{display:flex;gap:8px}#focus-active .dialog-actions button{flex:1;padding:12px;border:1px solid #cad0bc;border-radius:6px;font-size:11px}
+#focus-stats{display:flex;justify-content:space-between;border-top:1px solid #dde0d1;margin-top:18px;padding-top:14px;font-size:10px}
+#focus-stats b{display:block;color:var(--pine);font:22px Georgia,serif}
+#focus-banner{position:absolute;z-index:3;top:22px;left:50%;transform:translateX(-50%);padding:10px 16px;border-radius:20px;font-size:11px;color:var(--pine);cursor:pointer}
+body.focus-mode .locations,body.focus-mode .bottom-hint,body.focus-mode .chat-toggle,body.focus-mode .photo-button{display:none}
+.game-steps{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:20px 0}
+.game-steps button{display:flex;flex-direction:column;align-items:center;gap:5px;width:72px;padding:12px 6px;border:1px solid #cad0bc;border-radius:8px;font-size:10px}
+.game-steps button span{font-size:22px}
+.game-steps button.done{background:var(--pine);color:#fff;border-color:var(--pine)}
+@keyframes miss-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.game-steps button.miss{animation:miss-shake .25s}
+.emotes{display:inline-flex;gap:2px;margin-left:6px}
+.emotes button{font-size:15px;padding:4px 6px;border-radius:5px}
+.emotes button:hover{background:#eef0e2}
+@keyframes float-up{0%{opacity:0;transform:translate(-50%,4px) scale(.7)}20%{opacity:1;transform:translate(-50%,-6px) scale(1.05)}100%{opacity:0;transform:translate(-50%,-46px) scale(1)}}
+.world-label.reaction{animation:float-up 1.8s ease-out forwards;pointer-events:none;background:transparent;border:0;box-shadow:none;font-size:26px;padding:0}
+.world-label.reaction::after{display:none}
