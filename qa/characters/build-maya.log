@@ -1,0 +1,106 @@
+C:\Users\Aymen\Documents\ChatGPT\coffeshop\tools\author_characters.py:29: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(name);m.diffuse_color=(*color,1);m.use_nodes=True
+10:42:22 | INFO: Data are loaded, start creating Blender stuff
+10:42:22 | INFO: Blender create Mesh node 0
+10:42:22 | INFO: Blender create Mesh node 1
+10:42:22 | INFO: Blender create Mesh node 2
+10:42:22 | INFO: Blender create Mesh node 3
+10:42:22 | INFO: Blender create Mesh node 4
+10:42:22 | INFO: Blender create Mesh node 5
+10:42:22 | INFO: Blender create Mesh node 6
+10:42:22 | INFO: Blender create Mesh node 7
+10:42:22 | INFO: Blender create Mesh node 8
+10:42:22 | INFO: Blender create Mesh node 9
+10:42:22 | INFO: Blender create Mesh node 10
+10:42:22 | INFO: Blender create Mesh node 11
+10:42:22 | INFO: Blender create Mesh node 12
+10:42:22 | INFO: Blender create Mesh node 13
+10:42:22 | INFO: Blender create Mesh node 14
+10:42:22 | INFO: Blender create Mesh node 15
+10:42:23 | INFO: Blender create Mesh node 16
+10:42:23 | INFO: Blender create Mesh node 17
+10:42:23 | INFO: Blender create Mesh node 18
+10:42:23 | INFO: Blender create Mesh node 19
+10:42:23 | INFO: Blender create Mesh node 20
+10:42:23 | INFO: Blender create Mesh node 21
+10:42:23 | INFO: Blender create Mesh node 22
+10:42:23 | INFO: Blender create Mesh node 23
+10:42:23 | INFO: Blender create Mesh node 24
+10:42:23 | INFO: Blender create Mesh node 25
+10:42:23 | INFO: Blender create Mesh node 26
+10:42:23 | INFO: Blender create Mesh node 27
+10:42:23 | INFO: Blender create Mesh node 28
+10:42:23 | INFO: Blender create Mesh node 29
+10:42:23 | INFO: Blender create Mesh node 30
+10:42:23 | INFO: Blender create Mesh node 31
+10:42:23 | INFO: Blender create Mesh node 32
+10:42:23 | INFO: Blender create Mesh node 33
+10:42:23 | INFO: Blender create Mesh node 34
+10:42:23 | INFO: Blender create Mesh node 35
+10:42:23 | INFO: Blender create Mesh node 36
+10:42:23 | INFO: Blender create Mesh node 37
+10:42:23 | INFO: Blender create Mesh node 38
+10:42:23 | INFO: Blender create Mesh node 39
+10:42:23 | INFO: Blender create Mesh node 40
+10:42:23 | INFO: Blender create Mesh node 41
+10:42:23 | INFO: Blender create Mesh node 42
+10:42:23 | INFO: Blender create Mesh node 43
+10:42:23 | INFO: Blender create Mesh node 44
+10:42:23 | INFO: Blender create Mesh node 45
+10:42:23 | INFO: Blender create Mesh node 46
+10:42:23 | INFO: Blender create Mesh node 47
+10:42:23 | INFO: glTF import finished in 0.79s
+Warning: No mesh data to join
+Info: Saved as "maya.blend"
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+10:42:32 | INFO: Starting glTF 2.0 export
+10:42:32 | INFO: Extracting primitive: Mesh_35
+10:42:32 | INFO: Primitives created: 1
+10:42:32 | INFO: Extracting primitive: Upper lash
+10:42:32 | INFO: Primitives created: 1
+10:42:32 | INFO: Extracting primitive: Face
+10:42:33 | INFO: Primitives created: 1
+10:42:33 | INFO: Extracting primitive: Eye.L
+10:42:33 | INFO: Primitives created: 1
+10:42:33 | INFO: Extracting primitive: Hair primary mass
+10:42:33 | INFO: Primitives created: 1
+10:42:33 | INFO: Extracting primitive: Mesh_22
+10:42:33 | INFO: Primitives created: 1
+10:42:33 | INFO: Extracting primitive: Mesh_19
+10:42:33 | INFO: Primitives created: 1
+10:42:33 | INFO: Finished glTF 2.0 export in 0.9117801189422607 s
+
+{'id': 'maya', 'triangles': 55996, 'bones': 41, 'meshes': 7}
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+10:42:34 | INFO: Starting glTF 2.0 export
+10:42:34 | INFO: Extracting primitive: Mesh_35
+10:42:34 | INFO: Primitives created: 1
+10:42:34 | INFO: Extracting primitive: Upper lash
+10:42:34 | INFO: Primitives created: 1
+10:42:34 | INFO: Extracting primitive: Face
+10:42:34 | INFO: Primitives created: 1
+10:42:34 | INFO: Extracting primitive: Eye.L
+10:42:34 | INFO: Primitives created: 1
+10:42:34 | INFO: Extracting primitive: Hair primary mass
+10:42:34 | INFO: Primitives created: 1
+10:42:34 | INFO: Extracting primitive: Mesh_22
+10:42:34 | INFO: Primitives created: 1
+10:42:34 | INFO: Extracting primitive: Mesh_19
+10:42:34 | INFO: Primitives created: 1
+10:42:34 | INFO: Finished glTF 2.0 export in 0.20553374290466309 s
+
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

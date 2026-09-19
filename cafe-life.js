@@ -40,7 +40,7 @@ export function updateResident(n,dt,layout,occupied,player,talking=false){
     n.visible=true;n.visits++;go({x:coffee.approach[0],z:coffee.approach[1]},'to-counter');
   }else if(n.phase==='ordering'){
     const seats=layout.stations.filter(s=>['seat','read','study'].includes(s.kind)&&!occupied.has(s.id));
-    const seat=seats[(n.visits+(n.id==='claire'?3:0))%seats.length];
+    const seat=(n.id==='noah'&&seats.find(s=>s.kind==='study'))||seats[(n.visits+(n.id==='claire'?3:0))%seats.length];
     if(!seat){n.timer=4;return;}
     n.cup=true;if(go({x:seat.approach[0],z:seat.approach[1]},'to-seat'))n.seat=seat;
   }

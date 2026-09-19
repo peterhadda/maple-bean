@@ -1,0 +1,421 @@
+C:\Users\Aymen\Documents\ChatGPT\coffeshop\tools\author_characters.py:28: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(name);m.diffuse_color=(*color,1);m.use_nodes=True
+01:30:05 | INFO: Data are loaded, start creating Blender stuff
+01:30:05 | INFO: Blender create Mesh node 0
+01:30:06 | INFO: Blender create Mesh node 1
+01:30:06 | INFO: Blender create Mesh node 2
+01:30:06 | INFO: Blender create Mesh node 3
+01:30:06 | INFO: Blender create Mesh node 4
+01:30:06 | INFO: Blender create Mesh node 5
+01:30:06 | INFO: Blender create Mesh node 6
+01:30:06 | INFO: Blender create Mesh node 7
+01:30:06 | INFO: Blender create Mesh node 8
+01:30:06 | INFO: Blender create Mesh node 9
+01:30:06 | INFO: Blender create Mesh node 10
+01:30:06 | INFO: Blender create Mesh node 11
+01:30:06 | INFO: Blender create Mesh node 12
+01:30:06 | INFO: Blender create Mesh node 13
+01:30:06 | INFO: Blender create Mesh node 14
+01:30:06 | INFO: Blender create Mesh node 15
+01:30:06 | INFO: Blender create Mesh node 16
+01:30:06 | INFO: Blender create Mesh node 17
+01:30:06 | INFO: Blender create Mesh node 18
+01:30:06 | INFO: Blender create Mesh node 19
+01:30:06 | INFO: Blender create Mesh node 20
+01:30:06 | INFO: Blender create Mesh node 21
+01:30:06 | INFO: Blender create Mesh node 22
+01:30:06 | INFO: Blender create Mesh node 23
+01:30:06 | INFO: Blender create Mesh node 24
+01:30:06 | INFO: Blender create Mesh node 25
+01:30:06 | INFO: Blender create Mesh node 26
+01:30:06 | INFO: Blender create Mesh node 27
+01:30:06 | INFO: Blender create Mesh node 28
+01:30:06 | INFO: Blender create Mesh node 29
+01:30:06 | INFO: Blender create Mesh node 30
+01:30:06 | INFO: Blender create Mesh node 31
+01:30:06 | INFO: Blender create Mesh node 32
+01:30:06 | INFO: Blender create Mesh node 33
+01:30:06 | INFO: Blender create Mesh node 34
+01:30:06 | INFO: Blender create Mesh node 35
+01:30:06 | INFO: Blender create Mesh node 36
+01:30:06 | INFO: Blender create Mesh node 37
+01:30:06 | INFO: Blender create Mesh node 38
+01:30:06 | INFO: Blender create Mesh node 39
+01:30:06 | INFO: Blender create Mesh node 40
+01:30:06 | INFO: Blender create Mesh node 41
+01:30:06 | INFO: Blender create Mesh node 42
+01:30:06 | INFO: Blender create Mesh node 43
+01:30:06 | INFO: Blender create Mesh node 44
+01:30:06 | INFO: Blender create Mesh node 45
+01:30:06 | INFO: Blender create Mesh node 46
+01:30:06 | INFO: Blender create Mesh node 47
+01:30:06 | INFO: Blender create Mesh node 48
+01:30:06 | INFO: Blender create Mesh node 49
+01:30:06 | INFO: Blender create Mesh node 50
+01:30:07 | INFO: Blender create Mesh node 51
+01:30:07 | INFO: Blender create Mesh node 52
+01:30:07 | INFO: Blender create Mesh node 53
+01:30:07 | INFO: glTF import finished in 1.24s
+Info: Saved as "noah.blend"
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+01:30:21 | INFO: Starting glTF 2.0 export
+01:30:21 | INFO: Extracting primitive: Mesh_34
+01:30:21 | INFO: Primitives created: 1
+01:30:21 | INFO: Extracting primitive: Upper lash
+01:30:21 | INFO: Primitives created: 1
+01:30:21 | INFO: Extracting primitive: Face
+01:30:22 | INFO: Primitives created: 1
+01:30:22 | INFO: Extracting primitive: Eye.L
+01:30:22 | INFO: Primitives created: 1
+01:30:22 | INFO: Extracting primitive: Hair primary mass
+01:30:22 | INFO: Primitives created: 1
+01:30:22 | INFO: Extracting primitive: Mesh_21
+01:30:22 | INFO: Primitives created: 1
+01:30:22 | INFO: Extracting primitive: Mesh_18
+01:30:22 | INFO: Primitives created: 1
+01:30:22 | INFO: Finished glTF 2.0 export in 1.1084463596343994 s
+
+{'id': 'noah', 'triangles': 55994, 'bones': 41, 'meshes': 7}
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+01:30:23 | INFO: Starting glTF 2.0 export
+01:30:23 | INFO: Extracting primitive: Mesh_34
+01:30:23 | INFO: Primitives created: 1
+01:30:23 | INFO: Extracting primitive: Upper lash
+01:30:23 | INFO: Primitives created: 1
+01:30:23 | INFO: Extracting primitive: Face
+01:30:23 | INFO: Primitives created: 1
+01:30:23 | INFO: Extracting primitive: Eye.L
+01:30:23 | INFO: Primitives created: 1
+01:30:23 | INFO: Extracting primitive: Hair primary mass
+01:30:23 | INFO: Primitives created: 1
+01:30:23 | INFO: Extracting primitive: Mesh_21
+01:30:23 | INFO: Primitives created: 1
+01:30:23 | INFO: Extracting primitive: Mesh_18
+01:30:23 | INFO: Primitives created: 1
+01:30:23 | INFO: Finished glTF 2.0 export in 0.27870774269104004 s
+
+01:30:27 | INFO: Data are loaded, start creating Blender stuff
+01:30:27 | INFO: Blender create Mesh node 0
+01:30:27 | INFO: Blender create Mesh node 1
+01:30:27 | INFO: Blender create Mesh node 2
+01:30:27 | INFO: Blender create Mesh node 3
+01:30:27 | INFO: Blender create Mesh node 4
+01:30:27 | INFO: Blender create Mesh node 5
+01:30:27 | INFO: Blender create Mesh node 6
+01:30:27 | INFO: Blender create Mesh node 7
+01:30:27 | INFO: Blender create Mesh node 8
+01:30:27 | INFO: Blender create Mesh node 9
+01:30:27 | INFO: Blender create Mesh node 10
+01:30:27 | INFO: Blender create Mesh node 11
+01:30:27 | INFO: Blender create Mesh node 12
+01:30:27 | INFO: Blender create Mesh node 13
+01:30:27 | INFO: Blender create Mesh node 14
+01:30:27 | INFO: Blender create Mesh node 15
+01:30:27 | INFO: Blender create Mesh node 16
+01:30:27 | INFO: Blender create Mesh node 17
+01:30:28 | INFO: Blender create Mesh node 18
+01:30:28 | INFO: Blender create Mesh node 19
+01:30:28 | INFO: Blender create Mesh node 20
+01:30:28 | INFO: Blender create Mesh node 21
+01:30:28 | INFO: Blender create Mesh node 22
+01:30:28 | INFO: Blender create Mesh node 23
+01:30:28 | INFO: Blender create Mesh node 24
+01:30:28 | INFO: Blender create Mesh node 25
+01:30:28 | INFO: Blender create Mesh node 26
+01:30:28 | INFO: Blender create Mesh node 27
+01:30:28 | INFO: Blender create Mesh node 28
+01:30:28 | INFO: Blender create Mesh node 29
+01:30:28 | INFO: Blender create Mesh node 30
+01:30:28 | INFO: Blender create Mesh node 31
+01:30:28 | INFO: Blender create Mesh node 32
+01:30:28 | INFO: Blender create Mesh node 33
+01:30:28 | INFO: Blender create Mesh node 34
+01:30:28 | INFO: Blender create Mesh node 35
+01:30:28 | INFO: Blender create Mesh node 36
+01:30:28 | INFO: Blender create Mesh node 37
+01:30:28 | INFO: Blender create Mesh node 38
+01:30:28 | INFO: Blender create Mesh node 39
+01:30:28 | INFO: Blender create Mesh node 40
+01:30:28 | INFO: Blender create Mesh node 41
+01:30:28 | INFO: Blender create Mesh node 42
+01:30:28 | INFO: Blender create Mesh node 43
+01:30:28 | INFO: Blender create Mesh node 44
+01:30:28 | INFO: Blender create Mesh node 45
+01:30:28 | INFO: Blender create Mesh node 46
+01:30:28 | INFO: Blender create Mesh node 47
+01:30:28 | INFO: Blender create Mesh node 48
+01:30:28 | INFO: Blender create Mesh node 49
+01:30:28 | INFO: Blender create Mesh node 50
+01:30:28 | INFO: Blender create Mesh node 51
+01:30:28 | INFO: Blender create Mesh node 52
+01:30:28 | INFO: Blender create Mesh node 53
+01:30:28 | INFO: Blender create Mesh node 54
+01:30:28 | INFO: Blender create Mesh node 55
+01:30:28 | INFO: Blender create Mesh node 56
+01:30:28 | INFO: Blender create Mesh node 57
+01:30:28 | INFO: glTF import finished in 1.26s
+Info: Saved as "claire.blend"
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+01:30:44 | INFO: Starting glTF 2.0 export
+01:30:44 | INFO: Extracting primitive: Mesh_34
+01:30:44 | INFO: Primitives created: 1
+01:30:44 | INFO: Extracting primitive: Upper lash
+01:30:44 | INFO: Primitives created: 1
+01:30:44 | INFO: Extracting primitive: Face
+01:30:45 | INFO: Primitives created: 1
+01:30:45 | INFO: Extracting primitive: Eye.L
+01:30:45 | INFO: Primitives created: 1
+01:30:45 | INFO: Extracting primitive: Hair primary mass
+01:30:45 | INFO: Primitives created: 1
+01:30:45 | INFO: Extracting primitive: Mesh_21
+01:30:45 | INFO: Primitives created: 1
+01:30:45 | INFO: Extracting primitive: Mesh_18
+01:30:45 | INFO: Primitives created: 1
+01:30:45 | INFO: Finished glTF 2.0 export in 1.3986713886260986 s
+
+{'id': 'claire', 'triangles': 55996, 'bones': 41, 'meshes': 7}
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+01:30:46 | INFO: Starting glTF 2.0 export
+01:30:46 | INFO: Extracting primitive: Mesh_34
+01:30:46 | INFO: Primitives created: 1
+01:30:46 | INFO: Extracting primitive: Upper lash
+01:30:46 | INFO: Primitives created: 1
+01:30:46 | INFO: Extracting primitive: Face
+01:30:46 | INFO: Primitives created: 1
+01:30:46 | INFO: Extracting primitive: Eye.L
+01:30:46 | INFO: Primitives created: 1
+01:30:47 | INFO: Extracting primitive: Hair primary mass
+01:30:47 | INFO: Primitives created: 1
+01:30:47 | INFO: Extracting primitive: Mesh_21
+01:30:47 | INFO: Primitives created: 1
+01:30:47 | INFO: Extracting primitive: Mesh_18
+01:30:47 | INFO: Primitives created: 1
+01:30:47 | INFO: Finished glTF 2.0 export in 0.508385419845581 s
+
+01:30:51 | INFO: Data are loaded, start creating Blender stuff
+01:30:51 | INFO: Blender create Mesh node 0
+01:30:51 | INFO: Blender create Mesh node 1
+01:30:51 | INFO: Blender create Mesh node 2
+01:30:51 | INFO: Blender create Mesh node 3
+01:30:51 | INFO: Blender create Mesh node 4
+01:30:51 | INFO: Blender create Mesh node 5
+01:30:51 | INFO: Blender create Mesh node 6
+01:30:51 | INFO: Blender create Mesh node 7
+01:30:51 | INFO: Blender create Mesh node 8
+01:30:51 | INFO: Blender create Mesh node 9
+01:30:51 | INFO: Blender create Mesh node 10
+01:30:51 | INFO: Blender create Mesh node 11
+01:30:51 | INFO: Blender create Mesh node 12
+01:30:51 | INFO: Blender create Mesh node 13
+01:30:51 | INFO: Blender create Mesh node 14
+01:30:51 | INFO: Blender create Mesh node 15
+01:30:51 | INFO: Blender create Mesh node 16
+01:30:51 | INFO: Blender create Mesh node 17
+01:30:51 | INFO: Blender create Mesh node 18
+01:30:51 | INFO: Blender create Mesh node 19
+01:30:51 | INFO: Blender create Mesh node 20
+01:30:51 | INFO: Blender create Mesh node 21
+01:30:51 | INFO: Blender create Mesh node 22
+01:30:51 | INFO: Blender create Mesh node 23
+01:30:51 | INFO: Blender create Mesh node 24
+01:30:51 | INFO: Blender create Mesh node 25
+01:30:51 | INFO: Blender create Mesh node 26
+01:30:51 | INFO: Blender create Mesh node 27
+01:30:51 | INFO: Blender create Mesh node 28
+01:30:51 | INFO: Blender create Mesh node 29
+01:30:51 | INFO: Blender create Mesh node 30
+01:30:51 | INFO: Blender create Mesh node 31
+01:30:51 | INFO: Blender create Mesh node 32
+01:30:51 | INFO: Blender create Mesh node 33
+01:30:51 | INFO: Blender create Mesh node 34
+01:30:51 | INFO: Blender create Mesh node 35
+01:30:51 | INFO: Blender create Mesh node 36
+01:30:51 | INFO: Blender create Mesh node 37
+01:30:51 | INFO: Blender create Mesh node 38
+01:30:51 | INFO: Blender create Mesh node 39
+01:30:51 | INFO: Blender create Mesh node 40
+01:30:52 | INFO: Blender create Mesh node 41
+01:30:52 | INFO: Blender create Mesh node 42
+01:30:52 | INFO: Blender create Mesh node 43
+01:30:52 | INFO: Blender create Mesh node 44
+01:30:52 | INFO: Blender create Mesh node 45
+01:30:52 | INFO: Blender create Mesh node 46
+01:30:52 | INFO: Blender create Mesh node 47
+01:30:52 | INFO: Blender create Mesh node 48
+01:30:52 | INFO: Blender create Mesh node 49
+01:30:52 | INFO: Blender create Mesh node 50
+01:30:52 | INFO: Blender create Mesh node 51
+01:30:52 | INFO: Blender create Mesh node 52
+01:30:52 | INFO: glTF import finished in 1.17s
+Warning: No mesh data to join
+Info: Saved as "mara.blend"
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+01:31:08 | INFO: Starting glTF 2.0 export
+01:31:08 | INFO: Extracting primitive: Mesh_35
+01:31:08 | INFO: Primitives created: 1
+01:31:08 | INFO: Extracting primitive: Upper lash
+01:31:08 | INFO: Primitives created: 1
+01:31:08 | INFO: Extracting primitive: Face
+01:31:09 | INFO: Primitives created: 1
+01:31:09 | INFO: Extracting primitive: Eye.L
+01:31:09 | INFO: Primitives created: 1
+01:31:09 | INFO: Extracting primitive: Hair primary mass
+01:31:09 | INFO: Primitives created: 1
+01:31:09 | INFO: Extracting primitive: Mesh_22
+01:31:09 | INFO: Primitives created: 1
+01:31:09 | INFO: Extracting primitive: Mesh_19
+01:31:09 | INFO: Primitives created: 1
+01:31:09 | INFO: Finished glTF 2.0 export in 1.4922986030578613 s
+
+{'id': 'mara', 'triangles': 55994, 'bones': 41, 'meshes': 7}
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+01:31:10 | INFO: Starting glTF 2.0 export
+01:31:10 | INFO: Extracting primitive: Mesh_35
+01:31:10 | INFO: Primitives created: 1
+01:31:10 | INFO: Extracting primitive: Upper lash
+01:31:10 | INFO: Primitives created: 1
+01:31:10 | INFO: Extracting primitive: Face
+01:31:10 | INFO: Primitives created: 1
+01:31:10 | INFO: Extracting primitive: Eye.L
+01:31:10 | INFO: Primitives created: 1
+01:31:10 | INFO: Extracting primitive: Hair primary mass
+01:31:10 | INFO: Primitives created: 1
+01:31:10 | INFO: Extracting primitive: Mesh_22
+01:31:10 | INFO: Primitives created: 1
+01:31:10 | INFO: Extracting primitive: Mesh_19
+01:31:10 | INFO: Primitives created: 1
+01:31:10 | INFO: Finished glTF 2.0 export in 0.28884434700012207 s
+
+01:31:13 | INFO: Data are loaded, start creating Blender stuff
+01:31:13 | INFO: Blender create Mesh node 0
+01:31:13 | INFO: Blender create Mesh node 1
+01:31:13 | INFO: Blender create Mesh node 2
+01:31:13 | INFO: Blender create Mesh node 3
+01:31:13 | INFO: Blender create Mesh node 4
+01:31:13 | INFO: Blender create Mesh node 5
+01:31:13 | INFO: Blender create Mesh node 6
+01:31:13 | INFO: Blender create Mesh node 7
+01:31:13 | INFO: Blender create Mesh node 8
+01:31:13 | INFO: Blender create Mesh node 9
+01:31:13 | INFO: Blender create Mesh node 10
+01:31:13 | INFO: Blender create Mesh node 11
+01:31:13 | INFO: Blender create Mesh node 12
+01:31:13 | INFO: Blender create Mesh node 13
+01:31:13 | INFO: Blender create Mesh node 14
+01:31:13 | INFO: Blender create Mesh node 15
+01:31:13 | INFO: Blender create Mesh node 16
+01:31:13 | INFO: Blender create Mesh node 17
+01:31:13 | INFO: Blender create Mesh node 18
+01:31:13 | INFO: Blender create Mesh node 19
+01:31:13 | INFO: Blender create Mesh node 20
+01:31:13 | INFO: Blender create Mesh node 21
+01:31:13 | INFO: Blender create Mesh node 22
+01:31:13 | INFO: Blender create Mesh node 23
+01:31:13 | INFO: Blender create Mesh node 24
+01:31:13 | INFO: Blender create Mesh node 25
+01:31:13 | INFO: Blender create Mesh node 26
+01:31:13 | INFO: Blender create Mesh node 27
+01:31:13 | INFO: Blender create Mesh node 28
+01:31:13 | INFO: Blender create Mesh node 29
+01:31:13 | INFO: Blender create Mesh node 30
+01:31:13 | INFO: Blender create Mesh node 31
+01:31:13 | INFO: Blender create Mesh node 32
+01:31:13 | INFO: Blender create Mesh node 33
+01:31:13 | INFO: Blender create Mesh node 34
+01:31:13 | INFO: Blender create Mesh node 35
+01:31:13 | INFO: Blender create Mesh node 36
+01:31:14 | INFO: Blender create Mesh node 37
+01:31:14 | INFO: Blender create Mesh node 38
+01:31:14 | INFO: Blender create Mesh node 39
+01:31:14 | INFO: Blender create Mesh node 40
+01:31:14 | INFO: Blender create Mesh node 41
+01:31:14 | INFO: Blender create Mesh node 42
+01:31:14 | INFO: Blender create Mesh node 43
+01:31:14 | INFO: Blender create Mesh node 44
+01:31:14 | INFO: Blender create Mesh node 45
+01:31:14 | INFO: Blender create Mesh node 46
+01:31:14 | INFO: glTF import finished in 0.59s
+Warning: No mesh data to join
+Info: Saved as "jules.blend"
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+01:31:22 | INFO: Starting glTF 2.0 export
+01:31:22 | INFO: Extracting primitive: Mesh_34
+01:31:22 | INFO: Primitives created: 1
+01:31:22 | INFO: Extracting primitive: Upper lash
+01:31:22 | INFO: Primitives created: 1
+01:31:22 | INFO: Extracting primitive: Face
+01:31:22 | INFO: Primitives created: 1
+01:31:22 | INFO: Extracting primitive: Eye.L
+01:31:22 | INFO: Primitives created: 1
+01:31:22 | INFO: Extracting primitive: Hair primary mass
+01:31:23 | INFO: Primitives created: 1
+01:31:23 | INFO: Extracting primitive: Mesh_21
+01:31:23 | INFO: Primitives created: 1
+01:31:23 | INFO: Extracting primitive: Mesh_18
+01:31:23 | INFO: Primitives created: 1
+01:31:23 | INFO: Finished glTF 2.0 export in 0.9674978256225586 s
+
+{'id': 'jules', 'triangles': 55995, 'bones': 41, 'meshes': 7}
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+Info: Applied modifier was not first, result may not be as expected
+01:31:24 | INFO: Starting glTF 2.0 export
+01:31:24 | INFO: Extracting primitive: Mesh_34
+01:31:24 | INFO: Primitives created: 1
+01:31:24 | INFO: Extracting primitive: Upper lash
+01:31:24 | INFO: Primitives created: 1
+01:31:24 | INFO: Extracting primitive: Face
+01:31:24 | INFO: Primitives created: 1
+01:31:24 | INFO: Extracting primitive: Eye.L
+01:31:24 | INFO: Primitives created: 1
+01:31:24 | INFO: Extracting primitive: Hair primary mass
+01:31:24 | INFO: Primitives created: 1
+01:31:24 | INFO: Extracting primitive: Mesh_21
+01:31:24 | INFO: Primitives created: 1
+01:31:24 | INFO: Extracting primitive: Mesh_18
+01:31:24 | INFO: Primitives created: 1
+01:31:24 | INFO: Finished glTF 2.0 export in 0.3677971363067627 s
+
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kit parity (scaffold)</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/phase2/shared/scaffold.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head>
+<body class="scaffold-page">
+<p class="scaffold-note">Scaffold. Verification page, not a UI design.</p>
+<h1>Character kit parity</h1>
+<p>Each canonical resident is built by <code>/maya-character.js</code> (A) and by <code>/phase2/character-kit</code> (B).
+Geometry buffers, morph targets, materials, texture pixels, compiled shader uniforms, six pose updates and a rendered frame must be identical.</p>
+<pre id="log">Running…</pre>
+<div id="shots"></div>
+<script type="module" src="/phase2/lab/parity/parity.js"></script>
+</body>
+</html>

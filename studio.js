@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { createMaya } from './maya-character.js';
+import { createMaya, loadCharacters } from './assets/characters/runtime.js';
 import { cast } from './characters.js';
 const stage=document.querySelector('#stage'), q=()=>new URLSearchParams(location.hash.slice(1));
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -11,9 +11,11 @@ const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(26,1,.04,40),co
 controls.enableDamping=true;controls.minDistance=.55;controls.maxDistance=8;
 const pmrem=new THREE.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.42;pmrem.dispose();
 const characterId=new URLSearchParams(location.search).get('character')||'maya', character=cast[characterId]||cast.maya;
-const maya=createMaya(character);scene.add(maya.group);
 document.title=character.name+' · Maple Hollow';document.querySelector('.maya').textContent=character.name;
-document.querySelector('#loading .lt').textContent=character.name+' is getting ready…';
+const loading=document.querySelector('#loading');loading.querySelector('.lt').textContent=character.name+' is getting ready…';
+let maya;
+try{await loadCharacters([character.character]);maya=createMaya(character);scene.add(maya.group);}
+catch(error){loading.classList.add('failed');loading.setAttribute('role','alert');loading.querySelector('.lt').textContent=character.name+' could not load. Please try again.';const retry=document.createElement('button');retry.textContent='Try again';retry.onclick=()=>location.reload();loading.append(retry);window.__loadError=String(error);throw error;}
 if(!['maya','claire'].includes(character.character))document.querySelector('.meta').textContent='Maple Hollow resident';
 const castLabel=document.createElement('label');castLabel.style.cssText='font-size:12px;color:#526043';castLabel.textContent='Character ';
 const castSelect=document.createElement('select');castSelect.setAttribute('aria-label','Character');castSelect.style.cssText='padding:8px 12px;border-radius:6px;border:1px solid #d5d5c4;background:#fffaf2;color:#304c40';
@@ -26,16 +28,24 @@ Object.assign(key.shadow.camera,{left:-1,right:1,top:2,bottom:-.2,near:.1,far:12
 const rim=new THREE.DirectionalLight(0xe3ebff,1.3);rim.position.set(-2,3,-3);scene.add(rim);
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(20,20),new THREE.ShadowMaterial({opacity:.13}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;ground.position.y=-.006;scene.add(ground);
 const views={front:[0,4.6,.885],34:[35,4.6,.885],side:[90,4.6,.885],back:[180,4.6,.885],face:[14,1.36,1.505],profile:[90,1.36,1.505]};
-let pose=q().get('pose')||'idle';
+let pose='idle',expression='neutral',seatHeight=.54,currentView;
 const chair=new THREE.Group(),wood=new THREE.MeshStandardMaterial({color:0x9e784f,roughness:.8}),fabric=new THREE.MeshStandardMaterial({color:0x607b66,roughness:1});
 function chairPart(w,h,d,x,y,z,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;chair.add(m);}
 chairPart(.58,.12,.55,0,.48,-.08,fabric);chairPart(.58,.65,.10,0,.78,-.34,fabric);for(const x of [-.22,.22])for(const z of [-.28,.12])chairPart(.05,.43,.05,x,.22,z,wood);scene.add(chair);chair.visible=false;
-const group=document.createElement('div');group.className='group';group.innerHTML='<span>Pose</span><button data-p="idle">Idle</button><button data-p="walk">Walk</button><button data-p="sit">Sit</button><button data-p="wave">Wave</button><button data-p="sip">Sip</button>';document.querySelector('#stage > .hud:last-child').append(group);
-group.querySelectorAll('button').forEach(b=>b.onclick=()=>{pose=b.dataset.p;group.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
-function hash(){const params=q(),v=views[params.get('view')]||views.front;controls.target.set(0,v[2],.03);camera.position.copy(controls.target).add(new THREE.Vector3(Math.sin(v[0]*Math.PI/180)*v[1],.035*v[1],Math.cos(v[0]*Math.PI/180)*v[1]));controls.update();document.querySelectorAll('#views button').forEach(b=>b.classList.toggle('on',b.dataset.v===(params.get('view')||'front')));document.querySelectorAll('#exprs button').forEach(b=>b.classList.toggle('on',b.dataset.e===(params.get('expr')||'neutral')));}
-document.querySelectorAll('[data-v],[data-e]').forEach(b=>b.onclick=()=>{const params=q();params.set(b.dataset.v?'view':'expr',b.dataset.v||b.dataset.e);location.hash=params.toString();});
+const seatSelect=document.querySelector('#seat-height');
+function hash(){
+ const params=q(),view=Object.hasOwn(views,params.get('view'))?params.get('view'):'front',v=views[view];
+ pose=['idle','walk','sit','wave','sip','study'].includes(params.get('pose'))?params.get('pose'):'idle';
+ expression=params.get('expr')||'neutral';seatHeight=[.44,.54,.585].includes(Number(params.get('seat')))?Number(params.get('seat')):.54;
+ if(view!==currentView){controls.target.set(0,v[2],.03);camera.position.copy(controls.target).add(new THREE.Vector3(Math.sin(v[0]*Math.PI/180)*v[1],.035*v[1],Math.cos(v[0]*Math.PI/180)*v[1]));controls.update();currentView=view;}
+ for(const [selector,key,value] of [['#views button','v',view],['#exprs button','e',expression],['#poses button','p',pose]])document.querySelectorAll(selector).forEach(b=>{const on=b.dataset[key]===value;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+ seatSelect.value=String(seatHeight);chair.scale.y=seatHeight/.54;
+}
+function select(key,value){const params=q();params.set(key,value);location.hash=params.toString();hash();}
+document.querySelectorAll('[data-v],[data-e],[data-p]').forEach(b=>b.onclick=()=>select(b.dataset.v?'view':b.dataset.e?'expr':'pose',b.dataset.v||b.dataset.e||b.dataset.p));
+seatSelect.onchange=()=>select('seat',seatSelect.value);
 addEventListener('hashchange',hash);hash();
-new ResizeObserver(()=>{const h=Math.max(220,stage.clientHeight-(document.body.classList.contains('bare')?0:130));renderer.setSize(stage.clientWidth,h);camera.aspect=stage.clientWidth/h;camera.updateProjectionMatrix();}).observe(stage);
+new ResizeObserver(()=>{const h=Math.max(220,stage.clientHeight);renderer.setSize(stage.clientWidth,h);camera.aspect=stage.clientWidth/h;camera.updateProjectionMatrix();}).observe(stage);
 let last=0;
-renderer.setAnimationLoop(ms=>{const dt=Math.min((ms-last)/1000,.05);last=ms;const still=q().get('still')==='1';maya.update(still?0:ms/1000,dt,{still,expression:q().get('expr'),walking:pose==='walk',sitting:pose==='sit',wave:pose==='wave',cup:pose==='sip',sipping:pose==='sip',seatHeight:.54});chair.visible=pose==='sit';controls.update();renderer.render(scene,camera);document.querySelector('#loading').classList.add('done');window.__ready=true;});
-window.mayaStudio={maya,renderer,scene,camera,setPose(value){pose=value;}};
+renderer.setAnimationLoop(ms=>{const dt=Math.min((ms-last)/1000,.05);last=ms;const still=q().get('still')==='1';maya.update(still?0:ms/1000,dt,{still,expression:expression==='blink'?'neutral':expression,blink:expression==='blink'?1:undefined,walking:pose==='walk',sitting:pose==='sit'||pose==='study',studying:pose==='study',wave:pose==='wave',cup:pose==='sip',sipping:pose==='sip',seatHeight});chair.visible=pose==='sit'||pose==='study';controls.update();renderer.render(scene,camera);if(!window.__ready){loading.classList.add('done');document.querySelector('#controls').disabled=false;window.__ready=true;}});
+window.mayaStudio={maya,renderer,scene,camera,setPose(value){select('pose',value);},setSeatHeight(value){select('seat',value);}};

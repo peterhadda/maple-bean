@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canva icon check (scaffold)</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/phase2/shared/scaffold.css">
+<style>.icon-grid{display:flex;flex-wrap:wrap;gap:12px}.icon-grid figure{margin:0;width:96px;font-size:12px}.icon-grid img{width:96px;height:96px;display:block}</style>
+</head>
+<body class="scaffold-page">
+<p class="scaffold-note">Scaffold only. Lists the Canva icon exports so the prototypes can use them; placement and styling are designed in Figma.</p>
+<h1>Canva icons</h1>
+<p id="coverage"></p>
+<div id="groups"></div>
+<script type="module">
+import { MINIGAME_ICONS, WARDROBE_ICONS, SKIN_TONES, MENU_ICONS, BARISTA_STEP_ICONS } from '/phase2/shared/icons.js';
+import { GAMES } from '/minigames.js';
+
+const groups = [['Mini-games', MINIGAME_ICONS], ['Creator categories', WARDROBE_ICONS], ['Skin tones', SKIN_TONES],
+  ['Café menu', MENU_ICONS], ['Barista steps', Object.values(BARISTA_STEP_ICONS)]];
+const root = document.getElementById('groups');
+for (const [title, list] of groups) {
+  const h = document.createElement('h2'); h.textContent = title + ' (' + list.length + ')';
+  const grid = document.createElement('div'); grid.className = 'icon-grid';
+  for (const entry of list) {
+    const fig = document.createElement('figure');
+    const img = new Image(); img.src = entry.src; img.alt = entry.label; img.loading = 'lazy';
+    img.onerror = () => fig.append(' (missing)');
+    const cap = document.createElement('figcaption');
+    cap.textContent = entry.label + (entry.hex ? ' ' + entry.hex : '') + (entry.resident ? ' · ' + entry.resident : '');
+    fig.append(img, cap); grid.append(fig);
+  }
+  root.append(h, grid);
+}
+const steps = GAMES['coffee-making'].steps.map(s => s.id);
+const missing = steps.filter(id => !BARISTA_STEP_ICONS[id]);
+document.getElementById('coverage').textContent = missing.length
+  ? 'Barista steps without an icon: ' + missing.join(', ')
+  : 'Every barista step in minigames.js has a Canva icon (' + steps.join(', ') + ').';
+</script>
+</body>
+</html>

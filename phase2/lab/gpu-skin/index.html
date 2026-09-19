@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPU skinning check (scaffold)</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/phase2/shared/scaffold.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head>
+<body class="scaffold-page">
+<p class="scaffold-note">Scaffold. Verification page, not a UI design.</p>
+<h1>GPU skinning vs CPU skinning</h1>
+<p>Each row: CPU (kit default) then GPU for the same pose. Diff counts silhouette pixels whose colour moved by more than 12/255 on any channel.</p>
+<pre id="log">Running…</pre>
+<div id="shots"></div>
+<script type="module" src="/phase2/lab/gpu-skin/gpu-skin.js"></script>
+</body>
+</html>

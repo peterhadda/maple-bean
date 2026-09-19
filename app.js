@@ -3,7 +3,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { createMaya } from './maya-character.js';
+import { createMaya as createCharacter, loadCharacters } from './assets/characters/runtime.js';
+import { polishMaterial, worldUV, addVisualDetails, refineCafe } from './assets/visual-world.js';
 import { cast } from './characters.js';
 import { isWalkable, findPath, moveOnFloor, followRoute } from './navigation.js';
 import {menu,buyDrink,sipDrink,resident,updateResident} from './cafe-life.js';
@@ -16,6 +17,7 @@ import {deriveStatus,statusText,EMOTES,emoteEmoji} from './social.js';
 import {readSaved,save,KEYS,defaultSettings} from './save.js';
 
 const $=id=>document.getElementById(id), world=$('world');
+const createMaya=options=>createCharacter({...options,detail:'game'});
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let toastTimer;
 function toast(message){$('toast').textContent=message;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),4200);}
@@ -25,18 +27,20 @@ function failure(error){console.error(error);$('load-message').textContent='The 
 
 let renderer;
 try{renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true,powerPreference:'high-performance'});}catch(e){failure(e);throw e;}
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
-renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;world.prepend(renderer.domElement);
+renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.25:1.5));renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;world.prepend(renderer.domElement);
 renderer.domElement.setAttribute('aria-label','3D café. Use the destination buttons or WASD to walk.');renderer.domElement.tabIndex=0;
 const scene=new THREE.Scene();scene.background=new THREE.Color('#d5d6bd');scene.fog=new THREE.Fog('#d5d6bd',45,95);
 const camera=new THREE.PerspectiveCamera(42,1,.1,150);camera.position.set(22,22,28);
 const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,.1,0);controls.enableDamping=true;controls.dampingFactor=.09;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=2;controls.maxDistance=52;controls.update();
 const pmrem=new THREE.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.45;pmrem.dispose();
 const ambient=new THREE.HemisphereLight(0xffedd2,0x819178,2.1);scene.add(ambient);
-const sun=new THREE.DirectionalLight(0xffdfad,3.3);sun.position.set(-9,17,9);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.normalBias=.035;sun.shadow.bias=-.00015;sun.shadow.radius=3;
+const sun=new THREE.DirectionalLight(0xffdfad,3.3);sun.position.set(-12,9,14);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.normalBias=.012;sun.shadow.bias=-.00008;sun.shadow.radius=3;
 Object.assign(sun.shadow.camera,{left:-18,right:18,top:18,bottom:-18,near:.1,far:60});scene.add(sun);
 const fill=new THREE.DirectionalLight(0xd7e8f7,1);fill.position.set(7,9,-7);scene.add(fill);
 const lamps=[];
+let visualDetails;
+const obstructions=[];
 for(const [x,z] of [[-7,-3],[-3,-3],[2,-3],[7,-3],[-7,3],[-3,3],[2,3],[7,3]]){const l=new THREE.PointLight(0xffc775,6,6,2);l.position.set(x,2.55,z);scene.add(l);lamps.push(l);}
 const fire=new THREE.PointLight(0xff9347,8,5,2);fire.position.set(8.6,.65,-4);scene.add(fire);
 new ResizeObserver(()=>{const w=world.clientWidth,h=world.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}).observe(world);
@@ -80,33 +84,48 @@ function label(text,position,className=''){
 // a few draws, while the editable Blender file keeps every original object.
 function addCafe(root){
   root.updateMatrixWorld(true);const batches=new Map();
+  refineCafe(root,scene);
   root.traverse(o=>{
-    if(!o.isMesh)return;
+    if(!o.isMesh||o.userData.replaced||/Broad_living_leaf|Plant_frond/.test(o.name))return;
+    if(o.name==='Menu_welcome')o.matrixWorld.elements[13]-=.34;
+    if(/Garden_backdrop/.test(o.name)){o.material=new THREE.MeshStandardMaterial({color:'#899578',roughness:1});}
     const geometry=o.geometry.clone().applyMatrix4(o.matrixWorld);
     for(const a of Object.keys(geometry.attributes))if(!['position','normal'].includes(a))geometry.deleteAttribute(a);
     if(!geometry.attributes.normal)geometry.computeVertexNormals();
+    worldUV(geometry);polishMaterial(o.material);
     const g=geometry.index?geometry.toNonIndexed():geometry;
     if(g!==geometry)geometry.dispose();
-    const overhead=/Ceiling_beam|Pendant_cord|Pendant_shade|Pendant_warm_diffuser/.test(o.name);
-    const mat=o.material,key=mat.uuid+overhead;
-    if(!batches.has(key))batches.set(key,{mat,parts:[],overhead});batches.get(key).parts.push(g);
+    const overhead=/Ceiling_beam/.test(o.name);
+    const obstruction=/Left_plaster|Right_plaster|Maple_Bean_marquee|Pine_awning|Awning_valance|Entrance_door_jamb|Cream_window_upright|Window_slender_mullion/.test(o.name)?o.name:'';
+    const mat=o.material,key=mat.uuid+overhead+obstruction;
+    if(!batches.has(key))batches.set(key,{mat,parts:[],overhead,obstruction});batches.get(key).parts.push(g);
   });
-  for(const {mat,parts,overhead} of batches.values()){
-    const geometry=mergeGeometries(parts),m=new THREE.Mesh(geometry,mat);parts.forEach(g=>g.dispose());
+  for(const {mat,parts,overhead,obstruction} of batches.values()){
+    const geometry=mergeGeometries(parts),m=new THREE.Mesh(geometry,obstruction?mat.clone():mat);parts.forEach(g=>g.dispose());
+    if(obstruction){geometry.computeBoundingBox();m.userData.sightBounds=geometry.boundingBox.clone().expandByScalar(.25);obstructions.push(m);}
     m.castShadow=true;m.receiveShadow=true;(overhead?beams:scene).add(m);
   }
 }
 
 function cameraMode(next){
-  mode=next;document.body.classList.toggle('walking',mode==='walk');$('welcome').hidden=mode!=='overview';
+  mode=next;document.body.classList.toggle('walking',mode==='walk');document.body.classList.toggle('floor-plan',mode==='plan');$('welcome').hidden=mode!=='overview';
+  visualDetails?.update(performance.now()/1000,mode);
   for(const id of ['overview','walk','plan'])$(id).classList.toggle('selected',id===mode);
   const target=mode==='walk'?player.clone().add(new THREE.Vector3(0,1,0)):new THREE.Vector3(0,.15,0);
-  const position=mode==='walk'?player.clone().add(new THREE.Vector3(3.7,3.5,5)):mode==='plan'?new THREE.Vector3(0,28,.02):new THREE.Vector3(22,22,28);
+  const narrow=world.clientWidth<600;
+  const position=mode==='walk'?player.clone().add(new THREE.Vector3(narrow?.4:2.4,narrow?1.9:2.1,narrow?3.2:3.6)):mode==='plan'?new THREE.Vector3(17,25,22).multiplyScalar(narrow?1.55:1):new THREE.Vector3(18,17,23).multiplyScalar(narrow?1.6:1);
   cameraTween={from:camera.position.clone(),to:position,fromTarget:controls.target.clone(),target,t:0};
-  controls.maxPolarAngle=mode==='plan'?.10:Math.PI*.48;controls.enablePan=mode!=='walk';controls.minDistance=mode==='walk'?1.8:10;controls.maxDistance=mode==='walk'?14:52;
-  beams.visible=mode!=='plan'&&$('show-beams').checked;previousPlayer.copy(player);
+  controls.maxPolarAngle=mode==='plan'?.85:Math.PI*.48;controls.enablePan=mode!=='walk';controls.minDistance=mode==='walk'?1.8:10;controls.maxDistance=mode==='walk'?10:65;
+  beams.visible=mode==='overview'&&$('show-beams').checked;previousPlayer.copy(player);
 }
 for(const id of ['overview','walk','plan'])$(id).onclick=()=>cameraMode(id);
+const touchPad=document.createElement('div');touchPad.className='touch-pad';touchPad.setAttribute('aria-label','Walking controls');
+for(const [code,glyph,title] of [['KeyW','↑','Walk forward'],['KeyA','←','Walk left'],['KeyS','↓','Walk backward'],['KeyD','→','Walk right']]){
+  const b=document.createElement('button');b.textContent=glyph;b.setAttribute('aria-label',title);b.dataset.key=code;
+  b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);route=[];destination=null;keys.add(code);};
+  b.onpointerup=b.onpointercancel=b.onlostpointercapture=()=>keys.delete(code);touchPad.append(b);
+}
+world.append(touchPad);
 $('enter').onclick=()=>{cameraMode('walk');blip('chime');};$('cafe-nav').onclick=()=>cameraMode('overview');
 
 function openDialog(html){route=[];destination=null;keys.clear();$('dialog-content').innerHTML=html;$('dialog').showModal();}
@@ -157,6 +176,10 @@ function renderCoffeeGame(name){
 }
 function talkTo(station){
   talkingTo=station.id;
+  if(station.id==='noah'){
+    openDialog('<div class="eyebrow">NOAH · A QUIET MOMENT</div><h2>Good ideas start here.</h2><p>“One more page, then a maple latte. I like studying here—the company makes the work feel lighter. You’re welcome to join me.”</p><div class="dialog-actions"><button id="noah-hello">Save me a seat</button><a class="secondary" href="/maya.html?character=noah">Meet Noah in the studio ↗</a></div>');
+    $('noah-hello').onclick=()=>{$('dialog').close();toast('Noah: “Of course. Focus today, brighter tomorrow.”');};return;
+  }
   if(station.id==='claire'){
     openDialog('<div class="eyebrow">CLAIRE · CREATIVE SOUL & COFFEE ENTHUSIAST</div><h2>A good day starts<br>with a little curiosity.</h2><p>“I brought my sketchbook. Something about this place makes ordinary afternoons feel like the start of a story. Want to keep me company?”</p><div class="dialog-actions"><button id="claire-hello">I’d love to</button><a class="secondary" href="/maya.html?character=claire">Meet Claire in the studio ↗</a></div>');
     $('claire-hello').onclick=()=>{waveUntil=performance.now()/1000+2.3;$('dialog').close();toast('Claire: “Perfect. I’ll save you a spot and a page.”');$('activity').textContent='A new friend in Maple Hollow';};return;
@@ -294,9 +317,10 @@ controls.addEventListener('start',()=>{cameraTween=null;});
 
 $('lighting').onchange=()=>{
   const mode=$('lighting').value,evening=mode==='evening';
-  sun.intensity=evening?.16:mode==='day'?3.6:3.3;ambient.intensity=evening?.6:2.1;fill.intensity=evening?.15:1;scene.environmentIntensity=evening?.18:.45;
-  lamps.forEach(l=>l.intensity=evening?24:6);fire.intensity=evening?20:8;renderer.toneMappingExposure=evening?1.4:1.25;
-  scene.background.set(evening?'#444e47':'#d5d6bd');scene.fog.color.copy(scene.background);
+  sun.intensity=evening?.16:mode==='day'?3.3:3.7;ambient.intensity=evening?.5:mode==='day'?1.4:.72;fill.intensity=evening?.15:.5;scene.environmentIntensity=evening?.18:.3;
+  sun.color.set(mode==='day'?0xfff1dc:0xffd29b);
+  lamps.forEach(l=>l.intensity=evening?18:12);fire.intensity=evening?16:6;renderer.toneMappingExposure=evening?1.2:1.1;
+  scene.background.set(evening?'#444e47':'#c8cbb6');scene.fog.color.copy(scene.background);
   settings.lighting=mode;persist(KEYS.settings,settings);
 };
 $('lighting').value=settings.lighting;$('lighting').dispatchEvent(new Event('change'));
@@ -341,7 +365,7 @@ showNotes();$('review-open').onclick=()=>{$('review').hidden=!$('review').hidden
 $('note-form').onsubmit=e=>{e.preventDefault();const text=$('note-text').value.trim();if(!text)return;notes.push({kind:$('note-kind').value,text,date:new Date().toISOString(),position:{x:+player.x.toFixed(2),z:+player.z.toFixed(2)},camera:camera.position.toArray(),lighting:$('lighting').value});persist('maple-bean-notes',notes);$('note-text').value='';showNotes();toast('Saved in your playtest notebook.');};
 $('export-notes').onclick=()=>download(JSON.stringify({project:'Maple Bean expanded café',date:new Date().toISOString(),notes},null,2),'Maple-Bean-playtest-notes.json','application/json');
 $('show-collisions').onchange=()=>collisionGroup.visible=$('show-collisions').checked;
-$('show-beams').onchange=()=>beams.visible=mode!=='plan'&&$('show-beams').checked;
+$('show-beams').onchange=()=>beams.visible=mode==='overview'&&$('show-beams').checked;
 $('chat-toggle').onclick=()=>{$('chat').hidden=!$('chat').hidden;$('review').hidden=true;keys.clear();if(!$('chat').hidden)$('chat-input').focus();};$('chat-close').onclick=()=>$('chat').hidden=true;
 function chatLine(name,text){const line=document.createElement('p');line.className='chat-line';const b=document.createElement('b');b.textContent=name;line.append(b,document.createTextNode(text));$('chat-messages').append(line);if($('chat-messages').children.length>80)$('chat-messages').firstChild.remove();$('chat-messages').scrollTop=$('chat-messages').scrollHeight;}
 $('chat-form').onsubmit=async e=>{e.preventDefault();try{await api({action:'chat',text:$('chat-input').value});$('chat-input').value='';}catch(e){toast(e.message);}};
@@ -368,19 +392,22 @@ function connect(){
 }
 
 try{
-  [layout]=await Promise.all([fetch('/assets/layout.json').then(r=>r.json()),new GLTFLoader().loadAsync('/assets/cafe.glb').then(g=>addCafe(g.scene))]);
+  [layout]=await Promise.all([fetch('/assets/layout.json').then(r=>r.json()),new GLTFLoader().loadAsync('/assets/cafe.glb').then(g=>addCafe(g.scene)),loadCharacters()]);
+  visualDetails=addVisualDetails(scene,layout);
+  layout.stations.push({id:'noah',label:'Meet Noah',kind:'talk',x:7.1,z:3.4,approach:[7.1,3.4],angle:Math.PI});
   $('load-message').textContent='Maya is getting ready…';await new Promise(r=>setTimeout(r,30));
   maya=createMaya(cast.maya);scene.add(maya.group);maya.group.rotation.y=Math.PI;
   for(const o of layout.obstacles){const mesh=new THREE.Mesh(new THREE.BoxGeometry(o.w+.48,.12,o.d+.48),new THREE.MeshBasicMaterial({color:0xd06b4c,wireframe:true}));mesh.position.set(o.x,.10,o.z);collisionGroup.add(mesh);}
   for(const station of layout.stations){
     const marker=label(station.kind==='coffee'?'☕ The coffee bar':station.id==='sofa'?'The living room':station.id==='reading'?'The reading nook':station.kind==='study'?'📚 Study desk':station.kind==='talk'?cast[station.id]?.name||'Guest':'Take a seat',new THREE.Vector3(station.x,station.kind==='talk'?2.05:1.3,station.z));marker.station=station;marker.el.onclick=()=>goTo(station.id);
   }
-  for(const [id,x,z,angle] of [['mara',-4.7,-5.75,0],['jules',3,-.2,-.7],['claire',-3.1,1.0,.35]]){
+  for(const [id,x,z,angle] of [['mara',-4.7,-5.75,0],['jules',3,-.2,-.7],['claire',-3.1,1.0,.35],['noah',7.1,3.4,Math.PI]]){
     $('load-message').textContent=`${cast[id].name} is pulling up a chair…`;
     await new Promise(resolve=>setTimeout(resolve,30));
     const actor=createMaya({...cast[id],phaseOffset:id==='claire'?2.3:4.7});actor.group.position.set(x,0,z);actor.group.rotation.y=angle;scene.add(actor.group);regulars.push({id,actor,life:id==='mara'?null:resident(id,x,z,id==='claire'?12:25),clock:0});
   }
   session=await api({action:'join',name:readSaved('maple-bean-name','Maya')});$('player-name').textContent=session.name;connect();
+  cameraMode('overview');
   let last=performance.now(),lastNetwork=0,lastStats=0,frameCount=0;
   const direction=new THREE.Vector3(),forward=new THREE.Vector3(),right=new THREE.Vector3(),projected=new THREE.Vector3();
   let sending=false;
@@ -408,7 +435,7 @@ try{
         const marker=markers.find(m=>m.station===station);marker.position.set(l.x,2.05,l.z);
       }
       // Cap background character deformation at 15 Hz; player input stays every frame.
-      if(n.clock>=1/15){a.update(t+(n.id==='claire'?2.3:4.7),n.clock,{walking:l?.walking,sitting:l?.phase==='seated',seatHeight:l?.seat?.seatHeight??.54,cup:l?.cup,sipping:l?.sipping,wave:!l&&t%17<1.4,expression:'happy'});n.clock=0;}
+      if(n.clock>=1/15){a.update(t+(n.id==='claire'?2.3:4.7),n.clock,{walking:l?.walking,sitting:l?.phase==='seated',studying:l?.studying,seatHeight:l?.seat?.seatHeight??.54,cup:l?.cup,sipping:l?.sipping,wave:!l&&t%17<1.4,expression:n.id==='noah'?'neutral':'happy'});n.clock=0;}
     }
     steam.update(dt,[
       {position:cupWorldPosition(player.x,player.z,maya.group.rotation.y),active:!!drink},
@@ -435,6 +462,11 @@ try{
     if(cameraTween){const a=cameraTween;a.t=Math.min(1,a.t+dt/(reduced?.01:1.1));const k=a.t*a.t*(3-2*a.t);camera.position.lerpVectors(a.from,a.to,k);controls.target.lerpVectors(a.fromTarget,a.target,k);if(a.t===1)cameraTween=null;}
     else if(mode==='walk'){const delta=player.clone().sub(previousPlayer);camera.position.add(delta);controls.target.add(delta);}
     previousPlayer.copy(player);controls.update();
+    // Fade shell pieces only when they intersect the actual player sightline.
+    const sight=new THREE.Ray(camera.position,controls.target.clone().sub(camera.position).normalize());
+    const hit=new THREE.Vector3(),distance=camera.position.distanceTo(controls.target);
+    for(const mesh of obstructions){const blocked=mode==='walk'&&sight.intersectBox(mesh.userData.sightBounds,hit)&&camera.position.distanceTo(hit)<distance-.25;mesh.material.transparent=!!blocked;mesh.material.opacity=blocked?.12:1;mesh.material.depthWrite=!blocked;}
+    visualDetails.update(t,mode);
     nearest=null;let best=1.2;
     for(const s of layout.stations){if(s.unavailable)continue;const d=Math.hypot(player.x-s.approach[0],player.z-s.approach[1]);if(d<best){best=d;nearest=s;}}
     const verb=nearest&&verbFor(nearest.kind);
@@ -449,7 +481,8 @@ try{
     }
     for(const marker of markers){
       projected.copy(marker.position).project(camera);const s=marker.station;
-      const show=!s||mode==='plan'||(mode==='overview'?(['coffee','read','talk','study'].includes(s.kind)||s.id==='sofa'):camera.position.distanceTo(marker.position)<8);
+      const zone=s&&(['coffee','read','talk'].includes(s.kind)||s.id==='study-0'||s.id==='sofa');
+      const show=!s||(mode==='plan'||mode==='overview'?zone:camera.position.distanceTo(marker.position)<8);
       marker.el.hidden=!!s?.unavailable||!show||projected.z>1||projected.z< -1||Math.abs(projected.x)>1.1||Math.abs(projected.y)>1.1;
       marker.el.style.left=(projected.x*.5+.5)*world.clientWidth+'px';marker.el.style.top=(-projected.y*.5+.5)*world.clientHeight+'px';marker.el.classList.toggle('near',!!s&&s===nearest);
     }
@@ -461,5 +494,5 @@ try{
     window.__ready=true;
   });
   $('loading').style.opacity=0;setTimeout(()=>$('loading').hidden=true,550);
-  window.cafe={scene,camera,renderer,maya,layout,player,goTo,interact,stand,cameraMode,get state(){return {mode,seated:seated?.id,route:route.length,drink,session:session?.id,remote:remote.size};}};
+  window.cafe={scene,camera,controls,renderer,maya,regulars,layout,player,goTo,interact,stand,cameraMode,get state(){return {mode,seated:seated?.id,route:route.length,drink,session:session?.id,remote:remote.size};}};
 }catch(e){failure(e);}

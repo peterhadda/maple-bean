@@ -30,9 +30,9 @@ h3{margin:4px 0 8px;font-size:11px;letter-spacing:1.6px;text-transform:uppercase
 .sw i{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 -3px 6px rgba(0,0,0,.12),0 1px 2px rgba(60,40,30,.2)}
 .foot{margin-top:auto;font-size:10.5px;letter-spacing:2px;color:var(--navy);opacity:.75;display:flex;justify-content:space-between}
 .hud{position:absolute;left:0;right:0;bottom:22px;display:flex;justify-content:center;gap:14px;flex-wrap:wrap;pointer-events:none;padding:0 16px}
-.group{pointer-events:auto;display:flex;gap:4px;padding:5px;background:rgba(246,242,236,.86);border:1px solid rgba(31,51,84,.12);border-radius:14px;box-shadow:0 4px 18px rgba(80,55,40,.12);backdrop-filter:blur(6px)}
-.group span{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;align-self:center;padding:0 8px 0 6px}
-.group button{font:600 13px "Segoe UI",system-ui,sans-serif;color:var(--navy);background:transparent;border:0;border-radius:9px;padding:8px 13px;cursor:pointer}
+.group{pointer-events:auto;display:flex;flex-wrap:wrap;gap:4px;padding:5px;background:rgba(246,242,236,.86);border:1px solid rgba(31,51,84,.12);border-radius:14px;box-shadow:0 4px 18px rgba(80,55,40,.12);backdrop-filter:blur(6px)}
+.group > span{width:100%;font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;align-self:center;padding:0 8px 0 6px}
+.group button{font:600 13px "Segoe UI",system-ui,sans-serif;color:var(--navy);background:transparent;border:0;border-radius:9px;padding:10px 13px;min-height:44px;cursor:pointer}
 .group button:hover{background:rgba(31,51,84,.07)}
 .group button.on{background:var(--navy);color:#f6f2ec}
 .hint{position:absolute;top:18px;right:22px;font-size:12px;color:#8d8079;letter-spacing:.3px}
@@ -42,7 +42,16 @@ h3{margin:4px 0 8px;font-size:11px;letter-spacing:1.6px;text-transform:uppercase
 #loading svg{animation:sway 1.6s ease-in-out infinite alternate}
 @keyframes sway{from{transform:rotate(-10deg)}to{transform:rotate(10deg)}}
 #loading.done{opacity:0}
-body.bare #loading{display:none}
+#loading.failed{pointer-events:auto;background:var(--paper);text-align:center;padding:24px}
+#loading.failed svg{animation:none}
+#loading button{padding:12px 20px;border:0;border-radius:8px;background:var(--navy);color:var(--paper);font:inherit;cursor:pointer}
+#controls{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;min-width:0}
+#controls legend{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:10px}
+#controls select{font:inherit;min-height:44px;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fffaf5;color:var(--navy)}
+#controls label{font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--maple);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#loading svg{animation:none}#loading{transition:none}}
+body.bare #loading.done{display:none}
 @media (max-width:760px){#app{flex-direction:column}#side{width:auto;max-height:42vh;border-right:0;border-bottom:1px solid var(--line)}.hint{display:none}}
 </style>
 </head>
@@ -68,6 +77,19 @@ body.bare #loading{display:none}
         <div class="tag">People make the story.</div>
       </div>
     </div>
+    <fieldset id="controls" disabled>
+      <legend>Character controls</legend>
+      <div class="group" id="views"><span>View</span>
+        <button data-v="front">Front</button><button data-v="34">3/4</button><button data-v="side">Side</button><button data-v="back">Back</button><button data-v="face">Face</button><button data-v="profile">Profile</button>
+      </div>
+      <div class="group" id="exprs"><span>Expression</span>
+        <button data-e="neutral">Neutral</button><button data-e="smile">Smile</button><button data-e="happy">Happy</button><button data-e="curious">Curious</button><button data-e="surprised">Surprised</button><button data-e="focused">Focused</button><button data-e="laughing">Laughing</button><button data-e="listening">Listening</button><button data-e="wink">Wink</button><button data-e="blink">Blink</button>
+      </div>
+      <div class="group" id="poses"><span>Pose</span>
+        <button data-p="idle">Idle</button><button data-p="walk">Walk</button><button data-p="sit">Sit</button><button data-p="wave">Wave</button><button data-p="sip">Sip</button><button data-p="study">Study</button>
+      </div>
+      <label for="seat-height">Seat height <select id="seat-height"><option value="0.44">Lounge · 44 cm</option><option value="0.54" selected>Café · 54 cm</option><option value="0.585">High seat · 58.5 cm</option></select></label>
+    </fieldset>
     <div class="title">
       <div class="maya">Maya</div>
       <svg width="20" height="18" viewBox="0 0 20 18" style="margin-bottom:26px" aria-hidden="true"><path d="M10 16 C3 11 1 7 3.5 4 C5.5 1.6 8.6 2.4 10 5 C11.4 2.4 14.5 1.6 16.5 4 C19 7 17 11 10 16 Z" fill="none" stroke="#c9453d" stroke-width="1.8"/></svg>
@@ -98,17 +120,9 @@ body.bare #loading{display:none}
     <div class="foot"><span>MAPLE HOLLOW</span><span>A BRIGHTER TOMORROW.</span></div>
   </aside>
   <main id="stage">
-    <div id="loading"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path fill="#b3443a" d="M12 1 L13.6 5.2 L16 4 L15.2 8.6 L19.5 6.8 L18.6 9.6 L22 10.5 L17.8 13.8 L18.8 15.6 L13.2 15 L12.8 22 L11.2 22 L10.8 15 L5.2 15.6 L6.2 13.8 L2 10.5 L5.4 9.6 L4.5 6.8 L8.8 8.6 L8 4 L10.4 5.2 Z"/></svg><div class="lt">Maya is getting ready…</div></div>
+    <div id="loading" role="status" aria-live="polite"><svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><path fill="#b3443a" d="M12 1 L13.6 5.2 L16 4 L15.2 8.6 L19.5 6.8 L18.6 9.6 L22 10.5 L17.8 13.8 L18.8 15.6 L13.2 15 L12.8 22 L11.2 22 L10.8 15 L5.2 15.6 L6.2 13.8 L2 10.5 L5.4 9.6 L4.5 6.8 L8.8 8.6 L8 4 L10.4 5.2 Z"/></svg><div class="lt">Maya is getting ready…</div></div>
     <div class="label hud" style="bottom:auto;justify-content:flex-start">Character turnaround</div>
     <div class="hint hud" style="bottom:auto;left:auto;justify-content:flex-end">Drag to orbit · scroll to zoom</div>
-    <div class="hud">
-      <div class="group" id="views"><span>View</span>
-        <button data-v="front">Front</button><button data-v="34">3/4</button><button data-v="side">Side</button><button data-v="back">Back</button><button data-v="face">Face</button><button data-v="profile">Profile</button>
-      </div>
-      <div class="group" id="exprs"><span>Expression</span>
-        <button data-e="neutral">Neutral</button><button data-e="happy">Happy</button><button data-e="wink">Wink</button>
-      </div>
-    </div>
   </main>
 </div>
 

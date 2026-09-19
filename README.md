@@ -1,5 +1,7 @@
 # Maple Bean — expanded café playtest
 
+The current browser build includes the visual upgrade and Noah. Claire remains blonde. See [visual upgrade notes](VISUAL-UPGRADE.md) for screenshots, verification, source files and the remaining differences from the supplied references.
+
 Open **http://localhost:4321** while the local server is running.
 
 ```powershell
@@ -20,8 +22,8 @@ Start-Process "http://localhost:4321"
 - **Walk as Maya**: WASD / arrows to walk, drag to orbit the camera, scroll to zoom. Click clear floor to walk there.
 - Destination buttons guide Maya around the furniture. **E** interacts or gets up. **Esc** cancels a route or stands up.
 - **F / Wave hello** waves. Order a drink at the counter, take a sip, read, or sit in the lounge.
-- Talk to **Mara**, **Jules**, or **Claire**. Their dialogue is authored for this playtest.
-- **Maya’s studio** lets you inspect all four characters, angles, expressions and poses. A test chair appears for the seated pose.
+- Talk to **Mara**, **Jules**, **Claire**, or **Noah**. Their dialogue is authored for this playtest.
+- **Maya’s studio** lets you inspect all five characters, angles, expressions and poses. A test chair appears for the seated pose.
 - **Playtest notes** saves observations and location in your browser. Export the notebook as JSON to share feedback.
 - Try **Cozy evening**, **Floor plan**, boundary display, or the screenshot button.
 - Open a second browser window at the same address to test another guest, seat occupancy, and nearby chat. Chat range is 8 metres.
@@ -39,8 +41,9 @@ Maya's hidden scalp no longer intersects her eye sockets. Arms and fingers are a
 - `MapleBeanExpanded.blend`: editable café environment for Blender 5.2.
 - `assets/cafe.glb`: exported environment used by the browser.
 - `assets/layout.json`: furniture boundaries, seat heights and interactions.
-- `maya-character.js`: shared generated character model.
-- `animation.js`: shared arm, leg, foot and seated-pose logic.
+- `assets/character-kit/`: current shared character construction, outfits and GPU animation.
+- `assets/visual-world.js`: browser environment materials, foliage and visual additions.
+- `maya-character.js` and `animation.js`: preserved original model and CPU pose reference.
 - `characters.js`: resident identity and color presets.
 - `tools/build_cafe.py`: reproduces the expanded Blender environment from `original/MapleBeanGraphics.blend`.
 - `tools/build_maya.py`: reproduces the shared character module and studio shell from `original/maya.html`.

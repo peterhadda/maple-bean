@@ -23,3 +23,27 @@ body.focus-mode .locations,body.focus-mode .bottom-hint,body.focus-mode .chat-to
 @keyframes float-up{0%{opacity:0;transform:translate(-50%,4px) scale(.7)}20%{opacity:1;transform:translate(-50%,-6px) scale(1.05)}100%{opacity:0;transform:translate(-50%,-46px) scale(1)}}
 .world-label.reaction{animation:float-up 1.8s ease-out forwards;pointer-events:none;background:transparent;border:0;box-shadow:none;font-size:26px;padding:0}
 .world-label.reaction::after{display:none}
+
+/* Keep the room and residents at the centre of the playable view. */
+header{height:78px}main#world{margin:0 16px;border-radius:16px}footer{height:70px}
+.panel{background:rgba(250,246,235,.94);box-shadow:0 7px 28px #38291414}
+.segmented .selected{background:#c3cdb4;color:#254632}
+.walking .locations,.floor-plan .locations{display:none}
+.walking .view-tools{background:#faf6ebed}
+.world-label{font-size:11px;border-color:#d3c8af;box-shadow:0 3px 14px #33261516}
+.touch-pad{display:none;position:absolute;bottom:18px;left:16px;z-index:4;grid-template-columns:repeat(3,44px);gap:5px}
+.touch-pad button{width:44px;height:44px;border-radius:12px;border:1px solid #c6c5ad;background:#faf5e7ed;font-size:22px;touch-action:none}
+.touch-pad button[data-key=KeyW]{grid-column:2}.touch-pad button[data-key=KeyA]{grid-column:1;grid-row:2}.touch-pad button[data-key=KeyS]{grid-column:2;grid-row:2}.touch-pad button[data-key=KeyD]{grid-column:3;grid-row:2}
+@media(pointer:coarse){.walking .touch-pad{display:grid}.walking .bottom-hint{display:none}}
+@media(max-width:600px){
+ .walking .touch-pad{display:grid}
+ header{height:65px;padding:0 12px;gap:10px}.brand>span{font-size:25px}.brand small{font-size:5px}.brand img{width:30px;height:30px}nav{gap:8px}nav .nav{font-size:9px}#review-open{display:none}
+ main#world{margin:0 6px;border-radius:12px}.view-tools{top:9px;left:8px;right:8px;flex-wrap:wrap;gap:3px;justify-content:center;padding:5px}
+ .segmented button{min-height:40px;font-size:11px;padding:8px 11px}.light-select{border:0;padding:0 8px 3px}.light-select select{font-size:11px;max-width:165px;min-height:26px}
+ .welcome{left:12px;top:auto;bottom:14px;width:200px;padding:15px}.welcome h1{font-size:25px;margin:9px 0 12px}.welcome p,.welcome-foot{display:none}.welcome .eyebrow{font-size:8px}.welcome .primary{min-height:44px}
+ .bottom-hint{display:none}.photo-button{bottom:14px;right:12px;min-width:44px;min-height:44px}
+ footer{height:118px;padding:8px 14px;gap:6px;align-content:center}.resident{min-width:100%;gap:8px}.resident small{font-size:10px}.pocket{font-size:12px;gap:5px}.emotes button{font-size:19px;min-width:38px;min-height:38px}#coins{font-size:11px}#wave{font-size:11px;min-height:32px}
+ #interaction{bottom:128px;font-size:11px;padding:9px;width:calc(100% - 24px);gap:8px}#interaction button{min-height:44px}#toast{bottom:185px;width:calc(100% - 28px);font-size:12px}
+ #labels .world-label{font-size:10px;padding:5px 8px}.drawer{top:75px;bottom:125px;right:10px;width:calc(100vw - 20px)}#focus-banner{top:106px;font-size:10px;max-width:90%;white-space:nowrap}
+ dialog{width:calc(100% - 24px);max-height:80dvh;overflow:auto;padding:27px}
+}

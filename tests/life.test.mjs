@@ -23,7 +23,7 @@ test('purchase, ownership, funds and three sips',()=>{
 
 test('staggered customers order, sit, drink, leave and return without crossing furniture',()=>{
   const layout=JSON.parse(readFileSync(new URL('../assets/layout.json',import.meta.url)));
-  const people=[resident('jules',3,-.2,25),resident('claire',-3.1,1,12)];
+  const people=[resident('jules',3,-.2,25),resident('claire',-3.1,1,12),resident('noah',7.1,3.4,18)];
   const seen=people.map(()=>new Set()),player={x:-9,z:0};
   for(let step=0;step<6000;step++){
     const occupied=new Set(['sofa']);for(const n of people)if(n.seat)occupied.add(n.seat.id);
@@ -32,7 +32,7 @@ test('staggered customers order, sit, drink, leave and return without crossing f
       if(n.seat){assert.notEqual(n.seat.id,'sofa');occupied.add(n.seat.id);}
       if(n.phase!=='seated')assert.ok(isWalkable(n.x,n.z,layout),`${n.id} walked through furniture in ${n.phase}`);
     }
-    if(people.every(n=>n.seat))assert.notEqual(people[0].seat.id,people[1].seat.id);
+    const reserved=people.filter(n=>n.seat).map(n=>n.seat.id);assert.equal(new Set(reserved).size,reserved.length,'residents must not share a reserved seat');
   }
   for(const phases of seen)for(const phase of ['to-counter','ordering','to-seat','seated','drinking','leaving','away'])assert.ok(phases.has(phase),`missing phase ${phase}`);
   const n=people[0],before={x:n.x,z:n.z,timer:n.timer};updateResident(n,1,layout,new Set(),player,true);
