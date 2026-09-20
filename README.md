@@ -1,80 +1,147 @@
-# Maple Bean — expanded café playtest
+# 🍁 Maple Bean
 
-The current browser build includes the visual upgrade and Noah. Claire remains blonde. See [visual upgrade notes](VISUAL-UPGRADE.md) for screenshots, verification, source files and the remaining differences from the supplied references.
+**Coffee · People · Stories**  
+*A little room to slow down.*
 
-Open **http://localhost:4321** while the local server is running.
+Maple Bean is a cozy 3D browser game set in a neighborhood café in Maple Hollow. Create a character, meet the regulars, order a drink, study, play games, and make the space feel like your own.
 
-```powershell
-cd "C:\Users\Aymen\Documents\ChatGPT\coffeshop"
-node server.mjs
+The concept is a digital third place: somewhere between home and work where small routines, familiar faces, and good company give you a reason to return.
+
+[Play the private hosted café](https://maple-bean-cafe-aymen.peterhaddad200697049.chatgpt.site)
+
+> The hosted edition is a solo experience requiring the owner's account. The local edition also supports experimental guest multiplayer. This is a playable prototype, not a finished commercial release.
+
+## Inside the café
+
+![Maple Bean café development screenshot](docs/images/cafe-overview.png)
+
+*Development capture showing the main café, Study Room, and Games & Garden. Some details differ from the latest build.*
+
+Warm wood, deep green, cream walls, brass accents, leafy plants, and soft lighting define Maple Bean's style. The café and stylized characters follow the supplied visual references.
+
+Explore the coffee bar, shared tables, fireside lounge, reading nook, window seating, study room, and games area. Activities happen inside the world: sit at a chair, order at the counter, study at a desk, or play at a table.
+
+## Meet the cast
+
+![Maya, Claire, Noah, Mara, and Jules](docs/images/characters.png)
+
+*Latest character lineup rendered in Blender. In-game lighting changes their appearance.*
+
+| Character | Personality | Signature look |
+| --- | --- | --- |
+| Maya — The Optimist | Friendly, warm, creative | Brown bun, cream heart top, wide-leg jeans |
+| Claire — The Dreamer | Kind, elegant, thoughtful | Blonde waves, blue cardigan, light denim |
+| Noah — The Chill One | Calm, friendly, reliable | Dark hair, green hoodie, sand trousers |
+| Mara — The Bold One | Confident, stylish, ambitious | Long dark hair and a charcoal café outfit |
+| Jules — The Creative One | Chill, funny, artistic | Short brown hair, cream top, blue trousers |
+
+The approved character style is locked. Recent polish extends the men's tops below the waist, corrects walking arm swing, smooths expressions, and coordinates blinking. Characters use skeletal animation and facial morph targets, with poses for café interactions.
+
+## Gameplay
+
+- **Explore:** walk around furniture, choose destinations, sit, read, wave, and use highlighted objects.
+- **Enjoy coffee:** order coffee, latte, or matcha; collect your drink and take a sip.
+- **Focus:** choose a study session, pause and resume, listen to ambient music, or study beside a regular.
+- **Play:** try Chess, XO, Memory, Maple Eights, Snake, and Darts.
+- **Connect:** chat with regulars, give gifts, build friendships, and invite characters to activities.
+- **Customize:** use the character creator and wardrobe to change your avatar's appearance and clothing.
+- **Progress:** earn Maple Coins and XP through supported activities, unlock clothing, and build study streaks.
+- **Review:** inspect characters in Maya's Studio and record or export playtest notes.
+
+The core loop: **arrive → choose an activity → spend time with the café community → earn progress → return when you want a break.**
+
+## Tools and technology
+
+| Tool | Role |
+| --- | --- |
+| Three.js | Real-time 3D rendering, cameras, materials, and character display |
+| JavaScript, HTML, CSS | Gameplay and responsive browser interface |
+| Node.js | Local server, guest sessions, chat, and multiplayer coordination |
+| Blender 5.2 | Modeling, rigging, editable scenes, and renders |
+| Python + Blender API | Repeatable asset refinement and export scripts |
+| glTF / GLB | Delivery format for browser-ready 3D assets |
+| Anthropic SDK | Optional AI dialogue in the local server edition |
+| Node test runner | Gameplay, navigation, asset, and animation checks |
+| Playwright | Browser QA and development screenshots |
+| OpenAI Codex | Assisted development and specialist refinement |
+| Sites | Private hosting for the static solo edition |
+
+The browser game uses Three.js directly; Unity and Unreal Engine are not required.
+
+## Run locally
+
+Install a current Node.js LTS release. From the project folder:
+
+```sh
+npm install
+npm start
 ```
 
-Keep that terminal open. In another PowerShell window:
+Open [the local café](http://localhost:4321) and keep the server terminal open. On Windows, `Start Cafe.cmd` is an alternative launcher once dependencies are installed.
 
-```powershell
-Start-Process "http://localhost:4321"
+Open [Maya's Studio](http://localhost:4321/maya.html) to inspect the cast, poses, and expressions.
+
+`localhost` means the device opening the link. Use the hosted café link on a phone; the local server binds to `127.0.0.1` by default.
+
+### Controls
+
+| Input | Action |
+| --- | --- |
+| WASD / arrow keys | Walk |
+| Click clear floor | Walk to a point |
+| Click a highlighted object | Show available interactions |
+| E | Interact or get up |
+| Esc | Cancel a route or leave an action where supported |
+| F | Wave |
+| Drag / mouse wheel | Orbit / zoom the camera |
+| Touch interface | Tap available controls and interactions |
+
+## Editions and saved progress
+
+| Feature | Hosted solo café | Local server |
+| --- | --- | --- |
+| Café, cast, activities, and games | Included | Included |
+| Scripted NPC conversations | Included | Included |
+| Optional AI conversations | Not enabled | With server credentials |
+| Guest multiplayer and nearby player chat | Not included | Experimental |
+| Browser-saved profile and progress | Per browser | Per browser |
+
+Local AI dialogue can use `ANTHROPIC_API_KEY` configured in the server environment. Without credentials, regulars use authored persona replies. Keep credentials out of client files and version control.
+
+Saved progress uses browser storage and does not automatically sync across devices. Guest sessions are temporary. Maple Coins are in-game progression; no real-money purchasing is connected.
+
+## Project structure
+
+```text
+assets/characters/      Character models and runtime posing
+assets/cafe.glb         Exported café geometry
+assets/layout.json     Seats, interactions, navigation boundaries
+assets/visual-world.js Runtime plants, materials, and visual details
+games/                 Mini-game rules
+systems/               Creator, lighting, rewards, supporting systems
+tools/                 Blender scripts, exports, release preparation
+tests/                 Automated checks
+qa/                    Browser QA scripts and evidence
+refinement/            Refinement scenes, renders, and reports
+docs/images/           README images
+web-release/           Hosted solo edition
+app.js                 Main game integration
+server.mjs             Local server and multiplayer services
+MapleBeanExpanded.blend Editable café source scene
 ```
 
-`Start Cafe.cmd` also starts the server and opens the page. If a server is already running, just open the URL.
+The browser scene combines exported geometry with runtime additions. Opening the café Blender file alone does not reproduce every browser detail.
 
-## Play
+## Validation and status
 
-- **Walk as Maya**: WASD / arrows to walk, drag to orbit the camera, scroll to zoom. Click clear floor to walk there, or click anything that glows to use it.
-- Destination buttons guide Maya around the furniture. **E** interacts or gets up. **Esc** cancels a route or stands up.
-- **F / Wave hello** waves. Order a drink at the counter, take a sip, read, or sit in the lounge.
-- Talk to **Mara**, **Jules**, **Claire**, or **Noah**. Their dialogue is authored for this playtest.
-- **Maya’s studio** lets you inspect all five characters, angles, expressions and poses. A test chair appears for the seated pose.
-- **Playtest notes** saves observations and location in your browser. Export the notebook as JSON to share feedback.
-- Try **Cozy evening**, **Floor plan**, boundary display, or the screenshot button.
-- Open a second browser window at the same address to test another guest, seat occupancy, and nearby chat. Chat range is 8 metres.
+Run automated checks:
 
-## Gameplay, social and character pass
-
-Maple Bean is now a cozy social café you play by touching the world: anything usable glows and shows a small label (Sit, Study, Water, Talk, Play, Order) when you point at it.
-
-- **Three rooms (406 m²).** The main café keeps every original piece. A new **Study Room** (east doorway) has focus desks with laptops, lamps and headphones, a shared study table, reading armchairs and bookshelves. A new **Games & Garden** room (back doorway) has chess, XO, memory and card tables, a Snake arcade cabinet, a dartboard and plenty of plants. Built by `tools/build_wings.py` in Blender.
-- **Characters.** Anatomically correct hands (palm to the thigh, thumb in front), open-palm waves, a real cup grip and sip, softer hips, Maya’s smaller bun, tidier Noah hair and a short men’s cut for Jules (`tools/author_characters.py`, `tools/jules_hair.py`). Upper bodies use arm IK and hand shapes (`assets/characters/body-pose.js`) with idle variations, torso lean, head look and event-driven activity poses.
-- **Seating.** People step beside a chair (never through its back), lower themselves onto it and rise again; sofas are sat onto from the front.
-- **Drinks.** Regulars walk in empty-handed, queue at the counter, and Mara makes, places and slides each drink over; the customer reaches for it. The menu adds Latte, Coffee and Matcha latte.
-- **Study Mode.** Sit at a desk → Study → 30/60 min (or custom). You pick up the headphones, put them on, open the laptop and the camera eases in; the character types, reads, writes, thinks, sips and stretches in a logical sequence, with the cup set down beside the laptop. Completing a session pays Maple Coins, XP and builds a streak (5 days unlocks the Scholar’s Scarf); ending early pays nothing. Study Together seats a regular beside you.
-- **Mini-games** play on the physical tables: XO, Memory, Chess, Maple Eights (Crazy Eights), Snake on the arcade screen and Darts scored from where each dart lands. Opponents are Jules, Claire or Noah. Rewards need a real game and have a daily cap.
-- **People.** Click a regular to chat, ask, hang out, play, study together or give a maple cookie. Friendships grow Stranger → Acquaintance → Friend → Close Friend, with an optional shy crush for guest regulars once you are friends.
-- **NPC chat** uses Claude (`claude-opus-5`) when the server has credentials (`ANTHROPIC_API_KEY` or an `ant auth login` profile); otherwise each regular answers from their own persona lines. Personas: `npc-brain.js`.
-- **Group chat** (💬): create a group, invite other guests or regulars, send messages and study / play / hang-out invitations.
-- **Coins & wardrobe** (👕): tops, bottoms, shoes, hairstyles, hair colours, glasses, hats and scarves for your own avatar. Purchases stay unlocked.
-- **Clean HUD**: profile, coins, home, messages, notifications, wardrobe and menu. Everything else appears in context.
-
-Game rules are pure modules with tests: `economy.js`, `study.js`, `relationships.js`, `shop.js` and `games/` (`tests/gameplay.test.mjs`). The end-to-end check drives the real game in Chrome: `node qa/qa-gameplay.mjs` (server running).
-
-## What was upgraded
-
-The original `MapleBeanGraphics.blend` café grew from **12 × 10 m (120 m²)** to **20 × 14 m (280 m²)**. **112 original objects** remain, including the counter, espresso machine, menus, crockery and original tables. New areas include a fireside lounge, community table, book corner, and window seating. Source backups are in `original/`.
-
-All four residents share the detailed model derived from the supplied `maya.html`. Mara and Jules retain their skin colors; Jules has short hair and masculine proportions. Claire follows her supplied character sheet: blonde waves, blue eyes, cream cami, oatmeal cardigan, denim and necklace. This is a reference-guided café adaptation, not a completed recreation of every outfit/expression on Claire's sheet.
-
-Maya's hidden scalp no longer intersects her eye sockets. Arms and fingers are assigned to shoulder/elbow transforms, rather than being classified as legs by height. Shared pant seams use matching skin weights; feet use two-segment leg positioning, and seated height adapts to each chair. These are procedural animations, not motion capture.
-
-## Files
-
-- `MapleBeanExpanded.blend`: editable café environment for Blender 5.2.
-- `assets/cafe.glb`: exported environment used by the browser.
-- `assets/layout.json`: furniture boundaries, seat heights and interactions.
-- `assets/character-kit/`: current shared character construction, outfits and GPU animation.
-- `assets/visual-world.js`: browser environment materials, foliage and visual additions.
-- `maya-character.js` and `animation.js`: preserved original model and CPU pose reference.
-- `characters.js`: resident identity and color presets.
-- `tools/build_cafe.py`: reproduces the expanded Blender environment from `original/MapleBeanGraphics.blend`.
-- `tools/build_maya.py`: reproduces the shared character module and studio shell from `original/maya.html`.
-
-```powershell
-python -X utf8 tools/build_maya.py
-node --test tests/*.test.mjs
+```sh
+npm test
 ```
 
-Run the tests with the local café server open. They check reachable destinations, collision paths, seat reservation, chat validation, planted feet and hand deformation.
+Some integration checks require the local server. Browser smoke checks are available through `npm run qa:smoke` with a compatible browser setup.
 
-## Scope of this preview
+The latest character pass passed 10 targeted checks covering asset budgets, expressions, blinking, palms, walking counter-swing, and preserved seated/cup poses. This does not certify every pose or device. Further fixes should address specific clipping, interaction, performance, or accessibility issues while preserving the approved visual style.
 
-This is a local browser playtest with ephemeral guest sessions. The server listens on this computer's loopback interface; it is not publicly hosted. Purchases are free samples; café accounts, inventory and the original Unity economy are not connected. Notes remain in browser storage. The Blender file contains the café environment; characters are generated by the browser model code.
-
-The original Desktop/MappleHollow project is preserved. To iterate, edit this workspace and reload the page; server code changes require restarting `node server.mjs`.
+**A cup of coffee, a familiar face, and a little time for yourself.**
