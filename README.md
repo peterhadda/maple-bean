@@ -13,7 +13,7 @@ The concept is a digital third place: somewhere between home and work where smal
 
 ## Inside the café
 
-![Café overview](docs/images/cafe-overview.png)
+![Maple Bean café development screenshot](docs/images/cafe-overview.png)
 
 *Development capture showing the main café, Study Room, and Games & Garden. Some details differ from the latest build.*
 
@@ -23,7 +23,7 @@ Explore the coffee bar, shared tables, fireside lounge, reading nook, window sea
 
 ## Meet the cast
 
-![Character lineup](docs/images/characters.png)
+![Maya, Claire, Noah, Mara, and Jules](docs/images/characters.png)
 
 *Latest character lineup rendered in Blender. In-game lighting changes their appearance.*
 
