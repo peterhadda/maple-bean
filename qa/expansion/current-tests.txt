@@ -1,0 +1,299 @@
+TAP version 13
+# Subtest: blocked actors resolve false without teleporting, and normal routes still arrive
+ok 1 - blocked actors resolve false without teleporting, and normal routes still arrive
+  ---
+  duration_ms: 10.9584
+  type: 'test'
+  ...
+# Subtest: feet stay on the floor when seated, and planted steps do not penetrate it
+ok 2 - feet stay on the floor when seated, and planted steps do not penetrate it
+  ---
+  duration_ms: 28.7117
+  type: 'test'
+  ...
+# Subtest: low fingers follow the arm instead of leg motion, and poses never accumulate drift
+ok 3 - low fingers follow the arm instead of leg motion, and poses never accumulate drift
+  ---
+  duration_ms: 13.4476
+  type: 'test'
+  ...
+# Subtest: expanded café destinations are reachable without crossing furniture
+ok 4 - expanded café destinations are reachable without crossing furniture
+  ---
+  duration_ms: 454.3956
+  type: 'test'
+  ...
+# Subtest: local social playtest validates chat, names and seat reservations
+ok 5 - local social playtest validates chat, names and seat reservations
+  ---
+  duration_ms: 199.9039
+  type: 'test'
+  ...
+# Subtest: maya: authored character assets meet the runtime budgets
+ok 6 - maya: authored character assets meet the runtime budgets
+  ---
+  duration_ms: 141.069
+  type: 'test'
+  ...
+# Subtest: claire: authored character assets meet the runtime budgets
+ok 7 - claire: authored character assets meet the runtime budgets
+  ---
+  duration_ms: 97.0023
+  type: 'test'
+  ...
+# Subtest: mara: authored character assets meet the runtime budgets
+ok 8 - mara: authored character assets meet the runtime budgets
+  ---
+  duration_ms: 50.3654
+  type: 'test'
+  ...
+# Subtest: jules: authored character assets meet the runtime budgets
+ok 9 - jules: authored character assets meet the runtime budgets
+  ---
+  duration_ms: 55.0365
+  type: 'test'
+  ...
+# Subtest: noah: authored character assets meet the runtime budgets
+ok 10 - noah: authored character assets meet the runtime budgets
+  ---
+  duration_ms: 66.2332
+  type: 'test'
+  ...
+# Creator profile validation and ownership checks passed.
+# Subtest: tests\\creator.test.mjs
+ok 5 - tests\\creator.test.mjs
+  ---
+  duration_ms: 10060.1819
+  type: 'test'
+  ...
+# Subtest: completed rewards are finite, replay-safe and survive a saved reload
+ok 12 - completed rewards are finite, replay-safe and survive a saved reload
+  ---
+  duration_ms: 7.7236
+  type: 'test'
+  ...
+# Subtest: focus timer counts down, pauses, and finishes at zero
+ok 13 - focus timer counts down, pauses, and finishes at zero
+  ---
+  duration_ms: 1.2065
+  type: 'test'
+  ...
+# Subtest: remaining time and minutes format for the countdown and stats display
+ok 14 - remaining time and minutes format for the countdown and stats display
+  ---
+  duration_ms: 0.3177
+  type: 'test'
+  ...
+# Subtest: session stats accumulate per day and track a daily streak
+ok 15 - session stats accumulate per day and track a daily streak
+  ---
+  duration_ms: 4.1276
+  type: 'test'
+  ...
+# Subtest: display view zeroes today after midnight without mutating storage
+ok 16 - display view zeroes today after midnight without mutating storage
+  ---
+  duration_ms: 0.2954
+  type: 'test'
+  ...
+# Subtest: study rewards only completed, real sessions and build streaks
+ok 17 - study rewards only completed, real sessions and build streaks
+  ---
+  duration_ms: 5.9062
+  type: 'test'
+  ...
+# Subtest: mini-game and activity rewards resist farming
+ok 18 - mini-game and activity rewards resist farming
+  ---
+  duration_ms: 5.0669
+  type: 'test'
+  ...
+# Subtest: relationships progress with cooldowns and gate the optional crush
+ok 19 - relationships progress with cooldowns and gate the optional crush
+  ---
+  duration_ms: 1.8871
+  type: 'test'
+  ...
+# Subtest: wardrobe purchases persist ownership and equip only owned items
+ok 20 - wardrobe purchases persist ownership and equip only owned items
+  ---
+  duration_ms: 2.0404
+  type: 'test'
+  ...
+# Subtest: study choreography is a logical, deterministic sequence
+ok 21 - study choreography is a logical, deterministic sequence
+  ---
+  duration_ms: 2.2997
+  type: 'test'
+  ...
+# Subtest: XO detects wins and the regular never misses a forced block at full skill
+ok 22 - XO detects wins and the regular never misses a forced block at full skill
+  ---
+  duration_ms: 6.7871
+  type: 'test'
+  ...
+# Subtest: memory pairs score, misses pass the turn, the regular uses what it saw
+ok 23 - memory pairs score, misses pass the turn, the regular uses what it saw
+  ---
+  duration_ms: 2.3049
+  type: 'test'
+  ...
+# Subtest: snake grows on beans, ignores reversals and ends on walls
+ok 24 - snake grows on beans, ignores reversals and ends on walls
+  ---
+  duration_ms: 1.5184
+  type: 'test'
+  ...
+# Subtest: chess generates legal moves (perft), mates and special moves
+ok 25 - chess generates legal moves (perft), mates and special moves
+  ---
+  duration_ms: 212.7251
+  type: 'test'
+  ...
+# Subtest: darts score comes from the landing point
+ok 26 - darts score comes from the landing point
+  ---
+  duration_ms: 2.5982
+  type: 'test'
+  ...
+# Subtest: maple eights follows matching, wild eights and drawing
+ok 27 - maple eights follows matching, wild eights and drawing
+  ---
+  duration_ms: 3.0528
+  type: 'test'
+  ...
+# Subtest: contextual verbs cover every station kind, with a safe fallback
+ok 28 - contextual verbs cover every station kind, with a safe fallback
+  ---
+  duration_ms: 1.0888
+  type: 'test'
+  ...
+# Subtest: browse lines are non-empty and reproducible with a given rng
+ok 29 - browse lines are non-empty and reproducible with a given rng
+  ---
+  duration_ms: 0.3261
+  type: 'test'
+  ...
+# Subtest: purchase, ownership, funds and three sips
+ok 30 - purchase, ownership, funds and three sips
+  ---
+  duration_ms: 7.2552
+  type: 'test'
+  ...
+# Subtest: staggered customers order, sit, drink, leave and return without crossing furniture
+ok 31 - staggered customers order, sit, drink, leave and return without crossing furniture
+  ---
+  duration_ms: 598.3956
+  type: 'test'
+  ...
+# Subtest: sequence game advances only on the correct next step, in order
+ok 32 - sequence game advances only on the correct next step, in order
+  ---
+  duration_ms: 2.507
+  type: 'test'
+  ...
+# Subtest: a finished game ignores further attempts
+ok 33 - a finished game ignores further attempts
+  ---
+  duration_ms: 1.1933
+  type: 'test'
+  ...
+# Subtest: every registered game has a non-empty, uniquely-keyed step list
+ok 34 - every registered game has a non-empty, uniquely-keyed step list
+  ---
+  duration_ms: 2.1546
+  type: 'test'
+  ...
+# Subtest: music keeps chosen volume across playback/pause and surfaces local decode failures
+ok 35 - music keeps chosen volume across playback/pause and surfaces local decode failures
+  ---
+  duration_ms: 5.4405
+  type: 'test'
+  ...
+# Subtest: every category is either playable or has a documented integration note
+ok 36 - every category is either playable or has a documented integration note
+  ---
+  duration_ms: 2.7915
+  type: 'test'
+  ...
+# Subtest: trackAfter cycles forward and backward, wrapping around, and handles an empty list
+ok 37 - trackAfter cycles forward and backward, wrapping around, and handles an empty list
+  ---
+  duration_ms: 0.49
+  type: 'test'
+  ...
+# Subtest: movement sweeps furniture instead of tunneling across it on delayed frames
+ok 38 - movement sweeps furniture instead of tunneling across it on delayed frames
+  ---
+  duration_ms: 18.308
+  type: 'test'
+  ...
+# Subtest: live people stop routes and a blocked walker detours without overlap
+ok 39 - live people stop routes and a blocked walker detours without overlap
+  ---
+  duration_ms: 13.6912
+  type: 'test'
+  ...
+# Subtest: every save key is namespaced so it cannot collide with another site
+ok 40 - every save key is namespaced so it cannot collide with another site
+  ---
+  duration_ms: 2.674
+  type: 'test'
+  ...
+# Subtest: default settings are a complete, valid starting point
+ok 41 - default settings are a complete, valid starting point
+  ---
+  duration_ms: 0.4213
+  type: 'test'
+  ...
+# Subtest: GPU skin formula reproduces CPU applyPose positions for every region and pose
+ok 42 - GPU skin formula reproduces CPU applyPose positions for every region and pose
+  ---
+  duration_ms: 606.0036
+  type: 'test'
+  ...
+# Subtest: skin weights are normalised and the shader injection hits every insertion point
+ok 43 - skin weights are normalised and the shader injection hits every insertion point
+  ---
+  duration_ms: 4.131
+  type: 'test'
+  ...
+# Subtest: social arrivals stay on the public side of the bar and separate overlapping actors
+ok 44 - social arrivals stay on the public side of the bar and separate overlapping actors
+  ---
+  duration_ms: 46.9496
+  type: 'test'
+  ...
+# Subtest: status derivation prioritizes focus, then music, then seat/drink state
+ok 45 - status derivation prioritizes focus, then music, then seat/drink state
+  ---
+  duration_ms: 3.3772
+  type: 'test'
+  ...
+# Subtest: every status id used by deriveStatus has display metadata
+ok 46 - every status id used by deriveStatus has display metadata
+  ---
+  duration_ms: 0.8664
+  type: 'test'
+  ...
+# Subtest: statusText renders an emoji, label, and optional detail
+ok 47 - statusText renders an emoji, label, and optional detail
+  ---
+  duration_ms: 0.5425
+  type: 'test'
+  ...
+# Subtest: emote registry is small, unique, and looked up by id
+ok 48 - emote registry is small, unique, and looked up by id
+  ---
+  duration_ms: 0.9261
+  type: 'test'
+  ...
+1..48
+# tests 48
+# suites 0
+# pass 48
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 28947.7316

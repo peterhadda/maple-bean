@@ -1,0 +1,10 @@
+import {chromium} from 'playwright-core';
+const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--use-gl=angle','--use-angle=swiftshader','--no-sandbox']});
+const page=await browser.newPage({viewport:{width:1440,height:1000}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('http://127.0.0.1:4336/?qa');
+await page.waitForTimeout(3000);
+await page.evaluate(async()=>{const {createCreator}=await import('/systems/creator.js');const {defaultWardrobe}=await import('/shop.js');window.testCreator=createCreator({getWardrobe:defaultWardrobe,onSave:(p,w)=>{window.creatorResult={p,w};}});window.testCreator.open({name:'Maple Guest'});});
+await page.waitForTimeout(7000);await page.screenshot({path:'qa/expansion/creator/creator-base.png'});
+await page.getByRole('button',{name:'Continue →',exact:true}).click();await page.getByRole('button',{name:'Tone 6',exact:true}).click();await page.getByRole('button',{name:'Face',exact:true}).click();await page.waitForTimeout(2000);await page.screenshot({path:'qa/expansion/creator/creator-skin-face.png'});
+await page.getByRole('button',{name:'5. Name & preview',exact:true}).click();await page.getByLabel('What should we call you?').fill('Maple Guest');await page.getByRole('button',{name:'Enter Maple Bean',exact:true}).click();
+console.log(JSON.stringify({errors,result:await page.evaluate(()=>window.creatorResult),saved:await page.evaluate(()=>localStorage.getItem('maple-bean-avatar'))}));await browser.close();

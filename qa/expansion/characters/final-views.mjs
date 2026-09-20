@@ -1,0 +1,1 @@
+import faces from './face-views.mjs';import bodies from './body-views.mjs';export default [...faces,...bodies.slice(1)];

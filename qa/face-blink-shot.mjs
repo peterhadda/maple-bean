@@ -1,0 +1,7 @@
+import {chromium} from 'playwright-core';import fs from 'node:fs';import path from 'node:path';import views from './expansion/characters/cast-views.mjs';
+const pass=process.argv[2]||'before',trial=process.argv[3],out=`qa/expansion/face/${pass}`;fs.mkdirSync(out,{recursive:true});
+const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--use-angle=d3d11','--enable-gpu','--ignore-gpu-blocklist']});
+try{const page=await browser.newPage({viewport:{width:1000,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));if(trial)await page.route('**/assets/characters/*.glb',route=>route.fulfill({path:path.resolve(trial,path.basename(new URL(route.request().url()).pathname)),contentType:'model/gltf-binary'}));
+await page.goto('http://127.0.0.1:4336/?qa',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__ready,null,{timeout:180000});await page.evaluate(`(async()=>{${views[0].run}})()`);
+for(const [name,id,angle,blink]of [['maya-closed','maya',0,1]]){await page.evaluate(({id,angle,blink})=>{for(const a of Object.values(qaCast))a.group.visible=false;qaShow(id,-2,1,angle,{blink});qaRender(-2,1.47,1.95,-2,1.45,1,30);},{id,angle,blink});await page.screenshot({path:out+'/'+name+'.png'});}console.log(JSON.stringify({pass,errors}));if(errors.length)throw Error('Face render errors');}finally{await browser.close();}
+

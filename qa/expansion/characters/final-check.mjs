@@ -1,0 +1,1 @@
+import steps from './final-views.mjs';export default steps.filter(s=>['_setup','maya-face','maya-stand','maya-type','jules-stand'].includes(s.name));

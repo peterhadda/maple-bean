@@ -6,8 +6,10 @@ import { isWalkable, findPath } from '../navigation.js';
 const layout=JSON.parse(readFileSync(new URL('../assets/layout.json',import.meta.url)));
 test('expanded café destinations are reachable without crossing furniture',()=>{
   const start={x:0,z:5.6};assert.ok(isWalkable(start.x,start.z,layout));
-  assert.equal(layout.area,280);assert.equal(layout.originalArea,120);assert.equal(layout.originalObjects,112);
-  for(const s of layout.stations){
+  assert.ok(layout.area>=400,'the study room and games & garden wings add usable floor');assert.equal(layout.originalArea,120);assert.equal(layout.originalObjects,112);
+  assert.deepEqual(layout.rooms.map(r=>r.id).sort(),['games-room','study-room']);
+  const targets=layout.stations.flatMap(s=>[{id:s.id,approach:s.approach},...(s.seats||[]).map((seat,i)=>({id:s.id+'#'+i,approach:seat.approach}))]);
+  for(const s of targets){
     assert.ok(isWalkable(...s.approach,layout),`${s.id}: approach overlaps furniture`);
     const path=findPath(start,{x:s.approach[0],z:s.approach[1]},layout);
     assert.ok(path.length,`${s.id}: no route from entrance`);
@@ -18,7 +20,7 @@ test('expanded café destinations are reachable without crossing furniture',()=>
     }
   }
   assert.equal(isWalkable(NaN,0,layout),false);assert.equal(isWalkable(0,Infinity,layout),false);
-  assert.equal(isWalkable(11,0,layout),false);
+  assert.equal(isWalkable(21,0,layout),false);assert.equal(isWalkable(11,0,layout),true,"the study room is walkable");assert.equal(isWalkable(10,-3,layout),false,"the east wall outside the doorway blocks walking");
   assert.equal(isWalkable(-3.4,-4.8,layout),false);
   assert.deepEqual(findPath(start,{x:-3.4,z:-4.8},layout),[]);
   assert.ok(isWalkable(0,8.5,layout),'entrance path must be accessible');
@@ -32,7 +34,7 @@ test('expanded café destinations are reachable without crossing furniture',()=>
   const glb=readFileSync(new URL('../assets/cafe.glb',import.meta.url));
   const nodes=JSON.parse(glb.subarray(20,20+glb.readUInt32LE(12)).toString()).nodes;
   const tables=[[6.7,-3.55],[4,2],[-3.1,5.5],[8,5.5],[-7.4,-1.8],[.6,-1.8],[7.1,2.0],[8.5,2.0]];
-  const chairs=nodes.filter(n=>/^Chair (upholstered )?seat(?:\.|$)/.test(n.name));
+  const chairs=nodes.filter(n=>/^Chair (upholstered )?seat(?:\.|$)/.test(n.name)&&!n.extras?.wing);
   assert.equal(chairs.length,16);
   for(const chair of chairs){
     const back=nodes.find(n=>n.name===chair.name.replace('upholstered seat','curved back').replace('Chair seat','Chair back'));
@@ -53,7 +55,7 @@ test('local social playtest validates chat, names and seat reservations',async()
   try{
     assert.equal((await request({action:'chat',text:'x'.repeat(161)},a)).status,400);
     assert.equal((await request({action:'rename',name:''},a)).status,400);
-    assert.equal((await request({action:'move',x:-3.4,z:-4.8,angle:0},a)).data.z,5.6);
+    assert.equal((await request({action:'move',x:-3.4,z:-4.8,angle:0},a)).data.z,a.z);
     assert.equal((await request({action:'move',x:0,z:8.5,angle:0},a)).data.z,8.5);
     assert.equal((await request({action:'move',x:1.3,z:7,angle:0},a)).data.z,8.5);
     assert.equal((await request({action:'move',x:0,z:5.6,angle:0},a)).data.z,5.6);

@@ -1,0 +1,48 @@
+import { chromium } from 'playwright-core';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const out='qa/expansion/creator-runtime';fs.mkdirSync(out,{recursive:true});
+const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--use-angle=d3d11','--enable-gpu','--ignore-gpu-blocklist']});
+const page=await browser.newPage({viewport:{width:1280,height:800}}),errors=[];
+page.on('pageerror',e=>errors.push(e.message));
+try{
+ await page.goto('http://127.0.0.1:4336/?qa',{waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>window.__ready,{timeout:180000});
+ await page.evaluate(()=>{window.qaOriginalNpcs=cafe.regulars.filter(n=>["mara","jules"].includes(n.id)).map(n=>({id:n.id,group:n.avatar.group.uuid}));cafe.openCreator();});
+ await page.locator('#character-creator').waitFor({state:'visible'});
+ await page.getByRole('button',{name:'Noah base',exact:true}).click();
+ await page.waitForTimeout(1000);
+ await page.getByRole('button',{name:'Rotate right',exact:true}).click();
+ await page.getByRole('button',{name:'Face',exact:true}).click();
+ await page.getByRole('button',{name:'2. Skin & eyes',exact:true}).click();
+ await page.getByRole('button',{name:'Tone 4',exact:true}).click();
+ await page.getByRole('button',{name:'Green',exact:true}).click();
+ await page.screenshot({path:out+'/01-face-customized.png'});
+ await page.getByRole('button',{name:'Full body',exact:true}).click();
+ await page.getByRole('button',{name:'5. Name & preview',exact:true}).click();
+ await page.locator('#creator-name').fill('Rowan QA');
+ await page.screenshot({path:out+'/02-preview.png'});
+ await page.getByRole('button',{name:'Enter Maple Bean',exact:true}).click();
+ await page.waitForFunction(()=>!cafe.creator.isOpen);
+ assert.equal(await page.evaluate(()=>qaOriginalNpcs.every(saved=>cafe.npc(saved.id).avatar.group.uuid===saved.group)),true);
+ const saved=await page.evaluate(()=>({profile:JSON.parse(localStorage.getItem('maple-bean-avatar')),name:document.getElementById('player-name').textContent,mesh:cafe.maya.body.name}));
+ assert.equal(saved.profile.base,'noah');assert.equal(saved.profile.skin,'#c88d68');assert.equal(saved.profile.eyes,'#96c690');assert.equal(saved.name,'Rowan QA');
+ await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__ready,{timeout:180000});
+ const reloaded=await page.evaluate(()=>({profile:JSON.parse(localStorage.getItem('maple-bean-avatar')),name:document.getElementById('player-name').textContent,npcs:cafe.regulars.map(n=>n.id)}));
+ assert.deepEqual(reloaded.profile,saved.profile);assert.equal(reloaded.name,'Rowan QA');assert.ok(reloaded.npcs.includes('mara')&&reloaded.npcs.includes('jules'));
+ await page.evaluate(()=>{document.getElementById('lighting').value='evening';document.getElementById('lighting').dispatchEvent(new Event('change'));});
+ await page.screenshot({path:out+'/03-evening-reload.png'});
+ await page.evaluate(()=>document.querySelector('#music-categories button').click());
+ await page.locator('#music-play').evaluate(b=>b.click());await page.waitForTimeout(500);
+ const playing=await page.evaluate(()=>({visible:!document.getElementById('now-listening').hidden,text:document.getElementById('now-listening-track').textContent}));
+ assert.equal(playing.visible,true);assert.ok(playing.text.length>3);
+ await page.locator('#music-play').evaluate(b=>b.click());assert.equal(await page.evaluate(()=>document.getElementById('now-listening').hidden),true);
+ const order=await page.evaluate(async()=>{
+ cafe.cameraMode('walk'); Object.assign(cafe.me,{x:-3.4,z:-3.3}); cafe.playerCtl.stop(); await cafe.orderAtCounter();
+ const before=cafe.econ.coins; document.querySelector('[data-order="Coffee"]').click(); const charged=cafe.econ.coins;
+ cafe.talkTo(cafe.npc('mara')); await new Promise(r=>setTimeout(r,250));
+ return {before,charged,after:cafe.econ.coins};
+});assert.ok(order.charged<order.before);assert.equal(order.after,order.before);
+console.log('order cancellation',JSON.stringify(order));
+assert.deepEqual(errors,[]);console.log(JSON.stringify({saved,reloaded,playing,errors}));
+}finally{await browser.close();}

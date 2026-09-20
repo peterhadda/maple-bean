@@ -1,0 +1,2 @@
+import views from './coffee-views.mjs';
+export default [...views,{name:'menu-check',shot:false,run:`const {menu}=await import('/cafe-life.js');const mats=[];cafe.scene.traverse(o=>{const m=o.material;if(m?.name==='Maple Bean shared menu')mats.push(m);});if(mats.length!==1||!mats[0].map)throw Error('Shared 3D menu missing');if(Object.keys(menu).length!==6)throw Error('Review menu layout for new rows');return {menu,canvas:[mats[0].map.image.width,mats[0].map.image.height]};`}];

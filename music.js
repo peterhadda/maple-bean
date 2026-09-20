@@ -23,12 +23,12 @@ const PRESETS = [
 ];
 
 export function createProceduralProvider(audioContext, destination) {
-  let oscillators = [], gain = null;
+  let oscillators = [], gain = null, volume = .55, paused = false;
   return {
     name: 'Ambient (synthesized)',
     tracks: PRESETS,
     play(track) {
-      this.stop();
+      this.stop(); paused = false;
       gain = audioContext.createGain(); gain.gain.value = 0; gain.connect(destination);
       oscillators = track.freqs.map(hz => {
         const o = audioContext.createOscillator(), g = audioContext.createGain();
@@ -36,12 +36,12 @@ export function createProceduralProvider(audioContext, destination) {
         o.connect(g).connect(gain); o.start();
         return o;
       });
-      gain.gain.linearRampToValueAtTime(.6, audioContext.currentTime + .8);
+      gain.gain.linearRampToValueAtTime(volume * .6, audioContext.currentTime + .8);
     },
-    pause() { gain?.gain.linearRampToValueAtTime(0, audioContext.currentTime + .3); },
-    resume() { gain?.gain.linearRampToValueAtTime(.6, audioContext.currentTime + .3); },
+    pause() { paused = true; gain?.gain.linearRampToValueAtTime(0, audioContext.currentTime + .3); },
+    resume() { paused = false; gain?.gain.linearRampToValueAtTime(volume * .6, audioContext.currentTime + .3); },
     stop() { oscillators.forEach(o => { try { o.stop(); } catch {} }); oscillators = []; gain?.disconnect(); gain = null; },
-    setVolume(v) { if (gain) gain.gain.value = Math.max(0, Math.min(1, v)) * .6; },
+    setVolume(v) { volume = Math.max(0, Math.min(1, v)); if (gain) { gain.gain.cancelScheduledValues(audioContext.currentTime); gain.gain.setValueAtTime(paused ? 0 : volume * .6, audioContext.currentTime); } },
   };
 }
 
@@ -52,10 +52,10 @@ export function createLocalFilesProvider(audioElement) {
   return {
     name: 'My Music',
     get tracks() { return tracks; },
-    setFiles(fileList) { tracks = [...fileList].map(f => ({ id: f.name, title: f.name, url: URL.createObjectURL(f) })); },
-    play(track) { audioElement.src = track.url; audioElement.play().catch(() => {}); },
+    setFiles(fileList) { this.stop(); tracks.forEach(t => URL.revokeObjectURL(t.url)); tracks = [...fileList].map((f, i) => ({ id: String(i), title: f.name.replace(/\.[^.]+$/, ''), artist: 'Your audio file', url: URL.createObjectURL(f) })); },
+    play(track) { audioElement.src = track.url; return audioElement.play(); },
     pause() { audioElement.pause(); },
-    resume() { audioElement.play().catch(() => {}); },
+    resume() { return audioElement.play(); },
     stop() { audioElement.pause(); audioElement.removeAttribute('src'); },
     setVolume(v) { audioElement.volume = Math.max(0, Math.min(1, v)); },
   };

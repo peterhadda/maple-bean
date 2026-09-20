@@ -1,0 +1,131 @@
+{
+  "original_sha256": "c9d8d7f6f82aa8fa02fb7948055499e3560a79ddc46508a2cc09fe83b856ae43",
+  "output": "C:\\Users\\Aymen\\Documents\\ChatGPT\\coffeshop\\MapleBeanPhase2.blend",
+  "original_objects": 1566,
+  "imported_objects": 1319,
+  "hidden_originals": 1551,
+  "unmatched_source_names": [],
+  "images_packed": 16,
+  "lights": [
+    {
+      "name": "Afternoon sun",
+      "type": "AREA",
+      "energy": 2800.0,
+      "location": [
+        -4.0,
+        -6.0,
+        12.0
+      ]
+    },
+    {
+      "name": "Desk lamp light",
+      "type": "POINT",
+      "energy": 14.0,
+      "location": [
+        7.380000114440918,
+        -1.840000033378601,
+        1.0049999952316284
+      ]
+    },
+    {
+      "name": "Desk lamp light.001",
+      "type": "POINT",
+      "energy": 14.0,
+      "location": [
+        8.779999732971191,
+        -1.840000033378601,
+        1.0049999952316284
+      ]
+    },
+    {
+      "name": "Light",
+      "type": "POINT",
+      "energy": 1000.0,
+      "location": [
+        4.076245307922363,
+        1.0054539442062378,
+        5.903861999511719
+      ]
+    },
+    {
+      "name": "Warm pendant",
+      "type": "POINT",
+      "energy": 65.0,
+      "location": [
+        -7.0,
+        -3.0,
+        2.5999999046325684
+      ]
+    },
+    {
+      "name": "Warm pendant.001",
+      "type": "POINT",
+      "energy": 65.0,
+      "location": [
+        -3.0,
+        -3.0,
+        2.5999999046325684
+      ]
+    },
+    {
+      "name": "Warm pendant.002",
+      "type": "POINT",
+      "energy": 65.0,
+      "location": [
+        2.0,
+        -3.0,
+        2.5999999046325684
+      ]
+    },
+    {
+      "name": "Warm pendant.003",
+      "type": "POINT",
+      "energy": 65.0,
+      "location": [
+        7.0,
+        -3.0,
+        2.5999999046325684
+      ]
+    },
+    {
+      "name": "Warm pendant.004",
+      "type": "POINT",
+      "energy": 65.0,
+      "location": [
+        -7.0,
+        3.0,
+        2.5999999046325684
+      ]
+    },
+    {
+      "name": "Warm pendant.005",
+      "type": "POINT",
+      "energy": 65.0,
+      "location": [
+        -3.0,
+        3.0,
+        2.5999999046325684
+      ]
+    },
+    {
+      "name": "Warm pendant.006",
+      "type": "POINT",
+      "energy": 65.0,
+      "location": [
+        2.0,
+        3.0,
+        2.5999999046325684
+      ]
+    },
+    {
+      "name": "Warm pendant.007",
+      "type": "POINT",
+      "energy": 65.0,
+      "location": [
+        7.0,
+        3.0,
+        2.5999999046325684
+      ]
+    }
+  ]
+}

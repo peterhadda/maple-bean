@@ -1,0 +1,14 @@
+{
+  "file": "MapleBeanPhase2.blend",
+  "original_light_objects_preserved_hidden": 12,
+  "preview_visible_light_objects": 17,
+  "preview_collection": "Phase 2 - evening preview lighting",
+  "preview_lights": {"pendant_spots": 8, "wing_points": 5, "accent_spots": 2, "hearth_point": 1, "sky_area": 1},
+  "runtime_light_objects_unchanged": 22,
+  "runtime_shadow_maps_unchanged": 1,
+  "renderer": "Cycles CPU, 4 threads, 8 samples, AgX exposure 0.5",
+  "resolution": [960, 720],
+  "comparison": "Identical camera and preview lighting for original and copy",
+  "source_sha256_verified_after_render": "c9d8d7f6f82aa8fa02fb7948055499e3560a79ddc46508a2cc09fe83b856ae43",
+  "limitations": ["Environment-only source copy has no cast population", "Fire uses static alpha snapshot in source only", "Preview watts calibrated separately from runtime candela", "Further reference layout/detail work remains"]
+}

@@ -9,6 +9,7 @@
     "qa:smoke": "node qa/qa-full.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.127.0",
     "three": "0.180.0"
   },
   "devDependencies": {

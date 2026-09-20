@@ -1,0 +1,1 @@
+import v from './male-straight-views.mjs';import h from './head-views.mjs';export default[...v.filter(s=>s.name==='_setup'||s.name.endsWith('-front')||s.name.endsWith('-side')), ...h.filter(s=>['maya-sip','maya-headphones-glasses'].includes(s.name))];

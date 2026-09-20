@@ -1,0 +1,1 @@
+import views from './cast-views.mjs';const steps=[views[0]];for(const id of ['maya','noah'])for(const blink of [0,.5,1])steps.push({name:id+'-blink-'+blink,run:`for(const a of Object.values(qaCast))a.group.visible=false;qaShow('${id}',-2,1,0,{blink:${blink}});qaRender(-2,1.47,1.95,-2,1.45,1,30);`});export default steps;

@@ -19,7 +19,7 @@ Start-Process "http://localhost:4321"
 
 ## Play
 
-- **Walk as Maya**: WASD / arrows to walk, drag to orbit the camera, scroll to zoom. Click clear floor to walk there.
+- **Walk as Maya**: WASD / arrows to walk, drag to orbit the camera, scroll to zoom. Click clear floor to walk there, or click anything that glows to use it.
 - Destination buttons guide Maya around the furniture. **E** interacts or gets up. **Esc** cancels a route or stands up.
 - **F / Wave hello** waves. Order a drink at the counter, take a sip, read, or sit in the lounge.
 - Talk to **Mara**, **Jules**, **Claire**, or **Noah**. Their dialogue is authored for this playtest.
@@ -27,6 +27,24 @@ Start-Process "http://localhost:4321"
 - **Playtest notes** saves observations and location in your browser. Export the notebook as JSON to share feedback.
 - Try **Cozy evening**, **Floor plan**, boundary display, or the screenshot button.
 - Open a second browser window at the same address to test another guest, seat occupancy, and nearby chat. Chat range is 8 metres.
+
+## Gameplay, social and character pass
+
+Maple Bean is now a cozy social café you play by touching the world: anything usable glows and shows a small label (Sit, Study, Water, Talk, Play, Order) when you point at it.
+
+- **Three rooms (406 m²).** The main café keeps every original piece. A new **Study Room** (east doorway) has focus desks with laptops, lamps and headphones, a shared study table, reading armchairs and bookshelves. A new **Games & Garden** room (back doorway) has chess, XO, memory and card tables, a Snake arcade cabinet, a dartboard and plenty of plants. Built by `tools/build_wings.py` in Blender.
+- **Characters.** Anatomically correct hands (palm to the thigh, thumb in front), open-palm waves, a real cup grip and sip, softer hips, Maya’s smaller bun, tidier Noah hair and a short men’s cut for Jules (`tools/author_characters.py`, `tools/jules_hair.py`). Upper bodies use arm IK and hand shapes (`assets/characters/body-pose.js`) with idle variations, torso lean, head look and event-driven activity poses.
+- **Seating.** People step beside a chair (never through its back), lower themselves onto it and rise again; sofas are sat onto from the front.
+- **Drinks.** Regulars walk in empty-handed, queue at the counter, and Mara makes, places and slides each drink over; the customer reaches for it. The menu adds Latte, Coffee and Matcha latte.
+- **Study Mode.** Sit at a desk → Study → 30/60 min (or custom). You pick up the headphones, put them on, open the laptop and the camera eases in; the character types, reads, writes, thinks, sips and stretches in a logical sequence, with the cup set down beside the laptop. Completing a session pays Maple Coins, XP and builds a streak (5 days unlocks the Scholar’s Scarf); ending early pays nothing. Study Together seats a regular beside you.
+- **Mini-games** play on the physical tables: XO, Memory, Chess, Maple Eights (Crazy Eights), Snake on the arcade screen and Darts scored from where each dart lands. Opponents are Jules, Claire or Noah. Rewards need a real game and have a daily cap.
+- **People.** Click a regular to chat, ask, hang out, play, study together or give a maple cookie. Friendships grow Stranger → Acquaintance → Friend → Close Friend, with an optional shy crush for guest regulars once you are friends.
+- **NPC chat** uses Claude (`claude-opus-5`) when the server has credentials (`ANTHROPIC_API_KEY` or an `ant auth login` profile); otherwise each regular answers from their own persona lines. Personas: `npc-brain.js`.
+- **Group chat** (💬): create a group, invite other guests or regulars, send messages and study / play / hang-out invitations.
+- **Coins & wardrobe** (👕): tops, bottoms, shoes, hairstyles, hair colours, glasses, hats and scarves for your own avatar. Purchases stay unlocked.
+- **Clean HUD**: profile, coins, home, messages, notifications, wardrobe and menu. Everything else appears in context.
+
+Game rules are pure modules with tests: `economy.js`, `study.js`, `relationships.js`, `shop.js` and `games/` (`tests/gameplay.test.mjs`). The end-to-end check drives the real game in Chrome: `node qa/qa-gameplay.mjs` (server running).
 
 ## What was upgraded
 

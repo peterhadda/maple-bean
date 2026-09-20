@@ -1,0 +1,1 @@
+import views from './body-views.mjs';import blink from './blink-views.mjs';export default [...views.filter(s=>s.name==='_setup'||s.name==='maya-wave'||s.name==='jules-wave'),...blink.filter(s=>s.name==='noah-blink-1'||s.name==='noah-blink-0.5')];

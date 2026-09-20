@@ -1,0 +1,11 @@
+// The hidden first sleeve tube segment must stay buried in the chest on an arm raise.
+import fs from 'node:fs';
+const smooth=(a,b,v)=>{let t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t)};
+for(const id of ['maya','claire','mara','jules'])for(const suffix of ['','-lod']){
+ const file=`assets/characters/${id}${suffix}.glb`,bytes=fs.readFileSync(file),n=bytes.readUInt32LE(12),j=JSON.parse(bytes.subarray(20,20+n)),bin=bytes.subarray(n+28),seen=new Set();
+ const acc=i=>{let a=j.accessors[i],v=j.bufferViews[a.bufferView];return {a,v,o:(v.byteOffset||0)+(a.byteOffset||0)}};let count=0;
+ for(const node of j.nodes){if(node.mesh===undefined||node.skin===undefined)continue;const names=j.skins[node.skin].joints.map(i=>j.nodes[i].name.replaceAll('.',''));for(const p of j.meshes[node.mesh].primitives){if(seen.has(p.attributes.POSITION)||j.materials[p.material]?.name!=='Wardrobe')continue;seen.add(p.attributes.POSITION);const pos=acc(p.attributes.POSITION),ji=acc(p.attributes.JOINTS_0),we=acc(p.attributes.WEIGHTS_0),sz=ji.a.componentType===5121?1:2,read=sz===1?'readUInt8':'readUInt16LE',write=sz===1?'writeUInt8':'writeUInt16LE';
+ for(let i=0;i<pos.a.count;i++){let o=pos.o+i*(pos.v.byteStride||12),x=bin.readFloatLE(o),y=bin.readFloatLE(o+4);if(y<1.13||Math.abs(x)>.12)continue;let jo=ji.o+i*(ji.v.byteStride||4*sz),wo=we.o+i*(we.v.byteStride||16),upper=names.indexOf('upper'+(x<0?'L':'R')),chest=names.indexOf('chest'),values=[],amount=0;for(let k=0;k<4;k++){let bone=bin[read](jo+k*sz),w=bin.readFloatLE(wo+k*4);if(bone===upper){let transfer=w*(1-smooth(.085,.12,Math.abs(x)));amount+=transfer;w-=transfer;}values.push([bone,w]);}if(amount<.00001)continue;let target=values.find(v=>v[0]===chest)||values.find(v=>v[1]<.00001);if(!target)throw Error('Skin influence budget exceeded');if(target[0]!==chest){target[0]=chest;target[1]=0}target[1]+=amount;for(let k=0;k<4;k++){bin[write](values[k][0],jo+k*sz);bin.writeFloatLE(values[k][1],wo+k*4)}count++;
+ }
+ }}fs.writeFileSync(file,bytes);console.log(id+suffix,count);
+}

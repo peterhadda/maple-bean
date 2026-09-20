@@ -11,13 +11,15 @@ export const STATUS_META = {
   studying: { emoji: '📚', label: 'Studying' },
   focus: { emoji: '📚', label: 'Focusing' },
   music: { emoji: '🎵', label: 'Listening to Music' },
+  playing: { emoji: '🎲', label: 'Playing a game' },
 };
 export const STATUS_IDS = Object.keys(STATUS_META);
 
 // Priority order matters: a focused player is never shown as merely
 // "drinking coffee" just because they're holding a cup at their desk.
-export function deriveStatus({ seated, stationKind, focusActive, focusDetail, musicPlaying, hasDrink }) {
+export function deriveStatus({ seated, stationKind, focusActive, focusDetail, musicPlaying, hasDrink, playing }) {
   if (focusActive) return { id: 'focus', detail: focusDetail };
+  if (playing) return { id: 'playing' };
   if (musicPlaying) return { id: 'music' };
   if (seated && stationKind === 'study') return { id: 'studying' };
   if (seated) return { id: 'relaxing' };

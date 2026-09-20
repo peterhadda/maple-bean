@@ -1,0 +1,1 @@
+import v from './cast-views.mjs';export default[v[0],...['jules','maya'].flatMap(id=>[['walk',{walking:true}],['sit',{sitting:true}]].map(([pose,state])=>({name:id+'-'+pose,run:`for(const a of Object.values(qaCast))a.group.visible=false;qaShow('${id}',-2,1,0,${JSON.stringify(state)});qaRender(-1.72,1.08,2.25,-2,.90,1,36);`})) )];

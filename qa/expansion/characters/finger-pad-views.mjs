@@ -1,0 +1,2 @@
+import v from './cast-views.mjs';import hands from './hands-final-views.mjs';
+export default [v[0],{name:'open-pads',run:`for(const a of Object.values(qaCast))a.group.visible=false;qaShow('maya',-2,1,0,{wave:true});qaRender(-2.28,1.48,1.75,-2.29,1.46,1.08,21);`},{name:'peace-pads',run:`qaShow('maya',-2,1,0,{wave:true,handShape:'peace'});qaRender(-2.28,1.48,1.75,-2.29,1.46,1.08,21);`},...hands.filter(s=>['maya-fist','maya-book','maya-controller','maya-sip'].includes(s.name))];

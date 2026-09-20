@@ -107,6 +107,8 @@ def _hood():
         for column in range(columns):
             n = row*(columns+1)+column
             faces.append((n, n+columns+1, n+columns+2, n+1))
+    # Fold the forward hood tips down/back onto the tee neckline, retaining its open front.
+    vertices = [(x, y-.022*max(0,min(1,(z-.005)/.06)), z-.018*max(0,min(1,(z-.005)/.06))) for x,y,z in vertices]
     return _solidify(vertices, faces, .0035)
 
 

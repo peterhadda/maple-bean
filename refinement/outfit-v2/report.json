@@ -1,0 +1,38 @@
+{
+  "changes": [
+    {
+      "changed": true,
+      "extended_vertices": 1988,
+      "source_hems_m": [
+        0.9699851274490356,
+        0.9666115641593933,
+        0.9398497939109802,
+        0.9398512840270996,
+        0.9358247518539429,
+        0.9409080743789673,
+        0.9409081339836121,
+        0.9416131973266602
+      ],
+      "target_hem_m": 0.895,
+      "rig_coordinates_changed": false,
+      "new_meshes": 0
+    },
+    {
+      "changed": true,
+      "extended_vertices": 1136,
+      "source_hems_m": [
+        0.9699828028678894,
+        0.9666398763656616
+      ],
+      "target_hem_m": 0.895,
+      "rig_coordinates_changed": false,
+      "new_meshes": 0
+    }
+  ],
+  "normalized_weights": true,
+  "finite_poses": [
+    "walk",
+    "seated"
+  ],
+  "prop_contact_checked": false
+}

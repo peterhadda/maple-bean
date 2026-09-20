@@ -1,0 +1,1 @@
+import steps from './head-views.mjs';export default steps.filter(s=>['_setup','maya-headphones-glasses','attachment-check'].includes(s.name));

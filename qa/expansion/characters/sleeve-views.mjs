@@ -1,0 +1,1 @@
+import v from './body-views.mjs';export default v.filter(s=>['_setup','maya-wave','maya-stand'].includes(s.name));

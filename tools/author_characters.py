@@ -82,25 +82,42 @@ def lock(name,points,width,depth,mat,steps=22,sides=10,taper=True):
  fs.extend([tuple(reversed(range(sides))),tuple(steps*sides+j for j in range(sides))])
  return mesh(name,vs,fs,mat,uv)
 
+# Eye opening (A1 expansion pass 1): rounder, taller anime eyes than the earlier
+# .033/.019/.0155 slit, so the iris fills the opening like the cast sheet.
+EW,EHU,EHL=.034,.0225,.0178
+MALE=('noah','jules')
 def face_texture(id):
  n=1024;y,x=np.mgrid[0:n,0:n];x=x/(n-1)*.30-.15;y=y/(n-1)*.34+1.31
  color=rgb(COLORS[id][0]);data=np.ones((n,n,4));data[:,:,:3]=color
  def tint(mask,c,amount):data[:,:,:3][:]=data[:,:,:3]*(1-mask[:,:,None]*amount)+np.array(c)*mask[:,:,None]*amount
- deep=id=='jules';blush=rgb('a35b4b' if deep else 'e99789')
+ deep=id=='jules';male=id in MALE;blush=rgb('a35b4b' if deep else 'e8897f' if male else 'ef8a82')
+ # Round rosy cheeks sitting just under the eyes, as on the sheet (softer on the boys).
  for side in (-1,1):
-  tint(np.exp(-((x-side*.07)/.035)**2-((y-1.429)/.023)**2),blush,.19 if deep else .25)
- tint(np.exp(-(x/.014)**2-((y-1.422)/.014)**2),blush,.2)
- lip=rgb('915d51' if deep else 'ba7565' if id=='noah' else 'ca726b')
+  tint(np.exp(-((x-side*.071)/.036)**2-((y-1.433)/.022)**2),blush,.24 if deep else .26 if male else .44)
+ tint(np.exp(-(x/.014)**2-((y-1.422)/.014)**2),blush,.16 if male else .24)
+ # Nose: a small warm shadow under the tip and a soft highlight on it.
+ tint(np.exp(-(x/.011)**2-((y-1.4135)/.0042)**2),rgb('8a5344' if deep else 'c07a66'),.22)
+ tint(np.exp(-(x/.0055)**2-((y-1.429)/.0055)**2),rgb('c99a82' if deep else 'fff1e8'),.30)
+ lip=rgb('915d51' if deep else 'c07466' if id=='noah' else 'd66f73')
  seam=1.388+3.5*x*x+.0008*np.clip(x/.034,-1,1)
  shape=np.maximum(0,1-(x/.034)**2)
- upper=seam+.0055*shape**.8-.001*np.exp(-(x/.006)**2);lower=seam-.0072*shape**.6
+ upper=seam+(.0056 if male else .0068)*shape**.8-.0012*np.exp(-(x/.006)**2);lower=seam-(.0074 if male else .0094)*shape**.6
  def band(lo,hi):return np.clip((y-lo)/.0012+.5,0,1)*np.clip((hi-y)/.0012+.5,0,1)*np.clip((.034-np.abs(x))/.0015,0,1)
- tint(band(seam,upper),lip*.87,.9);tint(band(lower,seam),lip,.86)
- tint(np.exp(-((x-.006)/.013)**4-((y-(seam-.0048))/.0014)**2),rgb('efb6a2' if not deep else 'ac7b64'),.36)
+ tint(band(seam,upper),lip*.86,.72 if male else .9);tint(band(lower,seam),lip,.66 if male else .88)
+ # Gloss on the lower lip.
+ tint(np.exp(-((x-.005)/.011)**4-((y-(seam-.0052))/.0015)**2),rgb('f7c9bf' if not deep else 'b58470'),.45)
  tint(np.exp(-(x/.033)**8-((y-seam)/.0007)**2),rgb('563c35' if deep else '934a46'),.8)
  for side in (-1,1):tint(np.exp(-((x-side*.008)/.0028)**2-((y-1.410)/.0018)**2),rgb('503c33'),.28)
- # Gentle baked eyelid colour, without photographic pores or dark rings.
- for side in (-1,1):tint(np.exp(-((x-side*.053)/.038)**4-((y-1.495)/.013)**2),color*.8,.18)
+ for side in (-1,1):
+  cx=side*.056;ex=(x-cx)/EW;ey=(y-1.476)
+  # Warm eyeshadow on the upper lid, deeper toward the outer corner.
+  outer=np.clip(.55+.6*side*ex,0,1.2)
+  tint(np.exp(-((x-side*.058)/.040)**4-((y-1.503)/.0105)**2)*outer,rgb('9c5f52' if deep else 'c27768' if not male else 'b98470'),.16 if male else .30)
+  # Lid crease just above the lash line and a soft lower lash line (outer half).
+  r=np.sqrt(ex**2*(EW/(EW+.004))**2+(ey/(EHU+.0072))**2)
+  tint(np.exp(-((r-1)/.045)**2)*(ey>.004)*np.clip(1.2-np.abs(ex),0,1),rgb('8f5a4e' if not deep else '4f332b'),.30 if male else .42)
+  r=np.sqrt(ex**2+(ey/EHL)**2)
+  tint(np.exp(-((r-1.10)/.07)**2)*(ey<-.004)*np.clip(.3+side*ex,0,1),rgb('5b3a31'),.22 if male else .46)
  return image(id+' skin paint',data)
 
 def hair_texture(id):
@@ -270,6 +287,9 @@ def author_hair(id,mat):
  if id=='noah':
   from noah_hair import author_noah_hair
   return author_noah_hair({'mesh':mesh,'lock':lock,'scalp':scalp,'mat':mat})
+ if id=='jules':
+  from jules_hair import author_jules_hair
+  return author_jules_hair({'mesh':mesh,'lock':lock,'scalp':scalp,'mat':mat})
  def border(psi):
   if bun:return -.24-.29*max(0,-math.cos(psi))**1.5+1.04*max(0,math.cos(psi))**1.2+.24*math.exp(-((abs(math.atan2(math.sin(psi),math.cos(psi)))-1.63)/.35)**2)
   return (-.20-.25*max(0,-math.cos(psi))**1.5+.65*max(0,math.cos(psi))**.55) if id in ('noah','jules') else (-.30-.48*max(0,-math.cos(psi))**1.5+.75*max(0,math.cos(psi))**.55)
@@ -324,17 +344,17 @@ def author_hair(id,mat):
     q=k/6;pts=[]
     for t in np.linspace(0,1,11):
      psi=.09+(side*(.85+.65*q)-.09)*t**1.15;el=.84+.38*q-(.69+.31*q)*t**1.5
-     pts.append(scalp(psi,el,-.003+.014*math.sin(t*math.pi*.9)))
+     pts.append(scalp(psi,el,-.003+(.010 if id=='maya' else .014)*math.sin(t*math.pi*.9)))
     parts.append(lock('Parted curtain mass',pts,.023-.004*q,.0075,mat,32,12))
-  center=Vector((.010 if id=='mara' else 0,1.695,-.056));core=ellipsoid('Sculpted bun core',center,(.089,.068,.075),mat,40,28);parts.append(core)
+  bs=.78 if id=='maya' else 1;center=Vector((.010 if id=='mara' else 0,1.695-.030*(1-bs)/.22,-.056-.010*(1-bs)/.22));core=ellipsoid('Sculpted bun core',center,(.089*bs,.068*bs,.075*bs),mat,40,28);parts.append(core)
   for v in core.data.vertices:
    d=G(v.co)-center;lump=1+.07*math.sin(d.x*63+1.3)*math.sin(d.y*73+.4)*math.sin(d.z*58+2.1);v.co=P(center+d*lump)
   for k in range(9):
    pts=[];angle=k/9*math.tau
    for t in np.linspace(0,1,13):
-    a=angle+1.90*t;h=-.052+.115*t+.004*math.sin(angle*2);r=math.sqrt(max(.04,1-(h/.072)**2))
-    pts.append(tuple(center+Vector((.092*r*math.cos(a),h,.079*r*math.sin(a)))))
-   parts.append(lock('Wrapped bun fold',pts,.021+.004*math.sin(k*2),.010,mat,34,12))
+    a=angle+1.90*t;h=(-.052+.115*t+.004*math.sin(angle*2))*bs;r=math.sqrt(max(.04,1-(h/(.072*bs))**2))
+    pts.append(tuple(center+Vector((.092*bs*r*math.cos(a),h,.079*bs*r*math.sin(a)))))
+   parts.append(lock('Wrapped bun fold',pts,(.021+.004*math.sin(k*2))*(bs**.5),.010*bs,mat,34,12))
   for side in (-1,1):
    for k in range(2):
     pts=[scalp(side*(1.01+.15*k),.20-.08*k,.003),(side*(.112+k*.009),1.455,.063-k*.016),(side*(.105-k*.003),1.407,.060-k*.012),(side*.096,1.355-k*.008,.048),(side*.103,1.315-k*.012,.041),(side*.118,1.306-k*.014,.034)]
@@ -378,7 +398,7 @@ def load_body(id,mats):
  c=rgb(COLORS[id][0]);skin_linear=np.where(c<=.04045,c/12.92,((c+.055)/1.055)**2.4)
  for o in imported:
   o.data.transform(o.matrix_world.copy());o.parent=None;o.matrix_world=Matrix.Identity(4)
-  if all(.62<G(v.co).y<.81 and abs(G(v.co).x)>.12 for v in o.data.vertices):bpy.data.objects.remove(o,do_unlink=True);continue
+  if all(.62<G(v.co).y<.82 and abs(G(v.co).x)>.12 for v in o.data.vertices):bpy.data.objects.remove(o,do_unlink=True);continue
   layer=o.data.uv_layers.active or o.data.uv_layers.new(name='UVMap');skin=False;metallic=False
   for poly in o.data.polygons:
    old=o.data.materials[poly.material_index];index=old_mats.index(old);p=old.node_tree.nodes.get('Principled BSDF');color=np.array(old.diffuse_color[:3]);is_skin=np.max(abs(color-skin_linear))<.035 and not p.inputs['Base Color'].is_linked
@@ -391,6 +411,13 @@ def load_body(id,mats):
   if id in ('noah','jules'):
    for v in o.data.vertices:
     p=G(v.co);p.x*=1-.12*smooth(.88,1.20,p.y);v.co=P(p)
+  elif o.get('region')!='arm':
+   # Calmer hip and seat silhouette; waist, thighs and feet stay as authored.
+   for v in o.data.vertices:
+    p=G(v.co);band=math.exp(-((p.y-.81)/.075)**2)
+    p.x*=1-.045*band
+    if p.z<0:p.z*=1-.13*band
+    v.co=P(p)
   bm=bmesh.new();bm.from_mesh(o.data);bmesh.ops.remove_doubles(bm,verts=bm.verts,dist=.000001);bmesh.ops.recalc_face_normals(bm,faces=bm.faces);bm.to_mesh(o.data);bm.free()
   if len(o.data.polygons)>100:
    bpy.context.view_layer.objects.active=o;dec=o.modifiers.new('Game retopology','DECIMATE');dec.ratio=.32;dec.use_collapse_triangulate=True;bpy.ops.object.modifier_apply(modifier=dec.name)
@@ -399,14 +426,26 @@ def load_body(id,mats):
   if o.type!='MESH':bpy.data.objects.remove(o,do_unlink=True)
 
 def author_hands(id,mats,bones):
- wide=1.34 if id in ('noah','jules') else 1
+ # Relaxed rest pose: the palm faces the thigh, the index finger and thumb lead
+ # at the front and the fingers curl slightly toward the palm. Bind-space +x is
+ # the character's left side, so each hand keeps the correct chirality.
+ k=1.12
  for side,tag in [(-1,'L'),(1,'R')]:
-  x=side*(.180 if id in ('noah','jules') else .191);palm=ellipsoid('Palm.'+tag,(x,.764,.032),(.020,.036,.015),mats['skin'],20,16);palm['bone']='hand.'+tag
-  for finger,length in enumerate([.055,.062,.059,.047]):
-   fx=x+side*(finger-1.5)*.010;start=(fx,.742,.033);mid=(fx+side*.001,.742-length*.54,.039);end=(fx+side*.002,.742-length,.043);name=f'finger{finger}.{tag}';bones[name]=(start,mid,'hand.'+tag);bones[name+'Tip']=(mid,end,name)
-   f=lock('Finger',[start,mid,end],.0052,.005,mats['skin'],14,8,taper=False);f['finger']=name
-  start=(x-side*.016,.772,.035);mid=(x-side*.030,.751,.046);end=(x-side*.026,.731,.050);name='thumb.'+tag;bones[name]=(start,mid,'hand.'+tag);bones[name+'Tip']=(mid,end,name)
-  f=lock('Thumb',[start,mid,end],.007,.006,mats['skin'],14,8,taper=False);f['finger']=name
+  x=side*(.180 if id in ('noah','jules') else .191);cz=.030
+  palm=ellipsoid('Palm.'+tag,(x-side*.001,.761,cz),(.0115*k*.8,.037*k*.92,.0205*k*1.05),mats['skin'],20,16);palm['bone']='hand.'+tag
+  # Distal rings form a knuckle shelf; elliptical taper left outer finger roots detached.
+  for v in palm.data.vertices:
+   p=G(v.co);d=.761-p.y;fit=1+.55*smooth(.006,.025,d)*(1-smooth(.033,.039,d));p.x=x-side*.001+(p.x-(x-side*.001))*fit;p.z=.030+(p.z-.030)*fit;v.co=P(p)
+  for finger,length in enumerate([.053,.059,.056,.045]):
+   length*=k;fz=cz+(1.5-finger)*.0098*k;fx=x-side*.0005*abs(finger-1.5);top=.761-.030*k
+   start=(fx,top,fz);mid=(fx-side*.0035,top-length*.54,fz+.0006*(1.5-finger));end=(fx-side*.0095,top-length,fz+.0012*(1.5-finger))
+   name=f'finger{finger}.{tag}';bones[name]=(start,mid,'hand.'+tag);bones[name+'Tip']=(mid,end,name)
+   f=lock('Finger',[start,mid,end],.0058*k,.0054*k,mats['skin'],14,8,taper=False);f['finger']=name
+   points=[G(v.co) for v in f.data.vertices];ymin=min(p.y for p in points);ends=[p for p in points if p.y<ymin+.003];tip_cx=sum(p.x for p in ends)/len(ends);tip_cz=sum(p.z for p in ends)/len(ends)
+   for v,p in zip(f.data.vertices,points):
+    taper=.55+.45*smooth(ymin,ymin+.011,p.y);p.x=tip_cx+(p.x-tip_cx)*taper;p.z=tip_cz+(p.z-tip_cz)*taper;v.co=P(p)
+  start=(x-side*.004,.771,cz+.017);mid=(x-side*.009,.751,cz+.030);end=(x-side*.012,.733,cz+.034);name='thumb.'+tag;bones[name]=(start,mid,'hand.'+tag);bones[name+'Tip']=(mid,end,name)
+  f=lock('Thumb',[start,mid,end],.0078*k,.0068*k,mats['skin'],14,8,taper=False);f['finger']=name
 
 def rig_definition(id):
  wide=1.34 if id in ('noah','jules') else 1
@@ -431,12 +470,19 @@ def bind_rig(id,bones):
    elif o.get('finger'):
     name=o['finger'];start,mid,_=bones[name];tip=1-smooth(mid[1]-.008,mid[1]+.008,y);weights={name:1-tip,name+'Tip':tip}
    elif o.get('region')=='arm':
-    arm=1-smooth(.985,1.085,y);root=smooth(1.18,1.27,y)*(1-smooth(.12,.18,abs(x)));weights={'lower.'+tag:arm*(1-root),'upper.'+tag:(1-arm)*(1-root),'chest':root}
+    arm=1-smooth(.985,1.085,y);root=smooth(1.18,1.27,y)*(1-smooth(.12,.18,abs(x)))
+    # Sleeve loft begins inside the chest; keep that buried tail attached when waving.
+    if id!='noah' and y>1.13:root=max(root,1-smooth(.085,.12,abs(x)))
+    hand=1-smooth(.785,.825,y)
+    weights={'hand.'+tag:arm*(1-root)*hand,'lower.'+tag:arm*(1-root)*(1-hand),'upper.'+tag:(1-arm)*(1-root),'chest':root}
    elif o.get('region')=='shoe':weights={'foot.'+tag:1}
    elif y<.88:
-    if y>.69:pelvis=smooth(.74,.88,y);weights={'thigh.'+tag:1-pelvis,'hips':pelvis}
+    if y>.66:
+     pelvis=smooth(.74,.88,y);right=smooth(-.048,.048,x);weights={'thigh.L':(1-pelvis)*(1-right),'thigh.R':(1-pelvis)*right,'hips':pelvis}
     elif y<.14:shin=smooth(.06,.14,y);weights={'foot.'+tag:1-shin,'shin.'+tag:shin}
     else:thigh=smooth(.36,.48,y);weights={'shin.'+tag:1-thigh,'thigh.'+tag:thigh}
+   elif y<1.0:
+    spine=smooth(.88,1.0,y);chest=smooth(.94,1.2,y);weights={'hips':1-spine,'spine':spine*(1-chest),'chest':spine*chest}
    elif y>1.29:weights={'neck':1}
    else:chest=smooth(.94,1.2,y);weights={'spine':1-chest,'chest':chest}
    for name,w in weights.items():
@@ -457,7 +503,7 @@ def build(id):
  bpy.ops.wm.read_factory_settings(use_empty=True)
  skin=material('Skin',(1,1,1),.67,texture=face_texture(id));hair=material('Hair',(1,1,1),.43,texture=hair_texture(id));eye=material('Eyes',(1,1,1),.16,texture=eye_texture(id));eye.node_tree.nodes.get('Principled BSDF').inputs['Coat Weight'].default_value=.45
  surface_detail(hair,'hair')
- skin_shader=skin.node_tree.nodes.get('Principled BSDF');skin_shader.inputs['Sheen Weight'].default_value=.08;skin_shader.inputs['Sheen Color'].default_value=(.85,.45,.30,1);skin_shader.inputs['Sheen Roughness'].default_value=.7
+ skin_shader=skin.node_tree.nodes.get('Principled BSDF');skin_shader.inputs['Sheen Weight'].default_value=.08;skin_shader.inputs['Sheen Tint' if 'Sheen Tint' in skin_shader.inputs else 'Sheen Color'].default_value=(.85,.45,.30,1);skin_shader.inputs['Sheen Roughness'].default_value=.7
  mats={'skin':skin,'hair':hair,'eye':eye};load_body(id,mats)
  if id=='noah':
   sys.path.insert(0,str(ROOT/'tools'));from noah_garments import refine_noah_clothes

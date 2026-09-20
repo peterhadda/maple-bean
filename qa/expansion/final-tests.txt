@@ -1,0 +1,78 @@
+✔ blocked actors resolve false without teleporting, and normal routes still arrive (14.8315ms)
+✔ seat is reserved while approaching and released on blocked failure (2.4505ms)
+✔ feet stay on the floor when seated, and planted steps do not penetrate it (21.6219ms)
+✔ low fingers follow the arm instead of leg motion, and poses never accumulate drift (7.1264ms)
+✔ eyeballs and highlights close with each eyelid without changing neutral eye geometry (97.8716ms)
+✔ expanded café destinations are reachable without crossing furniture (762.5407ms)
+✔ local social playtest validates chat, names and seat reservations (448.3909ms)
+✔ maya: authored character assets meet the runtime budgets (204.3598ms)
+✔ claire: authored character assets meet the runtime budgets (128.8604ms)
+✔ mara: authored character assets meet the runtime budgets (118.7913ms)
+✔ jules: authored character assets meet the runtime budgets (73.3397ms)
+✔ noah: authored character assets meet the runtime budgets (76.4617ms)
+Creator profile validation and ownership checks passed.
+✔ tests\creator.test.mjs (2111.8949ms)
+✔ completed rewards are finite, replay-safe and survive a saved reload (11.3078ms)
+✔ focus timer counts down, pauses, and finishes at zero (3.4305ms)
+✔ remaining time and minutes format for the countdown and stats display (0.4993ms)
+✔ session stats accumulate per day and track a daily streak (46.051ms)
+✔ display view zeroes today after midnight without mutating storage (0.7615ms)
+✔ study rewards only completed, real sessions and build streaks (5.6075ms)
+✔ mini-game and activity rewards resist farming (5.3536ms)
+✔ relationships progress with cooldowns and gate the optional crush (3.5064ms)
+✔ wardrobe purchases persist ownership and equip only owned items (1.6309ms)
+✔ study choreography is a logical, deterministic sequence (2.2905ms)
+✔ XO detects wins and the regular never misses a forced block at full skill (18.3306ms)
+✔ memory pairs score, misses pass the turn, the regular uses what it saw (2.4786ms)
+✔ snake grows on beans, ignores reversals and ends on walls (4.3784ms)
+✔ chess generates legal moves (perft), mates and special moves (185.0425ms)
+✔ darts score comes from the landing point (1.7128ms)
+✔ maple eights follows matching, wild eights and drawing (2.8678ms)
+✔ buried sleeve roots stay inside the chest during a raised-arm wave (113.2122ms)
+✔ sipping brings the tilted cup rim to the authored mouth height for both body rigs (12.645ms)
+✔ both hand bases remain valid when palm and fingers are parallel (1.192ms)
+✔ all cast wrists turn smoothly between opposing activity poses and darts clear the face (294.7031ms)
+✔ open finger roots overlap the tapered palm instead of floating below it (2.5429ms)
+✔ typing fingertips stay above a desk through the tap cycle (47.5271ms)
+✔ contextual verbs cover every station kind, with a safe fallback (2.0735ms)
+✔ browse lines are non-empty and reproducible with a given rng (0.6931ms)
+✔ purchase, ownership, funds and three sips (4.9992ms)
+✔ staggered customers order, sit, drink, leave and return without crossing furniture (526.0253ms)
+✔ sequence game advances only on the correct next step, in order (2.3556ms)
+✔ a finished game ignores further attempts (1.1124ms)
+✔ every registered game has a non-empty, uniquely-keyed step list (0.5987ms)
+✔ music keeps chosen volume across playback/pause and surfaces local decode failures (4.0191ms)
+✔ every category is either playable or has a documented integration note (2.0992ms)
+✔ trackAfter cycles forward and backward, wrapping around, and handles an empty list (0.6538ms)
+✔ movement sweeps furniture instead of tunneling across it on delayed frames (14.6477ms)
+✔ live people stop routes and a blocked walker detours without overlap (10.4941ms)
+✔ every save key is namespaced so it cannot collide with another site (3.8905ms)
+✔ default settings are a complete, valid starting point (8.8223ms)
+✔ blocked chair exit returns to seated without passing through a guest (7.945ms)
+✔ transient chair-exit blocker clears and standing completes naturally (8.1398ms)
+✔ ambient regulars do not slide through people when leaving a chair (4.5108ms)
+✔ a blocked sitting transition returns to its entry and releases the seat (1.6919ms)
+✔ standing during lowering preserves motion continuity and resolves both callers (3.1159ms)
+✔ a blocked ambient chair sidestep releases its reservation and retries a route (11.89ms)
+✔ GPU skin formula reproduces CPU applyPose positions for every region and pose (604.3794ms)
+✔ skin weights are normalised and the shader injection hits every insertion point (4.1598ms)
+✔ social arrivals stay on the public side of the bar and separate overlapping actors (70.9633ms)
+✔ status derivation prioritizes focus, then music, then seat/drink state (2.6357ms)
+✔ every status id used by deriveStatus has display metadata (0.7944ms)
+✔ statusText renders an emoji, label, and optional detail (0.4876ms)
+✔ emote registry is small, unique, and looked up by id (0.4131ms)
+✔ planted foot holds its floor position at NPC and player travel speeds (13.334ms)
+ℹ tests 63
+ℹ suites 0
+ℹ pass 63
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9403.9713
+
+Post-suite targeted validation: actor-routing + seat-collision 9/9 pass after seated/transitioning movement guards; adds1new regression to63-test full run =64distinct currenttests covered.
+Live NPC release: XO launch, blocked Noah exit, life.seat game-xo#1 retained, ctl.seat null, scriptedBy false; browser errors[].
+Eye gaze all5cast: max head-relative center drift7.54e-10m, browser errors[].
+
+Root final full suite after all source changes: 64 tests, 64 pass, 0 fail, 5304.3492ms. Includes newest non-standing movement guard and guarded NPC availability.

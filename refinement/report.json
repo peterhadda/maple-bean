@@ -1,0 +1,78 @@
+[
+  {
+    "id": "maya",
+    "clothing": {
+      "character": "maya",
+      "recolored_polygons": 0,
+      "height_m": 1.65,
+      "bind_space_changed": false
+    },
+    "hands": {
+      "nails": 10,
+      "added_triangles": 1000
+    },
+    "height_scale": 0.9536288987743539
+  },
+  {
+    "id": "claire",
+    "clothing": {
+      "character": "claire",
+      "recolored_polygons": 1081,
+      "height_m": 1.64,
+      "bind_space_changed": false
+    },
+    "hands": {
+      "nails": 10,
+      "added_triangles": 1000
+    },
+    "height_scale": 0.9911182205106229
+  },
+  {
+    "id": "noah",
+    "clothing": {
+      "character": "noah",
+      "recolored_polygons": 11024,
+      "height_m": 1.78,
+      "bind_space_changed": false
+    },
+    "hands": {
+      "nails": 10,
+      "added_triangles": 1000
+    },
+    "height_scale": 1.0735876295997369
+  },
+  {
+    "id": "mara",
+    "clothing": {
+      "character": "mara",
+      "recolored_polygons": 4743,
+      "height_m": 1.66,
+      "bind_space_changed": false
+    },
+    "hands": {
+      "nails": 10,
+      "added_triangles": 1000
+    },
+    "height_scale": 1.0032789589839335
+  },
+  {
+    "id": "jules",
+    "clothing": {
+      "character": "jules",
+      "recolored_polygons": 8910,
+      "height_m": 1.76,
+      "bind_space_changed": false
+    },
+    "hands": {
+      "nails": 10,
+      "added_triangles": 1000
+    },
+    "height_scale": 1.056728193332216
+  },
+  {
+    "environment": {
+      "layout_preserved": true,
+      "plants_preserved_from_runtime": true
+    }
+  }
+]

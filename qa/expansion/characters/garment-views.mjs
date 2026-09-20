@@ -1,0 +1,1 @@
+import v from './body-views.mjs';import b from './blink-views.mjs';export default [...v.filter(s=>['_setup','maya-wave','maya-stand','jules-wave'].includes(s.name)),...b.filter(s=>s.name==='noah-blink-0')];

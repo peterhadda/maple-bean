@@ -1,0 +1,57 @@
+14:06:56 | INFO: Data are loaded, start creating Blender stuff
+14:06:56 | INFO: Blender create Mesh node Mesh_35
+14:06:56 | INFO: Blender create Mesh node Upper lash
+14:06:56 | INFO: Blender create Mesh node Face
+14:06:56 | INFO: Blender create Mesh node Eye.L
+14:06:56 | INFO: Blender create Mesh node Hair primary mass
+14:06:57 | INFO: Blender create Mesh node maya nail finger0.LTip
+14:06:57 | INFO: Blender create Mesh node Mesh_22
+14:06:57 | INFO: Blender create Mesh node Mesh_19
+14:06:57 | INFO: glTF import finished in 1.44s
+14:06:57 | INFO: Data are loaded, start creating Blender stuff
+14:06:57 | INFO: Blender create Mesh node Mesh_34
+14:06:57 | INFO: Blender create Mesh node claire nail finger0.LTip
+14:06:57 | INFO: Blender create Mesh node Upper lash
+14:06:58 | INFO: Blender create Mesh node Face
+14:06:58 | INFO: Blender create Mesh node Eye.L
+14:06:58 | INFO: Blender create Mesh node Claire crown foundation
+14:06:58 | INFO: Blender create Mesh node Mesh_21
+14:06:58 | INFO: Blender create Mesh node Mesh_18
+14:06:59 | INFO: glTF import finished in 1.45s
+14:06:59 | INFO: Data are loaded, start creating Blender stuff
+14:06:59 | INFO: Blender create Mesh node Mesh_34
+14:06:59 | INFO: Blender create Mesh node Upper lash
+14:06:59 | INFO: Blender create Mesh node Face
+14:07:00 | INFO: Blender create Mesh node Eye.L
+14:07:00 | INFO: Blender create Mesh node Noah continuous tousled crown
+14:07:00 | INFO: Blender create Mesh node noah nail finger0.LTip
+14:07:00 | INFO: Blender create Mesh node Mesh_21
+14:07:00 | INFO: Blender create Mesh node Mesh_18
+14:07:01 | INFO: glTF import finished in 1.89s
+14:07:01 | INFO: Data are loaded, start creating Blender stuff
+14:07:01 | INFO: Blender create Mesh node Mesh_35
+14:07:01 | INFO: Blender create Mesh node Upper lash
+14:07:01 | INFO: Blender create Mesh node Face
+14:07:02 | INFO: Blender create Mesh node Eye.L
+14:07:02 | INFO: Blender create Mesh node Claire continuous primary wave
+14:07:02 | INFO: Blender create Mesh node mara nail finger0.LTip
+14:07:02 | INFO: Blender create Mesh node Mesh_22
+14:07:02 | INFO: Blender create Mesh node Mesh_19
+14:07:03 | INFO: glTF import finished in 1.69s
+14:07:03 | INFO: Data are loaded, start creating Blender stuff
+14:07:03 | INFO: Blender create Mesh node Mesh_34
+14:07:03 | INFO: Blender create Mesh node Upper lash
+14:07:03 | INFO: Blender create Mesh node Face
+14:07:03 | INFO: Blender create Mesh node Eye.L
+14:07:03 | INFO: Blender create Mesh node Noah broad seated forehead sweep
+14:07:04 | INFO: Blender create Mesh node jules nail finger0.LTip
+14:07:04 | INFO: Blender create Mesh node Mesh_21
+14:07:04 | INFO: Blender create Mesh node Mesh_18
+14:07:04 | INFO: glTF import finished in 1.69s
+C:\Users\Aymen\Documents\ChatGPT\coffeshop\tools\export_refined_characters.py:103: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  scene.world.use_nodes = True
+01:46.750  render           | Saved: 'C:\Users\Aymen\Documents\ChatGPT\coffeshop\refinement\characters\lineup.png'
+Info: Saved as "lineup.blend"
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

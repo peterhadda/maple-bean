@@ -1,0 +1,1 @@
+import v from './male-straight-views.mjs';export default [...v,{name:'evening-noah',run:`document.getElementById('lighting').value='evening';document.getElementById('lighting').dispatchEvent(new Event('change'));for(const a of Object.values(qaCast))a.group.visible=false;qaShow('noah',-2,1);qaRender(-2,1.43,2.05,-2,1.40,1,38);`}];

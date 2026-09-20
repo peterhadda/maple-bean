@@ -1,0 +1,1 @@
+import v from './male-straight-views.mjs';const steps=v.filter(s=>s.name==='_setup'||s.name.endsWith('-walk'));for(const id of ['jules','noah'])steps.push({name:id+'-wave',run:`for(const a of Object.values(qaCast))a.group.visible=false;qaShow('${id}',-2,1,0,{wave:true});qaRender(-2,1.05,3.5,-2,.88,1,42);`});export default steps;

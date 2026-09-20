@@ -1,4 +1,6 @@
 import { Matrix4, Vector3 } from 'three';
+export const WALK_STRIDE=.23;
+const stepOffset=p=>{p=((p%(Math.PI*2))+Math.PI*2)%(Math.PI*2);return p<=Math.PI?-Math.cos(p):3-2*p/Math.PI;};
 export const smooth=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
 const translation=(x,y,z)=>new Matrix4().makeTranslation(x,y,z);
 function pivot(rotation,x,y,z){return translation(x,y,z).multiply(rotation).multiply(translation(-x,-y,-z));}
@@ -6,9 +8,9 @@ function pivot(rotation,x,y,z){return translation(x,y,z).multiply(rotation).mult
 // Bind-space transforms shared by Maya and every cafe resident. Foot targets
 // drive a two-segment leg; arms have their own shoulder and elbow pivots.
 export function poseMatrices({sit=0,walk=0,wave=0,sip=0,study=0,phase=0,time=0,seatHeight=.54,male=false}={}){
-  const stride=.23*walk*(1-sit);
+  const stride=WALK_STRIDE*walk*(1-sit);
   // Rise over the planted foot instead of holding a crouch for the whole step.
-  const reach=Math.cos(phase)*stride;
+  const reach=Math.max(Math.abs(stepOffset(phase)),Math.abs(stepOffset(phase+Math.PI)))*stride;
   const drop=(.70-seatHeight)*sit + (.006+.76-Math.sqrt(.76**2-reach**2))*walk*(1-sit);
   const root=translation(0,-drop,0),legs=[],arms=[];
   const gait=walk*(1-sit);
@@ -18,7 +20,7 @@ export function poseMatrices({sit=0,walk=0,wave=0,sip=0,study=0,phase=0,time=0,s
     0,.8-drop,0));
   for(const side of [-1,1]){
     const p=phase+(side<0?Math.PI:0);
-    const z=.38*sit - Math.cos(p)*stride;
+    const z=.38*sit + stepOffset(p)*stride;
     const footY=.04+drop+Math.max(0,Math.sin(p))*.055*walk*(1-sit);
     const dy=.8-footY, distance=Math.min(.759999,Math.hypot(dy,z));
     const bend=Math.acos(Math.min(1,distance/.76));

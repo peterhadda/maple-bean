@@ -1,0 +1,311 @@
+15:01:34 | INFO: Data are loaded, start creating Blender stuff
+15:01:35 | INFO: Blender create Mesh node Mesh_35
+15:01:35 | INFO: Blender create Mesh node Upper lash
+15:01:35 | INFO: Blender create Mesh node Face
+15:01:35 | INFO: Blender create Mesh node Eye.L
+15:01:35 | INFO: Blender create Mesh node Hair primary mass
+15:01:36 | INFO: Blender create Mesh node Mesh_22
+15:01:36 | INFO: Blender create Mesh node Mesh_19
+15:01:36 | INFO: glTF import finished in 1.88s
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+15:01:42 | INFO: Starting glTF 2.0 export
+15:01:43 | INFO: Extracting primitive: Mesh_35
+15:02:00 | INFO: Primitives created: 1
+15:02:00 | INFO: Extracting primitive: Upper lash
+15:02:01 | INFO: Primitives created: 1
+15:02:01 | INFO: Extracting primitive: Face
+15:02:02 | INFO: Primitives created: 1
+15:02:02 | INFO: Extracting primitive: Eye.L
+15:02:03 | INFO: Primitives created: 1
+15:02:03 | INFO: Extracting primitive: Hair primary mass
+15:02:03 | INFO: Primitives created: 1
+15:02:03 | INFO: Extracting primitive: maya nail finger0.LTip
+15:02:03 | INFO: Primitives created: 1
+15:02:03 | INFO: Extracting primitive: Mesh_19
+15:02:04 | INFO: Primitives created: 1
+15:02:05 | INFO: Finished glTF 2.0 export in 22.830982446670532 s
+
+Info: Saved as "maya.blend"
+15:02:07 | INFO: Data are loaded, start creating Blender stuff
+15:02:07 | INFO: Blender create Mesh node Mesh_35
+15:02:07 | INFO: Blender create Mesh node Upper lash
+15:02:07 | INFO: Blender create Mesh node Face
+15:02:07 | INFO: Blender create Mesh node Eye.L
+15:02:07 | INFO: Blender create Mesh node Hair primary mass
+15:02:07 | INFO: Blender create Mesh node Mesh_22
+15:02:07 | INFO: Blender create Mesh node Mesh_19
+15:02:07 | INFO: glTF import finished in 0.52s
+Info: Applied modifier was not first, result may not be as expected
+15:02:08 | INFO: Starting glTF 2.0 export
+15:02:08 | INFO: Extracting primitive: Mesh_35
+15:02:09 | INFO: Primitives created: 1
+15:02:09 | INFO: Extracting primitive: Eye.L
+15:02:09 | INFO: Primitives created: 1
+15:02:09 | WARNING: Mesh Upper lash is not valid, and may be exported wrongly
+15:02:09 | INFO: Extracting primitive: Upper lash
+15:02:09 | INFO: Primitives created: 1
+15:02:09 | INFO: Extracting primitive: Face
+15:02:09 | INFO: Primitives created: 1
+15:02:09 | INFO: Extracting primitive: Mesh_19
+15:02:09 | INFO: Primitives created: 1
+15:02:11 | INFO: Finished glTF 2.0 export in 2.27838134765625 s
+
+15:02:11 | INFO: Data are loaded, start creating Blender stuff
+15:02:11 | INFO: Blender create Mesh node Mesh_34
+15:02:11 | INFO: Blender create Mesh node Upper lash
+15:02:12 | INFO: Blender create Mesh node Face
+15:02:12 | INFO: Blender create Mesh node Eye.L
+15:02:12 | INFO: Blender create Mesh node Claire crown foundation
+15:02:12 | INFO: Blender create Mesh node Mesh_21
+15:02:13 | INFO: Blender create Mesh node Mesh_18
+15:02:13 | INFO: glTF import finished in 1.84s
+15:02:14 | INFO: Starting glTF 2.0 export
+15:02:14 | INFO: Extracting primitive: Mesh_34
+15:02:14 | INFO: Primitives created: 1
+15:02:14 | INFO: Extracting primitive: Upper lash
+15:02:15 | INFO: Primitives created: 1
+15:02:15 | INFO: Extracting primitive: Face
+15:02:17 | INFO: Primitives created: 1
+15:02:17 | INFO: Extracting primitive: Eye.L
+15:02:18 | INFO: Primitives created: 1
+15:02:18 | INFO: Extracting primitive: Claire crown foundation
+15:02:18 | INFO: Primitives created: 1
+15:02:18 | INFO: Extracting primitive: claire nail finger0.LTip
+15:02:18 | INFO: Primitives created: 1
+15:02:18 | INFO: Extracting primitive: Mesh_18
+15:02:19 | INFO: Primitives created: 2
+15:02:19 | INFO: Finished glTF 2.0 export in 5.036731481552124 s
+
+Info: Saved as "claire.blend"
+15:02:21 | INFO: Data are loaded, start creating Blender stuff
+15:02:21 | INFO: Blender create Mesh node Mesh_34
+15:02:21 | INFO: Blender create Mesh node Upper lash
+15:02:21 | INFO: Blender create Mesh node Face
+15:02:22 | INFO: Blender create Mesh node Eye.L
+15:02:22 | INFO: Blender create Mesh node Claire crown foundation
+15:02:22 | INFO: Blender create Mesh node Mesh_21
+15:02:22 | INFO: Blender create Mesh node Mesh_18
+15:02:22 | INFO: glTF import finished in 1.07s
+Info: Applied modifier was not first, result may not be as expected
+15:02:24 | INFO: Starting glTF 2.0 export
+15:02:24 | INFO: Extracting primitive: Mesh_34
+15:02:24 | INFO: Primitives created: 1
+15:02:24 | INFO: Extracting primitive: Eye.L
+15:02:24 | INFO: Primitives created: 1
+15:02:24 | WARNING: Mesh Upper lash is not valid, and may be exported wrongly
+15:02:24 | INFO: Extracting primitive: Upper lash
+15:02:24 | INFO: Primitives created: 1
+15:02:24 | INFO: Extracting primitive: claire nail finger0.LTip
+15:02:24 | INFO: Primitives created: 1
+15:02:24 | INFO: Extracting primitive: Mesh_18
+15:02:25 | INFO: Primitives created: 2
+15:02:25 | INFO: Finished glTF 2.0 export in 1.3350651264190674 s
+
+15:02:29 | INFO: Data are loaded, start creating Blender stuff
+15:02:29 | INFO: Blender create Mesh node Mesh_34
+15:02:29 | INFO: Blender create Mesh node Upper lash
+15:02:29 | INFO: Blender create Mesh node Face
+15:02:30 | INFO: Blender create Mesh node Eye.L
+15:02:30 | INFO: Blender create Mesh node Noah continuous tousled crown
+15:02:30 | INFO: Blender create Mesh node Mesh_21
+15:02:30 | INFO: Blender create Mesh node Mesh_18
+15:02:30 | INFO: glTF import finished in 1.22s
+15:02:32 | INFO: Starting glTF 2.0 export
+15:02:32 | INFO: Extracting primitive: Mesh_34
+15:02:32 | INFO: Primitives created: 1
+15:02:32 | INFO: Extracting primitive: Upper lash
+15:02:32 | INFO: Primitives created: 1
+15:02:32 | INFO: Extracting primitive: Face
+15:02:34 | INFO: Primitives created: 1
+15:02:34 | INFO: Extracting primitive: Eye.L
+15:02:34 | INFO: Primitives created: 1
+15:02:34 | INFO: Extracting primitive: Noah continuous tousled crown
+15:02:34 | INFO: Primitives created: 1
+15:02:34 | INFO: Extracting primitive: noah nail finger0.LTip
+15:02:34 | INFO: Primitives created: 1
+15:02:34 | INFO: Extracting primitive: Mesh_18
+15:02:35 | WARNING: The active Vertex Color will not be exported, as it is not used in the node tree of the material
+15:02:35 | INFO: Primitives created: 3
+15:02:36 | INFO: Finished glTF 2.0 export in 4.185716152191162 s
+
+Info: Saved as "noah.blend"
+15:02:41 | INFO: Data are loaded, start creating Blender stuff
+15:02:41 | INFO: Blender create Mesh node Mesh_34
+15:02:42 | INFO: Blender create Mesh node Upper lash
+15:02:42 | INFO: Blender create Mesh node Face
+15:02:42 | INFO: Blender create Mesh node Eye.L
+15:02:42 | INFO: Blender create Mesh node Noah continuous tousled crown
+15:02:42 | INFO: Blender create Mesh node Mesh_21
+15:02:42 | INFO: Blender create Mesh node Mesh_18
+15:02:42 | INFO: glTF import finished in 0.54s
+Info: Applied modifier was not first, result may not be as expected
+15:02:43 | INFO: Starting glTF 2.0 export
+15:02:43 | INFO: Extracting primitive: Mesh_34
+15:02:43 | INFO: Primitives created: 1
+15:02:43 | INFO: Extracting primitive: Eye.L
+15:02:44 | INFO: Primitives created: 1
+15:02:44 | INFO: Extracting primitive: Upper lash
+15:02:44 | INFO: Primitives created: 1
+15:02:44 | INFO: Extracting primitive: Face
+15:02:44 | INFO: Primitives created: 1
+15:02:44 | INFO: Extracting primitive: Mesh_18
+15:02:44 | WARNING: The active Vertex Color will not be exported, as it is not used in the node tree of the material
+15:02:44 | INFO: Primitives created: 3
+15:02:47 | INFO: Finished glTF 2.0 export in 4.142220497131348 s
+
+15:02:48 | INFO: Data are loaded, start creating Blender stuff
+15:02:48 | INFO: Blender create Mesh node Mesh_35
+15:02:48 | INFO: Blender create Mesh node Upper lash
+15:02:48 | INFO: Blender create Mesh node Face
+15:02:48 | INFO: Blender create Mesh node Eye.L
+15:02:49 | INFO: Blender create Mesh node Hair primary mass
+15:02:49 | INFO: Blender create Mesh node Mesh_22
+15:02:49 | INFO: Blender create Mesh node Mesh_19
+15:02:49 | INFO: glTF import finished in 1.42s
+15:02:52 | INFO: Starting glTF 2.0 export
+15:02:52 | INFO: Extracting primitive: Mesh_35
+15:02:52 | INFO: Primitives created: 1
+15:02:52 | INFO: Extracting primitive: Upper lash
+15:02:52 | INFO: Primitives created: 1
+15:02:52 | INFO: Extracting primitive: Face
+15:02:54 | INFO: Primitives created: 1
+15:02:54 | INFO: Extracting primitive: Eye.L
+15:02:54 | INFO: Primitives created: 1
+15:02:54 | INFO: Extracting primitive: Claire continuous primary wave
+15:02:54 | INFO: Primitives created: 1
+15:02:54 | INFO: Extracting primitive: mara nail finger0.LTip
+15:02:55 | INFO: Primitives created: 1
+15:02:55 | INFO: Extracting primitive: Mesh_19
+15:02:55 | INFO: Primitives created: 2
+15:02:56 | INFO: Finished glTF 2.0 export in 4.459219217300415 s
+
+Info: Saved as "mara.blend"
+15:03:00 | INFO: Data are loaded, start creating Blender stuff
+15:03:00 | INFO: Blender create Mesh node Mesh_35
+15:03:00 | INFO: Blender create Mesh node Upper lash
+15:03:00 | INFO: Blender create Mesh node Face
+15:03:00 | INFO: Blender create Mesh node Eye.L
+15:03:00 | INFO: Blender create Mesh node Hair primary mass
+15:03:00 | INFO: Blender create Mesh node Mesh_22
+15:03:00 | INFO: Blender create Mesh node Mesh_19
+15:03:00 | INFO: glTF import finished in 0.67s
+Info: Applied modifier was not first, result may not be as expected
+15:03:03 | INFO: Starting glTF 2.0 export
+15:03:03 | INFO: Extracting primitive: Mesh_35
+15:03:03 | INFO: Primitives created: 1
+15:03:03 | INFO: Extracting primitive: Eye.L
+15:03:03 | INFO: Primitives created: 1
+15:03:03 | INFO: Extracting primitive: Claire continuous primary wave
+15:03:03 | INFO: Primitives created: 1
+15:03:03 | INFO: Extracting primitive: Face
+15:03:03 | INFO: Primitives created: 1
+15:03:03 | INFO: Extracting primitive: Mesh_19
+15:03:03 | INFO: Primitives created: 2
+15:03:04 | INFO: Finished glTF 2.0 export in 1.189497470855713 s
+
+15:03:04 | INFO: Data are loaded, start creating Blender stuff
+15:03:04 | INFO: Blender create Mesh node Mesh_34
+15:03:04 | INFO: Blender create Mesh node Upper lash
+15:03:04 | INFO: Blender create Mesh node Face
+15:03:05 | INFO: Blender create Mesh node Eye.L
+15:03:05 | INFO: Blender create Mesh node Jules tapered crop
+15:03:05 | INFO: Blender create Mesh node Mesh_21
+15:03:05 | INFO: Blender create Mesh node Mesh_18
+15:03:05 | INFO: glTF import finished in 0.97s
+Info: Applied modifier was not first, result may not be as expected
+15:03:17 | INFO: Starting glTF 2.0 export
+15:03:17 | INFO: Extracting primitive: Mesh_34
+15:03:17 | INFO: Primitives created: 1
+15:03:17 | INFO: Extracting primitive: Upper lash
+15:03:17 | INFO: Primitives created: 1
+15:03:17 | INFO: Extracting primitive: Face
+15:03:19 | INFO: Primitives created: 1
+15:03:19 | INFO: Extracting primitive: Eye.L
+15:03:19 | INFO: Primitives created: 1
+15:03:19 | INFO: Extracting primitive: Noah broad seated forehead sweep
+15:03:19 | INFO: Primitives created: 1
+15:03:19 | INFO: Extracting primitive: jules nail finger0.LTip
+15:03:19 | INFO: Primitives created: 1
+15:03:19 | INFO: Extracting primitive: Mesh_18
+15:03:20 | WARNING: The active Vertex Color will not be exported, as it is not used in the node tree of the material
+15:03:20 | INFO: Primitives created: 3
+15:03:20 | INFO: Finished glTF 2.0 export in 3.165229558944702 s
+
+Info: Saved as "jules.blend"
+15:03:21 | INFO: Data are loaded, start creating Blender stuff
+15:03:21 | INFO: Blender create Mesh node Mesh_34
+15:03:21 | INFO: Blender create Mesh node Upper lash
+15:03:21 | INFO: Blender create Mesh node Face
+15:03:21 | INFO: Blender create Mesh node Eye.L
+15:03:21 | INFO: Blender create Mesh node Jules tapered crop
+15:03:21 | INFO: Blender create Mesh node Mesh_21
+15:03:22 | INFO: Blender create Mesh node Mesh_18
+15:03:22 | INFO: glTF import finished in 0.45s
+Info: Applied modifier was not first, result may not be as expected
+15:03:33 | INFO: Starting glTF 2.0 export
+15:03:33 | INFO: Extracting primitive: Mesh_34
+15:03:33 | INFO: Primitives created: 1
+15:03:33 | INFO: Extracting primitive: Eye.L
+15:03:33 | INFO: Primitives created: 1
+15:03:33 | INFO: Extracting primitive: Noah broad seated forehead sweep
+15:03:33 | INFO: Primitives created: 1
+15:03:33 | INFO: Extracting primitive: Face
+15:03:34 | INFO: Primitives created: 1
+15:03:34 | INFO: Extracting primitive: Mesh_18
+15:03:34 | WARNING: The active Vertex Color will not be exported, as it is not used in the node tree of the material
+15:03:34 | INFO: Primitives created: 3
+15:03:34 | INFO: Finished glTF 2.0 export in 1.2576508522033691 s
+
+15:03:35 | INFO: Data are loaded, start creating Blender stuff
+15:03:35 | INFO: Blender create Mesh node Mesh_35
+15:03:35 | INFO: Blender create Mesh node Upper lash
+15:03:35 | INFO: Blender create Mesh node Face
+15:03:35 | INFO: Blender create Mesh node Eye.L
+15:03:35 | INFO: Blender create Mesh node Hair primary mass
+15:03:36 | INFO: Blender create Mesh node maya nail finger0.LTip
+15:03:36 | INFO: Blender create Mesh node Mesh_19
+15:03:36 | INFO: glTF import finished in 1.09s
+15:03:36 | INFO: Data are loaded, start creating Blender stuff
+15:03:36 | INFO: Blender create Mesh node Mesh_34
+15:03:36 | INFO: Blender create Mesh node Upper lash
+15:03:36 | INFO: Blender create Mesh node Face
+15:03:37 | INFO: Blender create Mesh node Eye.L
+15:03:37 | INFO: Blender create Mesh node Claire crown foundation
+15:03:37 | INFO: Blender create Mesh node claire nail finger0.LTip
+15:03:37 | INFO: Blender create Mesh node Mesh_18
+15:03:37 | INFO: glTF import finished in 1.16s
+15:03:37 | INFO: Data are loaded, start creating Blender stuff
+15:03:38 | INFO: Blender create Mesh node Mesh_34
+15:03:38 | INFO: Blender create Mesh node Upper lash
+15:03:38 | INFO: Blender create Mesh node Face
+15:03:38 | INFO: Blender create Mesh node Eye.L
+15:03:38 | INFO: Blender create Mesh node Noah continuous tousled crown
+15:03:38 | INFO: Blender create Mesh node noah nail finger0.LTip
+15:03:38 | INFO: Blender create Mesh node Mesh_18
+15:03:39 | INFO: glTF import finished in 1.59s
+15:03:39 | INFO: Data are loaded, start creating Blender stuff
+15:03:39 | INFO: Blender create Mesh node Mesh_35
+15:03:39 | INFO: Blender create Mesh node Upper lash
+15:03:39 | INFO: Blender create Mesh node Face
+15:03:40 | INFO: Blender create Mesh node Eye.L
+15:03:40 | INFO: Blender create Mesh node Claire continuous primary wave
+15:03:40 | INFO: Blender create Mesh node mara nail finger0.LTip
+15:03:40 | INFO: Blender create Mesh node Mesh_19
+15:03:40 | INFO: glTF import finished in 1.13s
+15:03:41 | INFO: Data are loaded, start creating Blender stuff
+15:03:41 | INFO: Blender create Mesh node Mesh_34
+15:03:41 | INFO: Blender create Mesh node Upper lash
+15:03:41 | INFO: Blender create Mesh node Face
+15:03:41 | INFO: Blender create Mesh node Eye.L
+15:03:41 | INFO: Blender create Mesh node Noah broad seated forehead sweep
+15:03:41 | INFO: Blender create Mesh node jules nail finger0.LTip
+15:03:42 | INFO: Blender create Mesh node Mesh_18
+15:03:42 | INFO: glTF import finished in 1.28s
+C:\Users\Aymen\Documents\ChatGPT\coffeshop\tools\export_refined_characters.py:124: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  scene.world.use_nodes = True
+05:16.407  render           | Saved: 'C:\Users\Aymen\Documents\ChatGPT\coffeshop\refinement\characters\lineup.png'
+Info: Saved as "lineup.blend"
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

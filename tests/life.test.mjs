@@ -30,11 +30,12 @@ test('staggered customers order, sit, drink, leave and return without crossing f
     for(const [i,n] of people.entries()){
       updateResident(n,.1,layout,occupied,player);seen[i].add(n.phase);if(n.sipping)seen[i].add('drinking');
       if(n.seat){assert.notEqual(n.seat.id,'sofa');occupied.add(n.seat.id);}
-      if(n.phase!=='seated')assert.ok(isWalkable(n.x,n.z,layout),`${n.id} walked through furniture in ${n.phase}`);
+      if(!['seated','sitting-down','standing-up','sidling','sidling-out'].includes(n.phase))assert.ok(isWalkable(n.x,n.z,layout),`${n.id} walked through furniture in ${n.phase}`);
+      if(n.seat&&n.phase==='sitting-down')assert.ok(Math.hypot(n.x-n.seat.x,n.z-n.seat.z)<=.62,'sits down from beside the chair, not through it');
     }
     const reserved=people.filter(n=>n.seat).map(n=>n.seat.id);assert.equal(new Set(reserved).size,reserved.length,'residents must not share a reserved seat');
   }
-  for(const phases of seen)for(const phase of ['to-counter','ordering','to-seat','seated','drinking','leaving','away'])assert.ok(phases.has(phase),`missing phase ${phase}`);
+  for(const phases of seen)for(const phase of ['to-counter','ordering','to-seat','sidling','sitting-down','seated','drinking','standing-up','sidling-out','leaving','away'])assert.ok(phases.has(phase),`missing phase ${phase}`);
   const n=people[0],before={x:n.x,z:n.z,timer:n.timer};updateResident(n,1,layout,new Set(),player,true);
   assert.deepEqual({x:n.x,z:n.z,timer:n.timer},before,'conversation should pause the routine');
 });

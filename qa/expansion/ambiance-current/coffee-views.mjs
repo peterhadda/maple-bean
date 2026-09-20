@@ -1,0 +1,2 @@
+import views from './views.mjs';
+export default [views[0],{name:'pastries',run:`ambShot('evening',true);cafe.camera.position.set(-.5,1.82,-2.55);cafe.camera.lookAt(-1.9,1.36,-4.8);cafe.renderer.render(cafe.scene,cafe.camera);return {draws:cafe.renderer.info.render.calls,triangles:cafe.renderer.info.render.triangles};`},{name:'espresso',run:`cafe.camera.position.set(-5.65,1.95,-2.85);cafe.camera.lookAt(-6.85,1.3,-4.95);cafe.renderer.render(cafe.scene,cafe.camera);return {draws:cafe.renderer.info.render.calls,triangles:cafe.renderer.info.render.triangles};`}];

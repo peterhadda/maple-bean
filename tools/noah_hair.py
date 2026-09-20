@@ -18,7 +18,7 @@ def author_noah_hair(api):
         # Wide irregular ridges belong to the primary mass, so there are no
         # scalp holes between the separately sculpted locks.
         ridge = (.5 + .5 * math.cos(9 * psi + 1.7 * el)) ** 3
-        return .005 + .010 * top + .009 * ridge * math.cos(el) ** 2
+        return .005 + .009 * top + .006 * ridge * math.cos(el) ** 2
 
     vs, faces, uv = [], [], []
     rows, cols = 25, 72
@@ -63,7 +63,7 @@ def author_noah_hair(api):
             t = j / 7
             el = 1.40 - (.66 + .11 * math.sin(k * 1.9)) * t
             angle = psi - .33 * t + .16 * math.sin(t * math.pi)
-            lift = .001 + .018 * math.sin(t * math.pi) + .004 * t
+            lift = .001 + .012 * math.sin(t * math.pi) + .003 * t
             points.append(scalp(angle, el, lift))
         parts.append(lock('Noah overlapping crown fold', points,
                           .028 + .003 * math.sin(k * 2), .0075, mat, 22, 10))
@@ -80,7 +80,7 @@ def author_noah_hair(api):
                 angle = psi - side * .19 * (1 - t) + side * .07 * math.sin(t * math.pi)
                 el = .91 + .06 * math.sin(k * 1.3) - (.91 - finish) * t
                 lift = volume(angle,el) - .003 + .006 * math.sin(t * math.pi)
-                lift += .004 * math.sin(k * 1.6) * t ** 4
+                lift += .002 * math.sin(k * 1.6) * t ** 4
                 points.append(scalp(angle, el, lift))
             parts.append(lock('Noah tapered side and nape layer', points,
                               .026 + .003 * math.cos(k * 1.7), .0065, mat, 21, 8))
@@ -93,7 +93,7 @@ def author_noah_hair(api):
             t=j/10
             angle=.31+(finish-.31)*t+.11*math.sin(t*math.pi*1.4+k*.3)
             el=1.23-(1.23-elevation)*t
-            lift=volume(angle,el)-.001+.007*math.sin(t*math.pi)
+            lift=volume(angle,el)-.003+.003*math.sin(t*math.pi)
             points.append(scalp(angle,el,lift))
         parts.append(lock('Noah shallow sculpted accent curl',points,.012,.0045,mat,26,10))
     for part in parts:

@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {normalizeProfile,allowedWardrobe,SKINS} from '../systems/creator.js';
+import {defaultWardrobe} from '../shop.js';
+assert.equal(normalizeProfile({base:'unknown',skin:'red',eyes:'url(x)',name:' <Maya>\u0000 '}).name,'Maya');
+assert.deepEqual(normalizeProfile(null),{base:'maya',skin:null,eyes:null,name:''});
+assert.equal(normalizeProfile({base:'jules',skin:SKINS[3]}).base,'jules');
+const w=defaultWardrobe();w.equipped.top='top-maple';
+assert.equal(allowedWardrobe(w).equipped.top,'top-cream');
+assert.equal(allowedWardrobe(w,['top-maple']).equipped.top,'top-maple');
+console.log('Creator profile validation and ownership checks passed.');

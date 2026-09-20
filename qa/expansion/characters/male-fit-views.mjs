@@ -1,0 +1,1 @@
+import v from './cast-views.mjs'; const steps=[v[0]];for(const id of ['jules','noah'])for(const [pose,state]of Object.entries({stand:{},wave:{wave:true},sit:{sitting:true}}))steps.push({name:id+'-'+pose,run:`for(const a of Object.values(qaCast))a.group.visible=false;qaShow('${id}',-2,1,.15,${JSON.stringify(state)});qaRender(-1.7,1.05,3.1,-2,.95,1,45);`});export default steps;
