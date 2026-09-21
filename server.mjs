@@ -7,6 +7,7 @@ import { randomUUID } from 'node:crypto';
 import { isWalkable } from './navigation.js';
 import { STATUS_IDS, EMOTE_IDS } from './social.js';
 import { PERSONAS, NPC_IDS, offlineReply, systemPrompt, cleanHistory, intentOf } from './npc-brain.js';
+import { createStore, checkEmail, checkPassword, checkHandle } from './accounts.mjs';
 import Anthropic from '@anthropic-ai/sdk';
 
 // NPC replies come from Claude when credentials are configured (ANTHROPIC_API_KEY,
@@ -51,13 +52,47 @@ let layout=JSON.parse(await readFile(layoutPath,'utf8')),layoutMtime=(await stat
 setInterval(async()=>{try{const m=(await stat(layoutPath)).mtimeMs;if(m!==layoutMtime){layout=JSON.parse(await readFile(layoutPath,'utf8'));layoutMtime=m;console.log('layout.json reloaded');}}catch{}},2000).unref();
 const peers=new Map(), clients=new Set();
 const port=Number(process.env.PORT||4321), host=process.env.HOST||'127.0.0.1';
+
+// ---------------------------------------------------------------- accounts
+// The service the Figma sign-in journey is designed against. Local only: a
+// JSON file beside the café, never served as a static asset.
+const accounts=await createStore(path.join(root,'.data/accounts.json'));
+const local=['127.0.0.1','::1','localhost'].includes(host);
+// A coarse brake on password guessing: attempts per client address, decaying.
+const attempts=new Map();
+function tooManyAttempts(key){
+  const now=Date.now(),a=attempts.get(key);
+  if(!a||now-a.at>15*60000){attempts.set(key,{n:1,at:now});return false;}
+  a.n++;a.at=now;return a.n>12;
+}
+const forgetAttempts=key=>attempts.delete(key);
+setInterval(()=>{const cut=Date.now()-15*60000;for(const [k,a] of attempts)if(a.at<cut)attempts.delete(k);},60000).unref();
+
+// The look the café renders for a guest. Kept small and validated so one
+// browser can never push arbitrary data into everybody else's scene.
+const HEX=/^#[0-9a-f]{6}$/i;
+const tint=v=>typeof v==='string'&&HEX.test(v)?v.toLowerCase():null;
+const CAST_IDS=['maya','mara','jules','claire','noah'];
+const PROP_IDS=['glasses','beret','leaf-clip','scarf'];
+function cleanAppearance(a){
+  if(!a||typeof a!=='object')return null;
+  return {
+    base:CAST_IDS.includes(a.base)?a.base:'maya',
+    hair:CAST_IDS.includes(a.hair)?a.hair:'maya',
+    skin:tint(a.skin),eyes:tint(a.eyes),hairColor:tint(a.hairColor),
+    top:tint(a.top),bottom:tint(a.bottom),shoes:tint(a.shoes),
+    props:Array.isArray(a.props)?a.props.filter(p=>p&&PROP_IDS.includes(p.prop)).slice(0,4).map(p=>({prop:p.prop,color:tint(p.color)})):[],
+  };
+}
 // Seat ids are station ids, or "stationId#n" for the n-th seat at a game table.
 function seatOf(id){const [sid,n]=String(id||'').split('#');const st=layout.stations.find(s=>s.id===sid&&['seat','read','study','game'].includes(s.kind));return st&&(n!==undefined?st.seats?.[+n]:st.seats?null:st);}
 const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
-const snapshot=()=>[...peers.values()].map(({token,lastChat,lastEmote,lastNpc,lastGroup,joinedAt,...p})=>p);
+// `account` stays server-side: other guests learn that someone is a member,
+// never which account they are.
+const snapshot=()=>[...peers.values()].map(({token,lastChat,lastEmote,lastNpc,lastGroup,lastLook,joinedAt,account,...p})=>p);
 function broadcast(type,data){const event=`event: ${type}\ndata: ${JSON.stringify(data)}\n\n`;for(const c of clients)c.res.write(event);}
-const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.png':'image/png','.svg':'image/svg+xml','.ico':'image/x-icon'};
-const PUBLIC=new Set(['/index.html','/maya.html','/studio.js','/maya-character.js','/app.js','/navigation.js','/animation.js','/characters.js','/cafe-life.js','/effects.js','/interactions.js','/focus.js','/music.js','/minigames.js','/social.js','/save.js','/style.css','/favicon.svg',
+const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.glb':'model/gltf-binary','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ico':'image/x-icon'};
+const PUBLIC=new Set(['/index.html','/login.html','/maya.html','/studio.js','/maya-character.js','/app.js','/navigation.js','/animation.js','/characters.js','/cafe-life.js','/effects.js','/interactions.js','/focus.js','/music.js','/minigames.js','/social.js','/save.js','/style.css','/favicon.svg',
   '/economy.js','/study.js','/relationships.js','/shop.js','/npc-brain.js','/world.js','/hud.js','/activities.js','/camera-director.js','/wardrobe.js','/game-scenes.js','/messenger.js']);
 const server=http.createServer(async(req,res)=>{
   try {
@@ -69,6 +104,78 @@ const server=http.createServer(async(req,res)=>{
       const client={id:p.id,res};clients.add(client);res.write(`event: guests\ndata: ${JSON.stringify(snapshot())}\n\n`);
       req.on('close',()=>{clients.delete(client);peers.delete(p.id);leaveGroups(p.id);broadcast('guests',snapshot());});return;
     }
+    if(req.method==='POST'&&url.pathname==='/account'){
+      if(req.headers.origin && req.headers.origin!==url.origin)return json(res,403,{error:'Origin mismatch.'});
+      let body='';for await(const chunk of req){body+=chunk;if(body.length>8192){json(res,413,{error:'That request is too large.'});return;}}
+      let data;try{data=JSON.parse(body);}catch{return json(res,400,{error:'Invalid JSON.'});}
+      const who=req.socket.remoteAddress||'unknown';
+      try{
+        if(data.action==='sign-up'){
+          const handle=checkHandle(data.handle);if(handle.error)return json(res,400,{error:handle.error,field:'handle'});
+          const email=checkEmail(data.email);if(email.error)return json(res,400,{error:email.error,field:'email'});
+          const password=checkPassword(data.password);if(password.error)return json(res,400,{error:password.error,field:'password'});
+          const result=await accounts.signUp({email:email.email,password:password.password,handle:handle.handle});
+          console.log('New Maple Bean account: '+result.account.email);
+          return json(res,200,result);
+        }
+        if(data.action==='log-in'){
+          if(tooManyAttempts(who))return json(res,429,{error:'Too many attempts. Wait a few minutes, then try again.'});
+          const email=checkEmail(data.email);if(email.error)return json(res,400,{error:email.error,field:'email'});
+          if(typeof data.password!=='string'||!data.password)return json(res,400,{error:'Add your password.',field:'password'});
+          const result=await accounts.logIn({email:email.email,password:data.password});
+          forgetAttempts(who);
+          return json(res,200,result);
+        }
+        if(data.action==='resume'){
+          const account=await accounts.resume(data.id,data.token);
+          if(!account)return json(res,401,{error:'That session has ended. Log in again.'});
+          return json(res,200,{account:accounts.view(account)});
+        }
+        if(data.action==='log-out'){
+          await accounts.logOut(data.id,data.token);
+          return json(res,200,{ok:true});
+        }
+        if(data.action==='profile'){
+          const account=await accounts.resume(data.id,data.token);
+          if(!account)return json(res,401,{error:'That session has ended. Log in again.'});
+          const patch={};
+          if(data.handle!==undefined){const handle=checkHandle(data.handle);if(handle.error)return json(res,400,{error:handle.error,field:'handle'});patch.handle=handle.handle;}
+          if(data.avatar!==undefined)patch.avatar=data.avatar===null?null:cleanAppearance(data.avatar);
+          if(data.wardrobe!==undefined)patch.wardrobe=data.wardrobe;
+          if(data.onboarded!==undefined)patch.onboarded=data.onboarded;
+          if(data.tutorialDone!==undefined)patch.tutorialDone=data.tutorialDone;
+          const view=await accounts.saveProfile(account.id,patch);
+          // The name follows the account, so anyone already in the café sees it change.
+          for(const peer of peers.values())if(peer.account===account.id&&view.handle)peer.name=view.handle;
+          broadcast('guests',snapshot());
+          return json(res,200,{account:view});
+        }
+        if(data.action==='check-name'){
+          const handle=checkHandle(data.handle);if(handle.error)return json(res,200,{ok:false,error:handle.error});
+          const me=data.id&&data.token?await accounts.resume(data.id,data.token):null;
+          return json(res,200,accounts.handleTaken(handle.handle,me?.id)?{ok:false,error:'Someone already goes by that name. Try another.'}:{ok:true});
+        }
+        if(data.action==='forgot'){
+          if(tooManyAttempts(who))return json(res,429,{error:'Too many attempts. Wait a few minutes, then try again.'});
+          const email=checkEmail(data.email);if(email.error)return json(res,400,{error:email.error,field:'email'});
+          const reset=await accounts.startReset(email.email);
+          // No mail provider here. On a local playtest hand the link back so a
+          // password can actually be reset; anywhere else it only gets logged.
+          const link=reset?`/login.html?account=${encodeURIComponent(reset.accountId)}&reset=${encodeURIComponent(reset.token)}`:null;
+          if(link)console.log('Password reset for '+email.email+': http://localhost:'+port+link);
+          return json(res,200,{ok:true,...(local&&link?{link}:{})});
+        }
+        if(data.action==='reset'){
+          const password=checkPassword(data.password);if(password.error)return json(res,400,{error:password.error,field:'password'});
+          const account=await accounts.finishReset(data.id,data.reset,password.password);
+          const token=await accounts.startSession(account.id);
+          return json(res,200,{account,token});
+        }
+        return json(res,400,{error:'Unknown account action.'});
+      }catch(error){
+        return json(res,error.status||400,{error:error.message||'Something went wrong at the counter.',...(error.field?{field:error.field}:{})});
+      }
+    }
     if(req.method==='POST'&&url.pathname==='/api'){
       // Browser origins must match this server; no cross-site write access.
       if(req.headers.origin && req.headers.origin!==url.origin)return json(res,403,{error:'Origin mismatch.'});
@@ -76,17 +183,44 @@ const server=http.createServer(async(req,res)=>{
       let data;try{data=JSON.parse(body);}catch{return json(res,400,{error:'Invalid JSON.'});}
       if(data.action==='join'){
         if(peers.size>=16)return json(res,409,{error:'This playtest is full (16 guests).'});
-        const name=typeof data.name==='string'?data.name.trim().slice(0,24):'Maya';
+        // A signed-in guest joins as their account: the café uses the saved
+        // handle, so a member's name cannot be typed by somebody else.
+        const account=data.accountId&&data.accountToken?await accounts.resume(data.accountId,data.accountToken):null;
+        if(account){
+          // One seat per account — a second tab replaces the first rather than
+          // putting two copies of the same person in the room.
+          for(const [id,other] of peers)if(other.account===account.id){peers.delete(id);leaveGroups(id);for(const c of clients)if(c.id===id){c.res.write(`event: replaced\ndata: {}\n\n`);c.res.end();}}
+        }
+        const name=account?.handle||(typeof data.name==='string'?data.name.trim().slice(0,24):'Maya');
         if(!name||/[\x00-\x1f\x7f]/.test(name))return json(res,400,{error:'Use a name with 1–24 printable characters.'});
         // Spawn on the pavement outside the door, on the free spot furthest from anyone already there.
         const spawn=[[0,8.3],[0.9,8.5],[-0.9,8.5],[0.9,7.9],[-0.9,7.9],[0,7.7]].map(([x,z])=>({x,z,gap:Math.min(9,...[...peers.values()].map(o=>Math.hypot(o.x-x,o.z-z)))})).sort((a,b)=>b.gap-a.gap)[0];
-        const p={id:randomUUID(),token:randomUUID(),name,x:spawn.x,z:spawn.z,angle:Math.PI,seatId:null,status:'available',statusDetail:null,lastChat:0,lastEmote:0,lastNpc:0,lastGroup:0,joinedAt:Date.now()};peers.set(p.id,p);
-        json(res,200,p);broadcast('guests',snapshot());return;
+        const p={id:randomUUID(),token:randomUUID(),name,member:!!account,account:account?.id||null,
+          appearance:cleanAppearance(data.appearance)||cleanAppearance(account?.avatar),
+          x:spawn.x,z:spawn.z,angle:Math.PI,seatId:null,status:'available',statusDetail:null,
+          lastChat:0,lastEmote:0,lastNpc:0,lastGroup:0,lastLook:0,joinedAt:Date.now()};
+        peers.set(p.id,p);
+        json(res,200,{...p,account:undefined});broadcast('guests',snapshot());return;
       }
       const p=peers.get(data.id);if(!p||p.token!==data.token)return json(res,401,{error:'Your session ended. Reload to rejoin.'});
       if(data.action==='rename'){
         const name=typeof data.name==='string'?data.name.trim():'';
-        if(!name||name.length>24||/[\x00-\x1f\x7f]/.test(name))return json(res,400,{error:'Use a name with 1–24 printable characters.'});p.name=name;
+        if(!name||name.length>24||/[\x00-\x1f\x7f]/.test(name))return json(res,400,{error:'Use a name with 1–24 printable characters.'});
+        // A member's name is their account handle, so renaming has to clear
+        // the same uniqueness check the creator uses.
+        if(p.account){
+          const handle=checkHandle(name);if(handle.error)return json(res,400,{error:handle.error});
+          if(accounts.handleTaken(handle.handle,p.account))return json(res,409,{error:'Someone already goes by that name. Try another.'});
+          try{await accounts.saveProfile(p.account,{handle:handle.handle});}catch(e){return json(res,e.status||400,{error:e.message});}
+          p.name=handle.handle;
+        }else p.name=name;
+      }else if(data.action==='look'){
+        // Changing your look in the café: every other browser redresses you.
+        if(Date.now()-p.lastLook<600)return json(res,429,{error:'Give that a moment.'});p.lastLook=Date.now();
+        const appearance=cleanAppearance(data.appearance);
+        if(!appearance)return json(res,400,{error:'That look could not be read.'});
+        p.appearance=appearance;
+        if(p.account)accounts.saveProfile(p.account,{avatar:appearance}).catch(()=>{});
       }else if(data.action==='move'){
         if(!p.seatId&&isWalkable(data.x,data.z,layout)&&Number.isFinite(data.angle)){
           p.x=data.x;p.z=data.z;p.angle=data.angle;
@@ -155,7 +289,9 @@ const server=http.createServer(async(req,res)=>{
       json(res,200,{ok:true,x:p.x,z:p.z,seatId:p.seatId});broadcast('guests',snapshot());return;
     }
     if(!['GET','HEAD'].includes(req.method))return json(res,405,{error:'Method not allowed.'});
-    const pathname=decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname);
+    // The front door is the sign-in journey; the café itself lives at /cafe.
+    const raw=decodeURIComponent(url.pathname);
+    const pathname=raw==='/'?'/login.html':raw==='/cafe'||raw==='/cafe/'?'/index.html':raw;
     const file=path.resolve(root,'.'+pathname);
     if(!file.startsWith(root)||pathname.split('/').some(s=>s.startsWith('.'))||!PUBLIC.has(pathname)&&!/^\/(assets|games|systems)\//.test(pathname)&&!pathname.startsWith('/node_modules/three/'))return json(res,404,{error:'Not found.'});
     const info=await stat(file);if(!info.isFile())return json(res,404,{error:'Not found.'});
@@ -172,4 +308,7 @@ setInterval(()=>{
   for(const [id,p] of peers)if(!liveIds.has(id)&&Date.now()-p.joinedAt>15000){peers.delete(id);changed=true;}
   if(changed)broadcast('guests',snapshot());
 },15000).unref();
-server.listen(port,host,()=>console.log(`Maple Bean is open: http://localhost:${port}\nCharacter studio: http://localhost:${port}/maya.html\nCtrl+C closes the local playtest.`));
+// A local playtest server should complain and keep serving, not exit and sign
+// everyone out. Node's default for an unhandled rejection is to kill it.
+process.on('unhandledRejection',error=>console.warn('Unhandled rejection (café still open):',error?.message||error));
+server.listen(port,host,()=>console.log(`Maple Bean is open: http://localhost:${port}\nThe café itself: http://localhost:${port}/cafe\nCtrl+C closes the local playtest.`));

@@ -1,0 +1,179 @@
+/* Maple Bean UI components, built from the 🧩 Components page of the Figma UX
+ * file. Shared by the sign-in site (login.html) and the in-game onboarding,
+ * creator and tutorial so one change lands in every screen.
+ *
+ * Every value here comes from tokens.css — no raw hex in this file.
+ */
+
+/* ---------------------------------------------------------------- Button
+ * Primary (maple, elevated) / Secondary (cream, outlined) / Ghost (text only).
+ * Hover deepens rather than brightens so white label text keeps its contrast.
+ */
+.mb-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--mb-space-xs);
+  padding: var(--mb-space-sm) var(--mb-space-xl); border: 0; border-radius: var(--mb-radius-lg);
+  font-family: var(--mb-font-ui); font-weight: 700; font-size: 15px; line-height: 1.2; letter-spacing: .2px;
+  cursor: pointer; text-decoration: none; transition: background-color .15s, transform .08s, box-shadow .15s;
+}
+.mb-btn--primary { background: var(--mb-surface-accent); color: var(--mb-text-on-accent); box-shadow: var(--mb-elev-button); }
+.mb-btn--primary:hover:not(:disabled) { background: var(--mb-surface-accent-hover); }
+.mb-btn--secondary { background: var(--mb-surface-raised); color: var(--mb-text-primary); border: 1.5px solid var(--mb-border-strong); box-shadow: 0 6px 10px rgba(36, 22, 17, .12); }
+.mb-btn--secondary:hover:not(:disabled) { background: var(--mb-surface-sunken); }
+.mb-btn--ghost { background: none; color: var(--mb-text-link); padding: 6px var(--mb-space-2xs); box-shadow: none; }
+.mb-btn--ghost:hover:not(:disabled) { text-decoration: underline; }
+.mb-btn--block { width: 100%; }
+.mb-btn--tall { padding: var(--mb-space-lg) var(--mb-space-xl); }
+.mb-btn--wide { padding-left: var(--mb-space-3xl); padding-right: var(--mb-space-3xl); }
+.mb-btn:active:not(:disabled) { transform: translateY(1px); }
+.mb-btn:disabled { opacity: .55; cursor: default; box-shadow: none; }
+/* Loading shows "Brewing…" with three steam dots (Figma: Button · Loading). */
+.mb-btn[data-loading="true"] { color: transparent !important; position: relative; pointer-events: none; }
+.mb-btn[data-loading="true"]::after {
+  content: 'Brewing' attr(data-dots); position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--mb-text-on-accent); letter-spacing: .2px;
+}
+.mb-btn--secondary[data-loading="true"]::after { color: var(--mb-text-primary); }
+
+/* ---------------------------------------------------------------- Input
+ * Label + field + helper. Errors name the fix, never just "invalid".
+ */
+.mb-field { display: flex; flex-direction: column; gap: var(--mb-space-xs); width: 100%; }
+.mb-field > label { font-weight: 600; font-size: 12px; line-height: 1.2; letter-spacing: .4px; color: var(--mb-text-secondary); }
+.mb-field__box {
+  display: flex; align-items: center; gap: var(--mb-space-sm);
+  background: var(--mb-surface-raised); border: 1.5px solid var(--mb-border-subtle);
+  border-radius: var(--mb-radius-md); padding: 0 18px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.mb-field__box:focus-within { border-color: var(--mb-border-focus); box-shadow: 0 0 0 4px color-mix(in srgb, var(--mb-border-focus) 28%, transparent); }
+.mb-field__box input {
+  flex: 1 0 0; min-width: 0; border: 0; background: none; outline: none;
+  font-family: var(--mb-font-ui); font-weight: 400; font-size: 15px; line-height: 1.6;
+  color: var(--mb-text-primary); padding: 15px 0;
+}
+.mb-field__box input::placeholder { color: var(--mb-text-muted); }
+.mb-field__toggle {
+  border: 0; background: none; cursor: pointer; padding: 4px;
+  font-family: var(--mb-font-ui); font-weight: 600; font-size: 12px; letter-spacing: .4px; color: var(--mb-text-link);
+}
+.mb-field__help { font-size: 13px; line-height: 1.55; color: var(--mb-text-muted); margin: 0; }
+.mb-field[data-invalid="true"] .mb-field__box { border-color: var(--mb-state-error); background: var(--mb-state-error-soft); }
+.mb-field[data-invalid="true"] .mb-field__help { color: var(--mb-state-error); font-weight: 600; }
+
+/* ---------------------------------------------------------------- Checkbox
+ * Square 24px check with a 2px border. Terms, Remember me, Don't show again.
+ */
+.mb-check { display: inline-flex; align-items: flex-start; gap: var(--mb-space-sm); cursor: pointer; font-size: 15px; line-height: 1.6; color: var(--mb-text-secondary); }
+.mb-check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.mb-check__box {
+  flex: none; width: 24px; height: 24px; margin-top: 1px;
+  display: grid; place-items: center; border-radius: var(--mb-radius-xs);
+  background: var(--mb-surface-raised); border: 2px solid var(--mb-border-strong);
+  color: var(--mb-text-on-accent); font-weight: 700; font-size: 13px; line-height: 1;
+  transition: background-color .12s, border-color .12s;
+}
+.mb-check__box::after { content: '\2713'; opacity: 0; }
+.mb-check input:checked + .mb-check__box { background: var(--mb-surface-accent); border-color: var(--mb-border-accent); }
+.mb-check input:checked + .mb-check__box::after { opacity: 1; }
+.mb-check input:focus-visible + .mb-check__box { box-shadow: 0 0 0 4px color-mix(in srgb, var(--mb-border-focus) 34%, transparent); }
+
+/* ---------------------------------------------------------------- Card, Tag, Keycap */
+.mb-card {
+  background: var(--mb-surface-raised); border: 1.5px solid var(--mb-border-subtle);
+  border-radius: var(--mb-radius-xl); box-shadow: var(--mb-elev-card); padding: var(--mb-space-2xl);
+}
+.mb-card--selected { border: 3px solid var(--mb-border-accent); padding: calc(var(--mb-space-2xl) - 1.5px); }
+.mb-tag {
+  display: inline-flex; align-items: center; padding: 5px 10px; border-radius: var(--mb-radius-round);
+  background: var(--mb-surface-sunken); border: 1px solid var(--mb-border-subtle); color: var(--mb-text-muted);
+  font-weight: 800; font-size: 10px; line-height: 1.2; letter-spacing: 1.8px; text-transform: uppercase;
+}
+.mb-tag--success { background: var(--mb-state-success-soft); border-color: var(--mb-state-success); color: var(--mb-state-success); }
+.mb-tag--accent { background: var(--mb-surface-accent-soft); border-color: var(--mb-border-accent); color: var(--mb-text-accent); }
+.mb-key {
+  display: inline-grid; place-items: center; min-width: 44px; height: 38px; padding: 0 12px;
+  background: var(--mb-surface-raised); border: 1.5px solid var(--mb-border-strong);
+  border-radius: var(--mb-radius-xs); box-shadow: 0 2px 0 rgba(36, 22, 17, .18);
+  font-family: var(--mb-font-mono); font-weight: 700; font-size: 12px; letter-spacing: .5px; text-transform: uppercase;
+  color: var(--mb-text-primary);
+}
+
+/* ---------------------------------------------------------------- Creator Progress
+ * Four-step rail: Skin · Hair · Clothing · Name — the axes the runtime
+ * character model actually supports. Completed steps stay tappable.
+ */
+.mb-progress { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.mb-progress__step { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; }
+.mb-progress__step:disabled { cursor: default; }
+.mb-progress__marker {
+  width: 32px; height: 32px; border-radius: 16px; display: grid; place-items: center;
+  background: var(--mb-surface-sunken); color: var(--mb-text-muted);
+  font-weight: 600; font-size: 12px; letter-spacing: .4px;
+}
+.mb-progress__label { font-weight: 700; font-size: 13px; letter-spacing: .3px; color: var(--mb-text-muted); }
+.mb-progress__step[data-state="done"] .mb-progress__marker,
+.mb-progress__step[data-state="current"] .mb-progress__marker { background: var(--mb-surface-accent); color: var(--mb-text-on-accent); }
+.mb-progress__step[data-state="current"] .mb-progress__marker { box-shadow: 0 0 0 4px var(--mb-surface-accent-soft); }
+.mb-progress__step[data-state="done"] .mb-progress__label,
+.mb-progress__step[data-state="current"] .mb-progress__label { color: var(--mb-text-primary); }
+.mb-progress__connector { width: 52px; height: 3px; border-radius: 2px; background: var(--mb-border-subtle); }
+.mb-progress__connector[data-done="true"] { background: var(--mb-surface-accent); }
+
+/* ---------------------------------------------------------------- Customization Tile & Colour Swatch */
+.mb-tiles { display: flex; flex-wrap: wrap; gap: 14px; }
+.mb-tile {
+  position: relative; width: 178px; display: flex; flex-direction: column; align-items: center; gap: var(--mb-space-xs);
+  background: var(--mb-surface-raised); border: 1.5px solid var(--mb-border-subtle);
+  border-radius: var(--mb-radius-lg); padding: 10px 10px 12px; cursor: pointer;
+  font-family: inherit; transition: border-color .12s, background-color .12s;
+}
+.mb-tile:hover:not(:disabled) { border-color: var(--mb-border-strong); }
+.mb-tile__thumb {
+  width: 100%; height: 96px; display: grid; place-items: center; overflow: hidden;
+  background: var(--mb-surface-sunken); border-radius: var(--mb-radius-md);
+}
+.mb-tile__thumb canvas, .mb-tile__thumb svg { width: 88px; height: 88px; display: block; }
+.mb-tile__name { font-weight: 600; font-size: 12px; letter-spacing: .4px; color: var(--mb-text-secondary); text-align: center; }
+.mb-tile[aria-pressed="true"] { background: var(--mb-surface-selected); border: 3px solid var(--mb-border-accent); padding: 8.5px 8.5px 10.5px; box-shadow: 0 6px 10px rgba(36, 22, 17, .12); }
+.mb-tile[aria-pressed="true"] .mb-tile__name { color: var(--mb-text-primary); }
+.mb-tile__badge {
+  position: absolute; top: -11px; right: 9px; width: 30px; height: 30px; border-radius: 15px;
+  display: grid; place-items: center; background: var(--mb-surface-accent); color: var(--mb-text-on-accent);
+  font-weight: 700; font-size: 13px; box-shadow: var(--mb-elev-button);
+}
+.mb-tile__price {
+  position: absolute; top: -11px; left: 9px; padding: 4px 9px; border-radius: var(--mb-radius-round);
+  background: var(--mb-surface-inverse); color: var(--mb-text-on-inverse);
+  font-weight: 700; font-size: 11px; letter-spacing: .3px; white-space: nowrap;
+}
+.mb-tile:disabled { cursor: not-allowed; }
+.mb-tile:disabled .mb-tile__thumb { opacity: .45; }
+.mb-tile:disabled .mb-tile__name { color: var(--mb-text-disabled); }
+
+.mb-swatches { display: flex; flex-wrap: wrap; gap: 14px; }
+.mb-swatch {
+  position: relative; width: 60px; height: 60px; border-radius: 30px; cursor: pointer; padding: 0;
+  border: 2px solid var(--mb-border-subtle); background: var(--swatch, var(--mb-surface-sunken));
+  display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 13px;
+}
+.mb-swatch::after { content: '\2713'; opacity: 0; text-shadow: 0 1px 3px rgba(0, 0, 0, .45); }
+.mb-swatch[aria-pressed="true"] { border: 4px solid var(--mb-border-accent); box-shadow: 0 6px 10px rgba(36, 22, 17, .12); }
+.mb-swatch[aria-pressed="true"]::after { opacity: 1; }
+.mb-swatch:disabled { cursor: not-allowed; opacity: .5; }
+.mb-swatch__price {
+  position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%);
+  padding: 2px 7px; border-radius: var(--mb-radius-round);
+  background: var(--mb-surface-inverse); color: var(--mb-text-on-inverse);
+  font-weight: 700; font-size: 10px; letter-spacing: .2px; white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- shared focus ring */
+.mb-btn:focus-visible, .mb-tile:focus-visible, .mb-swatch:focus-visible,
+.mb-progress__step:focus-visible, .mb-field__toggle:focus-visible {
+  outline: 3px solid var(--mb-border-focus); outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mb-btn, .mb-field__box, .mb-tile, .mb-progress__marker { transition: none; }
+}

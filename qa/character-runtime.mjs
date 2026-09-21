@@ -12,7 +12,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 960 } });
   page.on('pageerror', e => errors.push(e.message));
   page.on('requestfailed', r => failures.push({ url: r.url(), error: r.failure()?.errorText }));
-  await page.goto('http://127.0.0.1:4321/', { waitUntil: 'domcontentloaded', timeout: 240000 });
+  await page.goto('http://127.0.0.1:4321/cafe?guest=1', { waitUntil: 'domcontentloaded', timeout: 240000 });
   await page.waitForFunction(() => window.__ready && window.cafe, null, { timeout: 240000 });
   await page.evaluate(async mouthY => {
     const THREE = await import('three'), { cast } = await import('/characters.js'), { createMaya } = await import('/assets/characters/runtime.js');

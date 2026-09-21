@@ -14,7 +14,7 @@ const errors = [], results = [];
 page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
 page.on('pageerror', e => errors.push('pageerror: ' + e.message));
 await page.addInitScript(() => localStorage.clear());
-await page.goto((process.env.CAFE_URL || 'http://127.0.0.1:4321/') + '?qa', { waitUntil: 'domcontentloaded' });
+await page.goto((process.env.CAFE_URL || 'http://127.0.0.1:4321/cafe?guest=1') + '&qa', { waitUntil: 'domcontentloaded' });
 await page.waitForFunction(() => window.__ready === true, null, { timeout: 180000 });
 // Page helpers: wait for a condition; click on a world-space point like a player would.
 await page.evaluate(() => {

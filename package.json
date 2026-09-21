@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test tests/*.test.mjs",
-    "qa:smoke": "node qa/qa-full.mjs"
+    "qa:smoke": "node qa/qa-full.mjs",
+    "accounts": "node tools/accounts.mjs",
+    "qa:onboarding": "node qa/onboarding.mjs qa/onboarding",
+    "portraits": "node qa/portraits.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.127.0",

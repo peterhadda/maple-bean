@@ -61,10 +61,16 @@ test('relationships progress with cooldowns and gate the optional crush', () => 
 test('wardrobe purchases persist ownership and equip only owned items', () => {
   let w = Shop.defaultWardrobe(), e = { ...E.defaultEconomy(), coins: 200 };
   assert.ok(Shop.validWardrobe(w));
-  assert.throws(() => Shop.equip(w, 'top-maple'), /Buy/);
-  ({ wardrobe: w, economy: e } = Shop.buy(w, e, 'top-maple')); assert.equal(e.coins, 140);
+  // The starter tier — everything the café already had — comes with the
+  // account, so it can be worn straight away without spending anything.
+  assert.ok(w.owned.includes('top-maple'));
+  assert.equal(Shop.equip(w, 'top-maple').equipped.top, 'top-maple');
   assert.throws(() => Shop.buy(w, e, 'top-maple'), /already/);
-  w = Shop.equip(w, 'top-maple'); assert.equal(Shop.lookFor(w).top, '#b8503c');
+  // Premium pieces still have to be bought.
+  assert.throws(() => Shop.equip(w, 'top-plum'), /Buy/);
+  ({ wardrobe: w, economy: e } = Shop.buy(w, e, 'top-plum')); assert.equal(e.coins, 150);
+  assert.throws(() => Shop.buy(w, e, 'top-plum'), /already/);
+  w = Shop.equip(w, 'top-plum'); assert.equal(Shop.lookFor(w).top, '#7d4f6b');
   assert.throws(() => Shop.buy(w, e, 'study-scarf'), /Earned/);
   w = Shop.equip(w, 'study-scarf', ['study-scarf']); assert.equal(Shop.lookFor(w).props[0].prop, 'scarf');
 });

@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en" data-mode="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maple Bean · Let’s get you inside</title>
+<meta name="description" content="Sign in to Maple Bean — the neighbourhood café in Maple Hollow.">
+<link rel="icon" href="/favicon.svg">
+<link rel="preload" as="image" href="/assets/ui/cafe-backdrop.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@700&display=swap">
+<link rel="stylesheet" href="/systems/tokens.css">
+<link rel="stylesheet" href="/systems/mb-ui.css">
+<link rel="stylesheet" href="/systems/login.css">
+</head>
+<body data-layout="splash">
+
+<!-- Café art. A render of the real three.js café, as the Café Backdrop
+     component in Figma specifies; blurred and scrimmed behind full-width
+     screens, sharp in the 560px rail beside the forms. -->
+<div class="art" aria-hidden="true">
+  <img class="art__photo" src="/assets/ui/cafe-backdrop.jpg" alt="">
+  <div class="art__warmth"></div>
+  <div class="art__wash"></div>
+  <div class="art__scrim"></div>
+  <div class="art__rail-content">
+    <img class="art__logo" src="/favicon.svg" alt="">
+    <figure class="art__quote">
+      <p class="mb-eyebrow">Maple Hollow</p>
+      <blockquote class="mb-display-s" id="art-quote">Your table is still by the window.</blockquote>
+    </figure>
+  </div>
+</div>
+
+<main id="flow">
+
+  <!-- 01 · Splash ------------------------------------------------------->
+  <section class="screen screen--center" id="screen-splash" data-layout="splash">
+    <div class="splash">
+      <img class="splash__logo" src="/favicon.svg" alt="">
+      <h1 class="mb-display-l">Maple Bean</h1>
+      <p class="mb-body-l">Putting the kettle on…</p>
+      <div class="steam" aria-hidden="true"><i></i><i></i><i></i></div>
+    </div>
+  </section>
+
+  <!-- 03 · Account choice ----------------------------------------------->
+  <section class="screen screen--center" id="screen-choice" data-layout="center" hidden>
+    <img class="choice__logo" src="/favicon.svg" alt="">
+    <div class="choice__heading">
+      <h1 class="mb-display-l">Let’s get you inside.</h1>
+      <p class="mb-body-l">A seat by the window is already warm.</p>
+    </div>
+    <div class="choice__cards">
+      <!-- Shown only when this browser already has a session. The door still
+           opens here rather than forwarding straight into the café. -->
+      <article class="mb-card mb-card--selected choice__card" id="resume-card" hidden>
+        <div class="choice__glyph choice__glyph--accent">☕</div>
+        <h2 class="mb-display-s">Welcome back, <span id="resume-name">friend</span></h2>
+        <p class="mb-body-m" id="resume-note">Your character and your usual table are where you left them.</p>
+        <p class="choice__tagrow"><span class="mb-tag mb-tag--success">Signed in</span></p>
+        <button class="mb-btn mb-btn--primary mb-btn--block" id="resume-enter">ENTER MAPLE BEAN</button>
+        <button class="mb-btn mb-btn--ghost" id="resume-signout">Not you? Sign out</button>
+      </article>
+      <article class="mb-card mb-card--selected choice__card" id="signup-card">
+        <div class="choice__glyph choice__glyph--accent">🍁</div>
+        <h2 class="mb-display-s">Create account</h2>
+        <p class="mb-body-m">New to Maple Bean? Start here — pick a name, make a character, keep your seat.</p>
+        <p class="choice__tagrow"><span class="mb-tag mb-tag--success">Works today</span></p>
+        <button class="mb-btn mb-btn--primary mb-btn--block" data-go="signup">CREATE ACCOUNT</button>
+      </article>
+      <article class="mb-card choice__card">
+        <div class="choice__glyph">☕</div>
+        <h2 class="mb-display-s">Log in</h2>
+        <p class="mb-body-m">Welcome back. Your character and your usual table are where you left them.</p>
+        <p class="choice__tagrow"><span class="mb-tag mb-tag--success">Works today</span></p>
+        <button class="mb-btn mb-btn--secondary mb-btn--block" data-go="login">LOG IN</button>
+      </article>
+      <article class="mb-card choice__card">
+        <div class="choice__glyph">👋</div>
+        <h2 class="mb-display-s">Continue as guest</h2>
+        <p class="mb-body-m">Walk straight in. Your name and look last until you close the tab.</p>
+        <p class="choice__tagrow"><span class="mb-tag">Nothing is saved</span></p>
+        <button class="mb-btn mb-btn--secondary mb-btn--block" id="guest-enter">CONTINUE AS GUEST</button>
+      </article>
+    </div>
+    <p class="choice__foot mb-body-s">Accounts are stored by this café’s own server so your character, wardrobe and Maple Coins come back with you. Guests are never written to disk.</p>
+  </section>
+
+  <!-- 04 · Create account ----------------------------------------------->
+  <section class="screen screen--split" id="screen-signup" data-layout="split" data-quote="Pull up a chair. We saved you one." hidden>
+    <form class="form" id="signup-form" novalidate>
+      <h1 class="mb-display-l">Pull up a chair 🍁</h1>
+      <p class="form__sub mb-body-m">An account keeps your character, your wardrobe and your Maple Coins.</p>
+      <div class="form__fields">
+        <div class="mb-field" id="signup-handle-field">
+          <label for="signup-handle">Username</label>
+          <div class="mb-field__box">
+            <input id="signup-handle" name="handle" type="text" autocomplete="nickname" maxlength="24" placeholder="Maple" required>
+            <span class="mb-field__toggle" id="signup-handle-state" aria-live="polite"></span>
+          </div>
+          <p class="mb-field__help" id="signup-handle-help">This is the name above your head in the café. 2–24 characters.</p>
+        </div>
+        <div class="mb-field" id="signup-email-field">
+          <label for="signup-email">Email</label>
+          <div class="mb-field__box"><input id="signup-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required></div>
+          <p class="mb-field__help" id="signup-email-help"></p>
+        </div>
+        <div class="mb-field" id="signup-password-field">
+          <label for="signup-password">Password</label>
+          <div class="mb-field__box">
+            <input id="signup-password" name="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" required>
+            <button type="button" class="mb-field__toggle" data-reveal="signup-password">Show</button>
+          </div>
+          <p class="mb-field__help" id="signup-password-help">At least 8 characters, with a letter and a number.</p>
+        </div>
+        <div class="mb-field" id="signup-confirm-field">
+          <label for="signup-confirm">Confirm password</label>
+          <div class="mb-field__box">
+            <input id="signup-confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Type it once more" required>
+            <button type="button" class="mb-field__toggle" data-reveal="signup-confirm">Show</button>
+          </div>
+          <p class="mb-field__help" id="signup-confirm-help"></p>
+        </div>
+        <label class="mb-check" id="signup-terms-label">
+          <input type="checkbox" id="signup-terms"><span class="mb-check__box"></span>
+          <span>I’ll be kind to the other guests.</span>
+        </label>
+        <p class="mb-field__help" id="signup-terms-help"></p>
+      </div>
+      <div class="form__actions">
+        <button class="mb-btn mb-btn--primary mb-btn--block mb-btn--tall" type="submit" id="signup-submit">CREATE ACCOUNT</button>
+        <p class="form__alt mb-body-m">Already have an account? <button class="mb-btn mb-btn--ghost" type="button" data-go="login">Log in</button></p>
+        <p class="form__alt mb-body-s"><button class="mb-btn mb-btn--ghost" type="button" data-go="choice">← All the ways in</button></p>
+      </div>
+    </form>
+  </section>
+
+  <!-- 05 · Log in --------------------------------------------------------->
+  <section class="screen screen--split" id="screen-login" data-layout="split" data-quote="Your table is still by the window." hidden>
+    <form class="form" id="login-form" novalidate>
+      <h1 class="mb-display-l">Welcome back ☕</h1>
+      <p class="form__sub mb-body-m">Pick up right where you left your cup.</p>
+      <div class="form__fields">
+        <div class="mb-field" id="login-email-field">
+          <label for="login-email">Email</label>
+          <div class="mb-field__box"><input id="login-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required></div>
+          <p class="mb-field__help" id="login-email-help"></p>
+        </div>
+        <div class="mb-field" id="login-password-field">
+          <label for="login-password">Password</label>
+          <div class="mb-field__box">
+            <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="••••••••••" required>
+            <button type="button" class="mb-field__toggle" data-reveal="login-password">Show</button>
+          </div>
+          <p class="mb-field__help" id="login-password-help"></p>
+        </div>
+        <div class="form__options">
+          <label class="mb-check"><input type="checkbox" id="login-remember" checked><span class="mb-check__box"></span><span>Remember me</span></label>
+          <button class="mb-btn mb-btn--ghost" type="button" data-go="forgot">Forgot password?</button>
+        </div>
+      </div>
+      <div class="form__actions">
+        <button class="mb-btn mb-btn--primary mb-btn--block mb-btn--tall" type="submit" id="login-submit">ENTER MAPLE BEAN</button>
+        <p class="form__alt mb-body-m">Don’t have an account? <button class="mb-btn mb-btn--ghost" type="button" data-go="signup">Create one</button></p>
+        <p class="form__alt mb-body-s"><button class="mb-btn mb-btn--ghost" type="button" data-go="choice">← All the ways in</button></p>
+      </div>
+    </form>
+  </section>
+
+  <!-- 06 · Forgot password ------------------------------------------------>
+  <section class="screen screen--split" id="screen-forgot" data-layout="split" data-quote="Everyone forgets their order sometimes." hidden>
+    <form class="form" id="forgot-form" novalidate>
+      <h1 class="mb-display-l">Forgot your password?</h1>
+      <p class="form__sub mb-body-m">Tell us the e-mail on your account and we’ll send a reset link.</p>
+      <div class="form__fields">
+        <div class="mb-field" id="forgot-email-field">
+          <label for="forgot-email">Email</label>
+          <div class="mb-field__box"><input id="forgot-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required></div>
+          <p class="mb-field__help" id="forgot-email-help"></p>
+        </div>
+      </div>
+      <div class="form__actions">
+        <button class="mb-btn mb-btn--primary mb-btn--block mb-btn--tall" type="submit" id="forgot-submit">SEND RESET LINK</button>
+        <p class="form__alt mb-body-m"><button class="mb-btn mb-btn--ghost" type="button" data-go="login">← Back to log in</button></p>
+      </div>
+    </form>
+  </section>
+
+  <!-- 06b · Reset link sent ----------------------------------------------->
+  <section class="screen screen--split" id="screen-sent" data-layout="split" data-quote="Check your inbox — we’ll keep the pot warm." hidden>
+    <div class="form">
+      <div class="form__badge">✉</div>
+      <h1 class="mb-display-l">Check your e-mail.</h1>
+      <p class="form__sub mb-body-m">If <strong id="sent-email">that address</strong> has an account here, a reset link is on its way. It expires in 30 minutes.</p>
+      <div class="form__note" id="sent-dev" hidden>
+        <p class="mb-eyebrow">Local playtest</p>
+        <p class="mb-body-s">This café has no mail service, so the link is printed in the server console — and here:</p>
+        <a class="mb-btn mb-btn--secondary mb-btn--block" id="sent-link" href="#">Open my reset link</a>
+      </div>
+      <div class="form__actions">
+        <button class="mb-btn mb-btn--secondary mb-btn--block mb-btn--tall" type="button" data-go="login">Back to log in</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reset · set a new password ------------------------------------------>
+  <section class="screen screen--split" id="screen-reset" data-layout="split" data-quote="A fresh cup, a fresh password." hidden>
+    <form class="form" id="reset-form" novalidate>
+      <h1 class="mb-display-l">Pick a new password.</h1>
+      <p class="form__sub mb-body-m">This signs you out everywhere else, which is the point.</p>
+      <div class="form__fields">
+        <div class="mb-field" id="reset-password-field">
+          <label for="reset-password">New password</label>
+          <div class="mb-field__box">
+            <input id="reset-password" name="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" required>
+            <button type="button" class="mb-field__toggle" data-reveal="reset-password">Show</button>
+          </div>
+          <p class="mb-field__help" id="reset-password-help">At least 8 characters, with a letter and a number.</p>
+        </div>
+        <div class="mb-field" id="reset-confirm-field">
+          <label for="reset-confirm">Confirm new password</label>
+          <div class="mb-field__box">
+            <input id="reset-confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Type it once more" required>
+            <button type="button" class="mb-field__toggle" data-reveal="reset-confirm">Show</button>
+          </div>
+          <p class="mb-field__help" id="reset-confirm-help"></p>
+        </div>
+      </div>
+      <div class="form__actions">
+        <button class="mb-btn mb-btn--primary mb-btn--block mb-btn--tall" type="submit" id="reset-submit">SAVE AND LOG IN</button>
+        <p class="form__alt mb-body-m"><button class="mb-btn mb-btn--ghost" type="button" data-go="login">← Back to log in</button></p>
+      </div>
+    </form>
+  </section>
+
+</main>
+
+<p id="status" role="status" aria-live="polite" class="visually-hidden"></p>
+<script type="module" src="/systems/login.js"></script>
+</body>
+</html>

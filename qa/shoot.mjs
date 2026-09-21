@@ -20,7 +20,7 @@ if(process.env.HEAD_SCALE_TRIAL){
  const headScale=Number(process.env.HEAD_SCALE_TRIAL);if(!Number.isFinite(headScale)||headScale<.6||headScale>1)throw Error('Invalid isolated head trial');
  await page.route('**/assets/characters/runtime.js',route=>route.fulfill({contentType:'application/javascript',body:fs.readFileSync('assets/characters/runtime.js','utf8').replace(/export const HEAD_SCALE=[.\d]+;/,`export const HEAD_SCALE=${headScale};`)}));
 }
-await page.goto(process.env.CAFE_URL || 'http://127.0.0.1:4321/', { waitUntil: 'domcontentloaded' });
+await page.goto(process.env.CAFE_URL || 'http://127.0.0.1:4321/cafe?guest=1', { waitUntil: 'domcontentloaded' });
 if (!process.env.NOREADY) await page.waitForFunction(() => window.__ready === true, null, { timeout: 180000 }); else await page.waitForTimeout(8000);
 if(process.env.HEAD_SCALE_TRIAL){const active=await page.evaluate(async()=> (await import('/assets/characters/runtime.js')).HEAD_SCALE);if(active!==Number(process.env.HEAD_SCALE_TRIAL))throw Error('Head trial interception was not active');}
 const authoredRig=await page.evaluate(()=>{const c=window.cafe,actors=[c?.maya,...(c?.regulars||[]).map(n=>n.avatar)];return actors.every(a=>{let found=false;a?.group?.traverse(o=>{if(o.isSkinnedMesh)found=true;});return found;});});

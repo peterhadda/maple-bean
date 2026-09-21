@@ -90,7 +90,10 @@ def plant(x, z, s=1, hanging=False, y0=0):
         bx, by = B(x+math.cos(a)*r, z+math.sin(a)*r)
         bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=1, location=(bx, by, y))
         o = bpy.context.object; o.name = 'Broad living leaf'; o.scale = (.11*s, .055*s, .28*s); o.rotation_euler = (.35*math.sin(a), .45*math.cos(a), a); o.data.materials.append(leaf); tag(o)
-    if not hanging and s >= .9: collide(x, z, .6*s, .6*s)
+    # Every pot standing on the floor blocks the way. The old `s >= .9` cutoff
+    # left the small garden plant at (5.25, -7.6) walk-through even though it is
+    # a waterable station you can point at.
+    if not hanging: collide(x, z, .6*s, .6*s)
 def rug(x, z, w, d, m):
     box('Woven rug', x, z, .009, w, d, .016, m, .015)
     for o in (-w/2+.12, w/2-.12): box('Rug border', x+o, z, .019, .035, d-.2, .005, ivory, 0)

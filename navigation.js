@@ -17,9 +17,18 @@ export function moveOnFloor(position,dx,dz,layout){
 }
 export function followRoute(position,route,dt,speed,layout){
   if(!route.length)return;
-  const p=route[0],dx=p.x-position.x,dz=p.z-position.z,d=Math.hypot(dx,dz);
-  if(d<.04){route.shift();return;}
-  const x=position.x,z=position.z,step=Math.min(speed*dt,d);moveOnFloor(position,dx/d*step,dz/d*step,layout);
+  const x=position.x,z=position.z;
+  // Spend the whole frame's travel, crossing as many waypoints as it reaches.
+  // Stopping at each one cost a frame of movement and showed as a walk-cycle hitch.
+  let budget=speed*dt;
+  while(route.length&&budget>1e-6){
+    const p=route[0],dx=p.x-position.x,dz=p.z-position.z,d=Math.hypot(dx,dz);
+    if(d<.04){route.shift();continue;}
+    const step=Math.min(budget,d),bx=position.x,bz=position.z;
+    moveOnFloor(position,dx/d*step,dz/d*step,layout);
+    budget-=step;
+    if(Math.hypot(position.x-bx,position.z-bz)<step*.5)break; // blocked; let the detour logic take over
+  }
   route.blockedFor=Math.hypot(position.x-x,position.z-z)<.00001?(route.blockedFor||0)+dt:0;
   if(route.blockedFor>1&&layout.people?.length){
     route.blockedFor=0;
@@ -29,16 +38,47 @@ export function followRoute(position,route,dt,speed,layout){
   }
 }
 
+// Furniture lookup grid. A path search tested all 74 obstacles for every sample
+// point, which cost several milliseconds per route and dropped a frame whenever
+// someone repathed. Bucketing them by 2 m cell gives the same answer from a
+// handful of boxes. Rebuilt whenever the obstacle list is replaced or grown.
+const OBSTACLE_CELL = 2, obstacleGrids = new WeakMap();
+function obstaclesNear(layout, x, z, radius) {
+  const list = layout.obstacles;
+  if (radius > OBSTACLE_CELL / 2) return list;   // outside what the padding covers
+  let cached = obstacleGrids.get(list);
+  if (!cached || cached.length !== list.length) {
+    const grid = new Map(), pad = OBSTACLE_CELL / 2;
+    for (const o of list) {
+      const x0 = Math.floor((o.x - o.w / 2 - pad) / OBSTACLE_CELL), x1 = Math.floor((o.x + o.w / 2 + pad) / OBSTACLE_CELL);
+      const z0 = Math.floor((o.z - o.d / 2 - pad) / OBSTACLE_CELL), z1 = Math.floor((o.z + o.d / 2 + pad) / OBSTACLE_CELL);
+      for (let cx = x0; cx <= x1; cx++) for (let cz = z0; cz <= z1; cz++) {
+        const key = cellKey(cx, cz), bucket = grid.get(key);
+        if (bucket) bucket.push(o); else grid.set(key, [o]);
+      }
+    }
+    obstacleGrids.set(list, cached = { length: list.length, grid });
+  }
+  return cached.grid.get(cellKey(Math.floor(x / OBSTACLE_CELL), Math.floor(z / OBSTACLE_CELL)));
+}
+const cellKey = (cx, cz) => (cx + 512) * 4096 + (cz + 512);   // numeric key: no string built per sample
+
+// Hot path: a route search calls this thousands of times, so it avoids
+// closures and array helpers. The rules are unchanged.
 export function isWalkable(x, z, layout, radius = .24) {
   if (!Number.isFinite(x) || !Number.isFinite(z)) return false;
-  if(layout.blockingPeople?.some(p=>Math.hypot(x-p.x,z-p.z)<.5))return false;
-  const inside=Math.abs(x)<=layout.width/2-.35 && Math.abs(z)<=layout.depth/2-.35;
-  const doorway=layout.entrance && Math.abs(x)<=layout.entrance.halfWidth-radius && z>=layout.depth/2-.35 && z<=layout.entrance.endZ-radius;
+  const blocking = layout.blockingPeople;
+  if (blocking) for (let i = 0; i < blocking.length; i++) { const p = blocking[i]; if (Math.hypot(x-p.x,z-p.z) < .5) return false; }
+  let ok = Math.abs(x) <= layout.width/2-.35 && Math.abs(z) <= layout.depth/2-.35;                                   // main room
+  if (!ok && layout.entrance) ok = Math.abs(x) <= layout.entrance.halfWidth-radius && z >= layout.depth/2-.35 && z <= layout.entrance.endZ-radius;
   // Added wings (rooms) keep the same wall clearance; doorway rects bridge the walls.
-  const room=layout.rooms?.some(r=>x>=r.x0+.35&&x<=r.x1-.35&&z>=r.z0+.35&&z<=r.z1-.35);
-  const door=layout.doors?.some(d=>x>=d.x0&&x<=d.x1&&z>=d.z0&&z<=d.z1);
-  if (!inside && !doorway && !room && !door) return false;
-  return !layout.obstacles.some(o => Math.abs(x-o.x) < o.w/2+radius && Math.abs(z-o.z) < o.d/2+radius);
+  if (!ok && layout.rooms) for (let i = 0; i < layout.rooms.length && !ok; i++) { const r = layout.rooms[i]; ok = x >= r.x0+.35 && x <= r.x1-.35 && z >= r.z0+.35 && z <= r.z1-.35; }
+  if (!ok && layout.doors) for (let i = 0; i < layout.doors.length && !ok; i++) { const d = layout.doors[i]; ok = x >= d.x0 && x <= d.x1 && z >= d.z0 && z <= d.z1; }
+  if (!ok) return false;
+  const near = obstaclesNear(layout, x, z, radius);
+  if (!near) return true;
+  for (let i = 0; i < near.length; i++) { const o = near[i]; if (Math.abs(x-o.x) < o.w/2+radius && Math.abs(z-o.z) < o.d/2+radius) return false; }
+  return true;
 }
 
 // Floor bounds across the main room, its entrance and every added wing.
@@ -85,5 +125,23 @@ export function findPath(start, end, layout) {
   if(goal<0)return [];
   const path=[end];
   for(let k=goal;k!==first;k=parents[k])path.push(point(k%cols,Math.floor(k/cols)));
-  return path.reverse();
+  return straighten(path.reverse(),start,layout);
+}
+
+// The grid search only steps north/south/east/west, so a plain route staircases
+// around the 32 cm cells: people zig-zagged and turned 90 degrees every few
+// steps. Keep only the corners you actually have to turn at, so the walk reads
+// as one natural diagonal line. Every kept segment is still collision-checked.
+export function straighten(route,start,layout){
+  if(route.length<3)return route;
+  const out=[];let anchor=start,i=0;
+  while(i<route.length-1){
+    let last=i;
+    for(let j=i+1;j<route.length;j++){if(!segmentClear(anchor,route[j],layout))break;last=j;}
+    if(last===i){out.push(route[i]);anchor=route[i];i++;}   // guard: never stall
+    else{out.push(route[last]);anchor=route[last];i=last;}
+  }
+  const end=route[route.length-1];
+  if(out[out.length-1]!==end)out.push(end);
+  return out;
 }

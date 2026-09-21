@@ -1,9 +1,15 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Maple Bean · Stay a little longer</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/style.css">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Maple Bean · Stay a little longer</title><link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@700&display=swap">
+<!-- Design tokens and the Figma component styles: the character creator and
+     the welcome tour are built from them, so they must load here too. -->
+<link rel="stylesheet" href="/systems/tokens.css"><link rel="stylesheet" href="/systems/mb-ui.css">
+<link rel="stylesheet" href="/style.css">
 <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head>
 <body>
-<header><a class="brand" href="/" id="brand" aria-label="Maple Bean home"><img src="/favicon.svg" alt=""><span>maple bean<small>MAPLE HOLLOW · THE NEIGHBOURHOOD CAFÉ</small></span></a><nav aria-label="Main"><button class="nav active" id="cafe-nav">The café</button><a class="nav" href="/maya.html">Maya’s studio ↗</a><button class="nav" id="review-open">Playtest notes <span id="note-count">0</span></button></nav><span class="live"><i></i> LOCAL PLAYTEST</span></header>
+<header><a class="brand" href="/cafe" id="brand" aria-label="Maple Bean home"><img src="/favicon.svg" alt=""><span>maple bean<small>MAPLE HOLLOW · THE NEIGHBOURHOOD CAFÉ</small></span></a><nav aria-label="Main"><button class="nav active" id="cafe-nav">The café</button><button class="nav" id="review-open">Playtest notes <span id="note-count">0</span></button></nav><span class="live"><i></i> LOCAL PLAYTEST</span></header>
 <main id="world" aria-label="Interactive 3D Maple Bean café">
   <div id="loading"><img src="/favicon.svg" alt=""><h1>Putting the kettle on.</h1><p id="load-message">Opening Maple Bean…</p></div>
   <div id="labels" aria-label="Café destinations"></div>
@@ -28,7 +34,8 @@
     <div class="menu-row"><button id="customize-character">✦ Customize character</button></div><div class="eyebrow">SAY HELLO</div>
     <div class="menu-row emotes" id="emotes"><button id="wave" title="Wave · F">👋</button></div>
     <div class="menu-row"><button id="rename">✎ Change name</button><button id="nearby-open">🗨 Nearby chat <span id="guest-count">Connecting…</span></button></div>
-    <div class="menu-row"><button id="help-open">? How to play</button><button id="review-open-2">Playtest notes</button></div>
+    <div class="menu-row"><button id="help-open">? How to play</button><button id="tour-open">↻ Replay the tour</button></div>
+    <div class="menu-row"><button id="review-open-2">Playtest notes</button><button id="sign-out">⎋ <span id="sign-out-label">Sign out</span></button></div>
   </div>
 
   <div id="tooltip" role="status" hidden></div>

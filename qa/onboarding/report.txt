@@ -1,0 +1,27 @@
+door: Maple Bean · Let’s get you inside
+username check: free ✓
+shot 01-signup-filled
+signed up as qa-1789958527702@maplebean.test -> http://127.0.0.1:4321/cafe?welcome=1
+creator gate {"required":true,"closeHidden":true,"steps":["Skin","Hair","Clothing","Name"],"starterFree":0}
+shot 02-creator-skin
+hair styles ["Messy Bun","Long Waves","Low Bun","Short Crop","Tousled"]
+shot 03-creator-hair
+priced pieces on the clothing step ["Plum Knit · 50 🍁","Ink Knit · 50 🍁","Butter Knit · 50 🍁","Slate Trousers · 50 🍁","Sand Trousers · 50 🍁","Ink Sneakers · 50 🍁","Honey Loafers · 50 🍁","Pine Scarf · 50 🍁","Berry Scarf · 50 🍁","Scholar’s Scarf · Earn it"]
+shot 04-creator-clothing
+shot 05-creator-name
+tour beat 1 Maya · Maple Bean
+shot 06-tour-maya
+07-tour-mara Mara · The coffee bar
+shot 07-tour-mara
+08-tour-noah Noah · The Study Room
+shot 08-tour-noah
+09-tour-claire Claire · Games & Garden
+shot 09-tour-claire
+10-tour-jules Jules · The living room
+shot 10-tour-jules
+in the café {"mode":"walk","posture":"stand","drink":null,"session":"b1a7f8ee-e074-4540-b50e-ba69149f4e1c","remote":1,"coins":30,"name":"QA 27702","account":{"handle":"QA 27702","onboarded":false}}
+shot 11-in-the-cafe
+second visit {"creatorOpen":false,"tourOpen":false,"name":"QA 27702"}
+shot 12-second-visit
+
+errors:

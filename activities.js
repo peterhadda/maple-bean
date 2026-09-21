@@ -126,8 +126,9 @@ export class Actor {
     }
     if (this.face !== null) { this.body.angle += wrap(this.face - this.body.angle) * Math.min(1, dt * 9); if (Math.abs(wrap(this.face - this.body.angle)) < .01) this.face = null; }
   }
-  // Free movement from keys (player only).
-  push(dx, dz) { if (this.posture !== 'stand') return; this.stop(); const b = { x: this.x, z: this.z }; moveOnFloor(this.body, dx, dz, this.layout); const m = Math.hypot(this.x - b.x, this.z - b.z); if (m > .0001) { this.walking = true; this.body.angle += wrap(Math.atan2(dx, dz) - this.body.angle) * .35; } }
+  // Free movement from keys (player only). The turn is eased by elapsed time so
+  // it reads the same on a 144 Hz screen as on a 60 Hz one.
+  push(dx, dz, dt = 1 / 60) { if (this.posture !== 'stand') return; this.stop(); const b = { x: this.x, z: this.z }; moveOnFloor(this.body, dx, dz, this.layout); const m = Math.hypot(this.x - b.x, this.z - b.z); if (m > .0001) { this.walking = true; this.body.angle += wrap(Math.atan2(dx, dz) - this.body.angle) * Math.min(1, dt * 21); } }
   visual() {
     return { walking: this.walking, sitAmount: this.sit, seatHeight: this.seat?.seatHeight ?? .54, activity: this.activity, reach: this.reach, headphones: this.headphones || undefined, deskHeight: this.seat?.deskHeight, lookTarget: this.lookTarget, stick: this.stick, panelHeight: this.panelHeight };
   }

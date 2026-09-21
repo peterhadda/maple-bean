@@ -5,7 +5,7 @@ await mkdir(out, {recursive:true});
 const browser = await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--use-gl=angle','--use-angle=swiftshader','--no-sandbox']});
 const page = await browser.newPage({viewport:{width:1440,height:960}});
 const errors=[]; page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE ERROR',e.message);});page.on('console',m=>{if(m.type()==='error'){errors.push(m.text());console.log('CONSOLE ERROR',m.text());}});
-await page.goto('http://127.0.0.1:4321/');
+await page.goto('http://127.0.0.1:4321/cafe?guest=1');
 try{await page.waitForFunction(()=>window.__ready,null,{timeout:180000});}catch(e){console.log(await page.locator('#load-message').textContent());await browser.close();throw e;}
 await page.waitForTimeout(1500);
 const prefix=process.argv[2]||'current';

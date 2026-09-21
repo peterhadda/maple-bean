@@ -1,6 +1,6 @@
 import { chromium } from 'playwright-core';
 const CHROME = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const URL = 'http://127.0.0.1:4321/';
+const URL = 'http://127.0.0.1:4321/cafe?guest=1';
 const SHOTS = 'C:\\Users\\Aymen\\Documents\\ChatGPT\\coffeshop\\qa';
 const log = (...a) => console.log(new Date().toISOString().slice(11,19), ...a);
 

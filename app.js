@@ -1,4 +1,6 @@
-import { createCreator, readProfile, applyProfile } from './systems/creator.js';
+import { createCreator, readProfile, applyProfile, appearanceOf, PROFILE_KEY } from './systems/creator.js';
+import { readSession, readGuestPass, writeGuestPass, resumeAccount, saveAccountProfile, accountApi, logOut as signOutAccount, LOGIN_URL } from './systems/account.js';
+import { createTutorial } from './systems/tutorial.js';
 import { socialSpot, socialArrived } from './systems/social-approach.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -52,8 +54,32 @@ const controls = new OrbitControls(camera, renderer.domElement); controls.target
 const lighting = createLighting(scene, renderer), { ambient, sun, fill, lamps, fire } = lighting;
 new ResizeObserver(() => { const w = world.clientWidth, h = world.clientHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }).observe(world);
 
+// ------------------------------------------------------------------ who is at the door
+// The café is behind the sign-in journey now (login.html). Arriving without a
+// session or a guest pass sends you back to the door rather than quietly
+// starting a nameless game.
+//   ?guest=1   — take a guest pass on the way in (what the QA harness uses)
+//   ?welcome=1 — first visit: the creator, then the tour
+const entry = new URLSearchParams(location.search);
+if (entry.get('guest') === '1') writeGuestPass(true);
+let account = null, cafeUnreachable = false;
+try { account = await resumeAccount(); }
+catch { cafeUnreachable = true; }        // the session is still good; the server is not answering
+// Only a genuinely absent sign-in sends someone back to the door. A failed
+// request does not: the café will show its own "could not open" message,
+// and the saved session is still there when it comes back.
+if (!account && !cafeUnreachable && !readSession() && !readGuestPass()) {
+  location.replace(LOGIN_URL);
+  await new Promise(() => {});           // stop booting the café behind the redirect
+}
+const accountSession = account ? readSession() : null;
+
 // ------------------------------------------------------------------ saved player state
+// A signed-in character lives on the account, so it follows you between
+// browsers; a guest's lives in this tab only.
 let avatarProfile = readProfile();
+if (account?.avatar) avatarProfile = { base: account.avatar.base, skin: account.avatar.skin, eyes: account.avatar.eyes, name: account.handle || avatarProfile.name };
+if (account?.handle) avatarProfile.name = account.handle;
 let settings = readSaved(KEYS.settings, defaultSettings());
 if (!Number.isFinite(settings.volume) || settings.volume < 0 || settings.volume > 100) settings.volume = defaultSettings().volume;
 if (!['afternoon', 'evening', 'day'].includes(settings.lighting)) settings.lighting = defaultSettings().lighting;
@@ -62,7 +88,10 @@ const oldWallet = readSaved('maple-bean-wallet', null);
 let econ = Econ.migrateEconomy(readSaved('maple-bean-economy', null), { legacyWallet: oldWallet });
 let cupState = readSaved('maple-bean-drink', { drink: null, sips: 0 });
 if (!cupState || (cupState.drink && !Object.hasOwn(menu, cupState.drink)) || !Number.isInteger(cupState.sips)) cupState = { drink: null, sips: 0 };
-let wardrobe = readSaved('maple-bean-wardrobe', null); if (!Shop.validWardrobe(wardrobe)) wardrobe = Shop.defaultWardrobe();
+let wardrobe = account?.wardrobe ?? readSaved('maple-bean-wardrobe', null); if (!Shop.validWardrobe(wardrobe)) wardrobe = Shop.defaultWardrobe();
+// Starter pieces are free, so anyone who played before the split still owns
+// the whole starter rail the next time they open the wardrobe.
+wardrobe = { ...wardrobe, owned: [...new Set([...Shop.starterItems().map(i => i.id), ...wardrobe.owned])] };
 let bonds = readSaved('maple-bean-bonds', {}); if (typeof bonds !== 'object' || !bonds) bonds = {};
 let focusStats = readSaved(KEYS.focusStats, defaultStats());
 let notifications = readSaved('maple-bean-notifications', []); if (!Array.isArray(notifications)) notifications = [];
@@ -166,7 +195,7 @@ function addCafe(root) {
 
 // ------------------------------------------------------------------ camera: modes and activity framing
 let mode = 'overview', cameraTween = null, framing = null;
-const player = new V(0, 0, 8.3), previousPlayer = player.clone();
+const player = new V(0, 0, 8.3), previousPlayer = player.clone(), followDelta = new V();
 function insideCafe(x, z, margin) {
   if (Math.abs(x) <= 9.88 - margin && Math.abs(z) <= 6.88 - margin) return true;
   return (layout?.rooms || []).some(r => x >= r.x0 + .12 + margin && x <= r.x1 - .12 - margin && z >= r.z0 + .12 + margin && z <= r.z1 - .12 - margin) || (layout?.doors || []).some(d => x >= d.x0 && x <= d.x1 && z >= d.z0 && z <= d.z1);
@@ -213,12 +242,53 @@ let sipUntil = 0, waveUntil = 0, expressionUntil = 0, playerExpression = null;
 function startScript(name) { script?.cancel(); script = new Script(name); return script; }
 
 // ------------------------------------------------------------------ dressing the avatar
-function dress(look = Shop.lookFor(wardrobe)) { if (!maya) return; maya.setTints({ top: look.top, bottom: look.bottom, shoes: look.shoes, hair: look.hairColor }); maya.setHairStyle(look.hair === 'maya' ? avatarProfile.base : look.hair); maya.setAccessories(look.props); applyProfile(maya, avatarProfile); }
+function dress(look = Shop.lookFor(wardrobe)) { if (!maya) return; maya.setTints({ top: look.top, bottom: look.bottom, shoes: look.shoes, hair: look.hairColor }); maya.setHairStyle(look.hair); maya.setAccessories(look.props); applyProfile(maya, avatarProfile); }
+
+// ---- other people's characters
+// A guest arrives with the same description of a look the creator produces,
+// so what you see across the room is the character they actually made.
+function wearAppearance(avatar, a = {}) {
+  avatar.setTints({ top: a.top || null, bottom: a.bottom || null, shoes: a.shoes || null, hair: a.hairColor || null });
+  avatar.setHairStyle(a.hair || a.base || 'maya');
+  avatar.setAccessories(Array.isArray(a.props) ? a.props : []);
+  avatar.setAppearance?.({ skin: a.skin || null, eyes: a.eyes || null });
+}
+function makeGuestAvatar(a) {
+  const avatar = createCharacter({ ...(cast[a?.base] || cast.maya), detail: 'game', customizable: true });
+  if (a) wearAppearance(avatar, a);
+  return avatar;
+}
+
+// Tell the café what you look like, so every other browser in the room
+// redresses your avatar instead of showing a stand-in.
+async function publishLook() {
+  const appearance = appearanceOf(avatarProfile, wardrobe);
+  if (session && !sessionDead) await api({ action: 'look', appearance }).catch(() => {});
+  return appearance;
+}
 
 // The creator reuses the current authored avatars and owned wardrobe.
 const creator = createCreator({
   getWardrobe: () => wardrobe, getUnlocked: () => econ.unlocked,
-  onSave: async (profile, selected) => {
+  getCoins: () => econ.coins,
+  // A premium piece can be bought without leaving the creator.
+  onBuy: async id => {
+    const result = Shop.buy(wardrobe, econ, id);
+    wardrobe = result.wardrobe; econ = result.economy;
+    persist('maple-bean-wardrobe', wardrobe); saveEcon(); updateHUD();
+    const item = Shop.itemById(id);
+    toast(`${item.name} is yours — ${item.price} 🍁 spent.`);
+    return wardrobe;
+  },
+  // Figma "12b · Name taken": members share one pool of café names.
+  checkName: async name => {
+    if (!accountSession) return { ok: true };
+    // Only the credentials from the session — spreading it whole would let its
+    // own stale `handle` override the name being checked.
+    try { return await accountApi('check-name', { id: accountSession.id, token: accountSession.token, handle: name }); }
+    catch (e) { return { ok: false, error: e.message }; }
+  },
+  onSave: async (profile, selected, appearance) => {
     await api({ action: 'rename', name: profile.name });
     const replacement = createCharacter({ ...cast[profile.base], detail: 'game', customizable: true });
     replacement.group.position.copy(maya.group.position); replacement.group.rotation.copy(maya.group.rotation);
@@ -226,16 +296,56 @@ const creator = createCreator({
     avatarProfile = profile; wardrobe = selected; dress();
     persist('maple-bean-wardrobe', wardrobe); persist(KEYS.name, profile.name);
     session.name = profile.name; $('player-name').textContent = profile.name; $('avatar-initial').textContent = profile.name[0].toUpperCase();
-    cameraMode('walk'); toast('Welcome, ' + profile.name + '. Your look is saved.');
+    await publishLook();
+    if (accountSession) await saveAccountProfile({ handle: profile.name, avatar: appearance, wardrobe: selected, onboarded: true }).catch(() => {});
+    cameraMode('walk');
+    toast('Welcome, ' + profile.name + '.' + (accountSession ? ' Your character is saved to your account.' : ' Your look lasts until you close the tab.'));
+    afterCreate?.(); afterCreate = null;
   },
 });
-function openCreator() {
+function openCreator(options = {}) {
   if (!maya || !session) return;
-  if (focus || playing || playerCtl.arrive || playerCtl.busy || pendingOrder) return toast('Finish your current activity before changing your look.');
+  if (!options.required && (focus || playing || playerCtl.arrive || playerCtl.busy || pendingOrder)) return toast('Finish your current activity before changing your look.');
   keys.clear(); script?.cancel(); playerCtl.stop(); closeShop(); closeNpcMenu(); $('menu').hidden = true;
-  creator.open({ ...avatarProfile, name: session.name });
+  creator.open({ ...avatarProfile, name: session.name }, options);
 }
-$('create-character').onclick = $('customize-character').onclick = openCreator;
+$('create-character').onclick = $('customize-character').onclick = () => openCreator();
+
+// ------------------------------------------------------------------ the first visit
+// Sign up → make a character → take the tour, once. Every visit after that
+// opens straight into the room, with no doors in the way.
+let afterCreate = null;
+const tour = createTutorial({
+  reduced,
+  look: view => frame(new V(...view.from), new V(...view.at), 1.5),
+  onFinish: endTour, onSkip: endTour,
+});
+function endTour({ skipped } = {}) {
+  release();
+  settings.hints.tour = true; persist(KEYS.settings, settings);
+  if (accountSession) saveAccountProfile({ tutorialDone: true }).catch(() => {});
+  toast(skipped ? 'Tour skipped — “How to play” in the menu has it whenever you want.' : 'That’s the tour. Make yourself at home.');
+}
+$('tour-open').onclick = () => { $('menu').hidden = true; if (!tour.isOpen) tour.start(); };
+// Guests have nothing to sign out of — for them this is a way back to the door.
+$('sign-out-label').textContent = accountSession ? 'Sign out' : 'Leave the café';
+$('sign-out').onclick = async () => {
+  $('menu').hidden = true;
+  await signOutAccount();
+  location.href = LOGIN_URL;
+};
+
+async function firstVisit() {
+  // The door sends newcomers here with ?welcome=1; an account that never
+  // finished the creator gets it again however it arrives. A bare /cafe visit
+  // (the QA harness, a bookmark) never gets stopped.
+  const newcomer = entry.get('welcome') === '1' || (account && !account.onboarded);
+  if (!newcomer) return;
+  // The character comes before the café: there is nothing to play as yet, so
+  // the creator has no close button until the four steps are done.
+  await new Promise(resolve => { afterCreate = resolve; openCreator({ required: true }); });
+  tour.start();
+}
 
 // ------------------------------------------------------------------ seats & occupancy
 function seatTaken(seat) {
@@ -710,7 +820,7 @@ function sip() { if (!cupState.drink || sipUntil) return; sipUntil = performance
 
 // ------------------------------------------------------------------ input
 const keys = new Set();
-const typingNow = () => ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName) || document.activeElement?.isContentEditable || $('dialog').open || creator.isOpen;
+const typingNow = () => ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName) || document.activeElement?.isContentEditable || $('dialog').open || creator.isOpen || tour.isOpen;
 addEventListener('keydown', e => {
   if (playing?.ctl?.key && !typingNow()) { if (playing.ctl.key(e, true)) { e.preventDefault(); return; } }
   if (e.code === 'Escape') { keys.clear(); closeNpcMenu(); $('menu').hidden = true; if (chat.npc) return chat.close(); if (playing) return; if (!focus) { if (script && !['focus', 'game'].includes(script.name)) script.cancel(); playerCtl?.stop(); if (playerCtl?.posture === 'seated') { startScript('stand'); standPlayer(); } } return; }
@@ -760,7 +870,7 @@ renderer.domElement.addEventListener('pointerup', e => {
   closeNpcMenu(); $('menu').hidden = true;
   const t = mode !== 'plan' ? cafeWorld.pick(pointer, camera) : null;
   if (t) { useTarget(t); return; }
-  if (focus || playerCtl.posture === 'seated') return;
+  if (focus || playerCtl.posture === 'seated' || tour.isOpen) return;
   if (ray.ray.intersectPlane(plane, point) && isWalkable(point.x, point.z, layout)) {
     if (script && !['focus', 'game'].includes(script.name)) { script.cancel(); script = null; }
     if (mode !== 'walk') cameraMode('walk'); if (framing && !talking) release();
@@ -955,8 +1065,24 @@ function connect() {
     $('guest-count').textContent = `(${guests.length})`;
     for (const guest of guests) {
       if (guest.id === session.id) continue; ids.add(guest.id); let item = remote.get(guest.id);
-      if (!item) { const avatar = createMaya(cast.maya), marker = worldLabel(guest.name, new V(guest.x, 1.95, guest.z), 'guest'); item = { avatar, marker, data: guest, waveUntil: 0 }; scene.add(avatar.group); avatar.group.position.set(guest.x, 0, guest.z); remote.set(guest.id, item); cafeWorld.person('guest:' + guest.id, 'guest', guest.name).userData.target.id = guest.id; }
-      item.data = guest; item.marker.el.textContent = guest.name + (guest.status ? ' · ' + statusText(guest.status, guest.statusDetail) : '');
+      const look = JSON.stringify(guest.appearance || null);
+      if (!item) {
+        const avatar = makeGuestAvatar(guest.appearance), marker = worldLabel(guest.name, new V(guest.x, 1.95, guest.z), 'guest');
+        item = { avatar, marker, data: guest, waveUntil: 0, look };
+        scene.add(avatar.group); avatar.group.position.set(guest.x, 0, guest.z); remote.set(guest.id, item);
+        cafeWorld.person('guest:' + guest.id, 'guest', guest.name).userData.target.id = guest.id;
+      } else if (look !== item.look) {
+        // Somebody redressed. A new build needs a new body; anything else is
+        // a re-tint of the one already standing there.
+        if ((guest.appearance?.base || 'maya') !== (item.data.appearance?.base || 'maya')) {
+          const next = makeGuestAvatar(guest.appearance);
+          next.group.position.copy(item.avatar.group.position); next.group.rotation.copy(item.avatar.group.rotation);
+          scene.remove(item.avatar.group); scene.add(next.group); item.avatar = next;
+        } else wearAppearance(item.avatar, guest.appearance || {});
+        item.look = look;
+      }
+      item.data = guest;
+      item.marker.el.textContent = (guest.member ? '🍁 ' : '') + guest.name + (guest.status ? ' · ' + statusText(guest.status, guest.statusDetail) : '');
     }
     for (const [id, item] of remote) if (!ids.has(id)) { scene.remove(item.avatar.group); item.marker.el.remove(); markers.splice(markers.indexOf(item.marker), 1); remote.delete(id); cafeWorld.removePerson('guest:' + id); }
   });
@@ -983,7 +1109,7 @@ try {
   // Regulars arrive from the street, order at the counter, then settle in.
   for (const [id, delay] of [['mara', 0], ['noah', 1.5], ['claire', 6], ['jules', 11]]) {
     $('load-message').textContent = `${cast[id].name} is on the way…`; await new Promise(resolve => setTimeout(resolve, 30));
-    const avatar = createMaya({ ...cast[id], phaseOffset: id === 'claire' ? 2.3 : 4.7 }); scene.add(avatar.group);
+    const avatar = createMaya({ phaseOffset: 4.7, ...cast[id] }); scene.add(avatar.group);
     const life = id === 'mara' ? null : Object.assign(resident(id, 0, 8.4, delay), { phase: 'away', visible: false, waitForService: true });
     const body = life || { x: -4.7, z: -5.75, angle: 0 };
     const n = { id, avatar, life, ctl: new Actor(body, layout, { speed: .95 }), clock: 0, expression: null, exprUntil: 0, drink: null, studyStart: 0 };
@@ -993,7 +1119,13 @@ try {
     regulars.push(n);
   }
   baristaLoop();
-  session = await api({ action: 'join', name: readSaved('maple-bean-name', 'Maya') }); if (Number.isFinite(session.x) && Number.isFinite(session.z)) { me.x = session.x; me.z = session.z; } $('player-name').textContent = session.name; $('avatar-initial').textContent = session.name[0].toUpperCase(); connect();
+  session = await api({
+    action: 'join',
+    name: avatarProfile.name || readSaved('maple-bean-name', 'Maya'),
+    appearance: appearanceOf(avatarProfile, wardrobe),
+    ...(accountSession ? { accountId: accountSession.id, accountToken: accountSession.token } : {}),
+  });
+  if (Number.isFinite(session.x) && Number.isFinite(session.z)) { me.x = session.x; me.z = session.z; } $('player-name').textContent = session.name; $('avatar-initial').textContent = session.name[0].toUpperCase(); connect();
   api({ action: 'groups' }).then(r => { messenger.setGroups(r.groups); chat.ai = r.ai; }).catch(() => {});
   updateHUD(); $('notifications-badge').hidden = !notifications.some(n => !n.read);
   // Compile every shader up front (hidden regulars, ceilings, props included) so
@@ -1020,7 +1152,7 @@ try {
         dir.normalize(); const nx = me.x + dir.x * .35, nz = me.z + dir.z * .35;
         // People are solid too: stop short instead of walking through someone.
         const blocked = [...regulars.map(n => n.avatar.group), ...[...remote.values()].map(r => r.avatar.group)].some(g => g.visible && Math.hypot(g.position.x - nx, g.position.z - nz) < .42 && Math.hypot(g.position.x - me.x, g.position.z - me.z) > Math.hypot(g.position.x - nx, g.position.z - nz));
-        if (!blocked) playerCtl.push(dir.x * 1.75 * dt, dir.z * 1.75 * dt); else playerCtl.body.angle += Math.atan2(Math.sin(Math.atan2(dir.x, dir.z) - me.angle), Math.cos(Math.atan2(dir.x, dir.z) - me.angle)) * .3;
+        if (!blocked) playerCtl.push(dir.x * 1.75 * dt, dir.z * 1.75 * dt, dt); else playerCtl.body.angle += Math.atan2(Math.sin(Math.atan2(dir.x, dir.z) - me.angle), Math.cos(Math.atan2(dir.x, dir.z) - me.angle)) * Math.min(1, dt * 18);
       }
     } else playerCtl.update(dt);
     player.set(me.x, 0, me.z);
@@ -1085,7 +1217,7 @@ try {
       if (n.clock >= 1 / 15 || n.ctl.activity === 'reach') {
         const v = n.ctl.visual(), scripted = n.ctl.scriptedBy || n.id === 'mara' || l?.scripted;
         const hasCup = n.id === 'mara' ? !!n.drink : !!l?.cup;
-        a.update(t + (n.id === 'claire' ? 2.3 : 4.7), n.clock, {
+        a.update(t + (cast[n.id].phaseOffset ?? 4.7), n.clock, {
           walking: scripted ? v.walking : l?.walking, sitAmount: scripted ? v.sitAmount : (l?.sit ?? 0), seatHeight: (scripted ? n.ctl.seat : l?.seat)?.seatHeight ?? .54,
           deskHeight: (scripted ? n.ctl.seat : l?.seat)?.deskHeight ?? cafeWorld.seatById((scripted ? n.ctl.seat : l?.seat)?.id)?.deskHeight,
           activity: l?.sipping && !scripted ? null : activity, cupDown: false, reach: activity === 'reach' ? n.ctl.reach : null, headphones,
@@ -1107,8 +1239,17 @@ try {
     steam.update(dt, [{ position: cupWorldPosition(player.x, player.z, me.angle), active: !!cupState.drink && playerCtl.posture !== 'seated' }]);
     playing?.ctl?.update?.(dt, t);
     // ---- camera
-    if (cameraTween) { const a = cameraTween; a.t = Math.min(1, a.t + dt / (reduced ? .01 : a.seconds)); const k = a.t * a.t * (3 - 2 * a.t); camera.position.lerpVectors(a.from, a.to, k); controls.target.lerpVectors(a.fromTarget, a.target, k); if (a.t === 1) cameraTween = null; }
-    else if (mode === 'walk' && !framing) { const delta = player.clone().sub(previousPlayer); camera.position.add(delta); controls.target.add(delta); }
+    if (cameraTween) {
+      const a = cameraTween;
+      // A walk-mode tween aims at where you stood when it started. If you keep
+      // walking while it eases in, that head start used to be lost for good:
+      // the camera settled behind your old position and you slid toward the
+      // edge of frame, closer and closer, with nothing to pull it back. Carry
+      // the whole interpolation along with you instead.
+      if (mode === 'walk' && !framing) { followDelta.copy(player).sub(previousPlayer); a.from.add(followDelta); a.to.add(followDelta); a.fromTarget.add(followDelta); a.target.add(followDelta); }
+      a.t = Math.min(1, a.t + dt / (reduced ? .01 : a.seconds)); const k = a.t * a.t * (3 - 2 * a.t); camera.position.lerpVectors(a.from, a.to, k); controls.target.lerpVectors(a.fromTarget, a.target, k); if (a.t === 1) cameraTween = null;
+    }
+    else if (mode === 'walk' && !framing) { followDelta.copy(player).sub(previousPlayer); camera.position.add(followDelta); controls.target.add(followDelta); }
     previousPlayer.copy(player); controls.update();
     // Keep the camera inside the building while you are inside it: swing it
     // around you to the nearest angle that stays indoors (keeping its height and
@@ -1162,7 +1303,8 @@ try {
     get script() { return script?.name + (script?.cancelled ? " (cancelled)" : ""); }, get econ() { return econ; }, get cup() { return cupState; }, get focus() { return focus; }, get playing() { return playing; }, get wardrobe() { return wardrobe; }, get bonds() { return bonds; },
     npc: npcById, seat: id => cafeWorld.seatById(id),
     get state() { return { mode, seated: playerCtl.seat?.id, posture: playerCtl.posture, drink: cupState.drink, session: session?.id, remote: remote.size, focus: focus?.stage, playing: playing?.st.game, coins: econ.coins }; },
-    qa,
+    qa, tour, get account() { return account ? { handle: account.handle, onboarded: account.onboarded } : null; },
   };
+  firstVisit().catch(e => console.warn('Maple Bean first visit:', e));
 } catch (e) { failure(e); }
 

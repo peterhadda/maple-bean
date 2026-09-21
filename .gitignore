@@ -5,3 +5,9 @@ __pycache__/
 node_modules/
 .env
 dist/
+
+# local account store (passwords, sessions)
+.data/
+
+# QA scratch renders (regenerate with the scripts in qa/)
+qa/wall/

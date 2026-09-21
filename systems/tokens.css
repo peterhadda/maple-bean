@@ -1,0 +1,119 @@
+/* Maple Bean design tokens, generated from the Figma UX file
+ * (p8TKGHhasO65VBOFvM7BQ1 → 🎨 Foundations). Collections: Primitives,
+ * Color (Day / Evening modes), Spacing, Radius, Size, plus the text styles
+ * and elevation effects the components use.
+ *
+ * Day is the default. `[data-mode="evening"]` on <html> switches the café to
+ * the evening palette, matching the Colour collection's second mode.
+ */
+:root {
+  /* ---- primitives */
+  --mb-espresso-900: #241611; --mb-espresso-800: #33211a; --mb-espresso-700: #4a3125;
+  --mb-espresso-600: #6b4a37; --mb-espresso-500: #8a7061;
+  --mb-cream-50: #fffdf8; --mb-cream-100: #fdf7ec; --mb-cream-200: #f7eede;
+  --mb-cream-300: #efe2cd; --mb-cream-400: #e7d9c4; --mb-cream-500: #d3be9f;
+  --mb-maple-700: #a24c14; --mb-maple-600: #c4611f; --mb-maple-500: #e08a3c;
+  --mb-maple-400: #f0a860; --mb-maple-200: #f9dcbc; --mb-maple-100: #fbebd9;
+  --mb-caramel-600: #a8703f; --mb-caramel-500: #c98a54; --mb-caramel-200: #ead3bb;
+  --mb-sage-700: #586b4e; --mb-sage-600: #6f8265; --mb-sage-500: #8a9a7b;
+  --mb-sage-300: #b9c6aa; --mb-sage-200: #d6dccb;
+  --mb-pine-800: #22382e; --mb-pine-700: #304c40; --mb-pine-500: #4c6c5b;
+  --mb-berry-600: #a83b2a; --mb-berry-500: #c0503f; --mb-berry-100: #f7ded8;
+  --mb-honey-600: #9c6b0e; --mb-honey-500: #d9a227; --mb-honey-100: #fbefd2;
+  --mb-leaf-600: #4e7a46; --mb-leaf-500: #5e8c55; --mb-leaf-100: #dfebd9;
+  --mb-white: #ffffff; --mb-ink: #1a0f0b;
+
+  /* ---- semantic colour · Day */
+  --mb-surface-page: var(--mb-cream-100);
+  --mb-surface-raised: var(--mb-cream-50);
+  --mb-surface-sunken: var(--mb-cream-200);
+  --mb-surface-inverse: var(--mb-espresso-800);
+  --mb-surface-accent-soft: var(--mb-maple-100);
+  --mb-surface-accent: var(--mb-maple-600);
+  --mb-surface-accent-hover: var(--mb-maple-700);
+  --mb-surface-secondary: var(--mb-pine-700);
+  --mb-surface-selected: var(--mb-maple-200);
+  --mb-surface-overlay: var(--mb-espresso-900);
+  --mb-surface-disabled: var(--mb-cream-400);
+  --mb-text-primary: var(--mb-espresso-900);
+  --mb-text-secondary: var(--mb-espresso-600);
+  --mb-text-muted: var(--mb-espresso-500);
+  --mb-text-on-accent: var(--mb-white);
+  --mb-text-on-inverse: var(--mb-cream-100);
+  --mb-text-accent: var(--mb-maple-700);
+  --mb-text-link: var(--mb-pine-700);
+  --mb-text-disabled: var(--mb-espresso-500);
+  --mb-border-subtle: var(--mb-cream-400);
+  --mb-border-strong: var(--mb-cream-500);
+  --mb-border-accent: var(--mb-maple-600);
+  --mb-border-focus: var(--mb-maple-500);
+  --mb-state-success: var(--mb-leaf-600);
+  --mb-state-success-soft: var(--mb-leaf-100);
+  --mb-state-error: var(--mb-berry-600);
+  --mb-state-error-soft: var(--mb-berry-100);
+  --mb-state-warning: var(--mb-honey-600);
+  --mb-state-warning-soft: var(--mb-honey-100);
+
+  /* ---- spacing, radius, size */
+  --mb-space-2xs: 4px; --mb-space-xs: 8px; --mb-space-sm: 12px; --mb-space-md: 16px;
+  --mb-space-lg: 20px; --mb-space-xl: 24px; --mb-space-2xl: 32px; --mb-space-3xl: 40px;
+  --mb-space-4xl: 56px; --mb-space-5xl: 80px;
+  --mb-radius-xs: 6px; --mb-radius-sm: 10px; --mb-radius-md: 14px;
+  --mb-radius-lg: 20px; --mb-radius-xl: 28px; --mb-radius-round: 999px;
+  --mb-control-sm: 36px; --mb-control-md: 46px; --mb-control-lg: 58px;
+  --mb-avatar-sm: 36px; --mb-avatar-md: 56px; --mb-avatar-lg: 104px; --mb-card-tile: 104px;
+
+  /* ---- type: Fraunces for display, Nunito for UI, JetBrains Mono for keycaps */
+  --mb-font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --mb-font-ui: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --mb-font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* ---- elevation */
+  --mb-elev-button: 0 3px 0 rgba(36, 22, 17, .22), 0 6px 14px -6px rgba(36, 22, 17, .18);
+  --mb-elev-card: 0 2px 5px -2px rgba(36, 22, 17, .10), 0 10px 28px -8px rgba(36, 22, 17, .16);
+  --mb-elev-panel: 0 6px 20px -8px rgba(36, 22, 17, .12);
+  --mb-elev-modal: 0 6px 16px -6px rgba(36, 22, 17, .16), 0 32px 72px -16px rgba(36, 22, 17, .30);
+}
+[data-mode="evening"] {
+  --mb-surface-page: var(--mb-espresso-800);
+  --mb-surface-raised: var(--mb-espresso-700);
+  --mb-surface-sunken: var(--mb-espresso-900);
+  --mb-surface-inverse: var(--mb-cream-100);
+  --mb-surface-accent-soft: var(--mb-espresso-700);
+  --mb-surface-accent-hover: var(--mb-maple-500);
+  --mb-surface-secondary: var(--mb-pine-500);
+  --mb-surface-selected: var(--mb-maple-700);
+  --mb-surface-overlay: var(--mb-ink);
+  --mb-surface-disabled: var(--mb-espresso-600);
+  --mb-text-primary: var(--mb-cream-100);
+  --mb-text-secondary: var(--mb-cream-300);
+  --mb-text-muted: var(--mb-cream-500);
+  --mb-text-on-inverse: var(--mb-espresso-900);
+  --mb-text-accent: var(--mb-maple-400);
+  --mb-text-link: var(--mb-sage-300);
+  --mb-border-subtle: var(--mb-espresso-600);
+  --mb-border-strong: var(--mb-espresso-500);
+  --mb-border-accent: var(--mb-maple-500);
+  --mb-border-focus: var(--mb-maple-400);
+  --mb-state-success: var(--mb-leaf-500);
+  --mb-state-success-soft: var(--mb-pine-800);
+  --mb-state-error: var(--mb-berry-500);
+  --mb-state-error-soft: var(--mb-espresso-700);
+  --mb-state-warning: var(--mb-honey-500);
+  --mb-state-warning-soft: var(--mb-espresso-700);
+}
+
+/* ---- text styles (Figma: Display/L·M·S, Heading/M·S, Body/L·M·S, Label/L·M·S, Eyebrow, Mono/Key) */
+.mb-display-l { font-family: var(--mb-font-display); font-weight: 600; font-size: 40px; line-height: 1.1; letter-spacing: -1px; font-variation-settings: 'SOFT' 0, 'WONK' 1; }
+.mb-display-m { font-family: var(--mb-font-display); font-weight: 600; font-size: 30px; line-height: 1.18; letter-spacing: -.4px; font-variation-settings: 'SOFT' 0, 'WONK' 1; }
+.mb-display-s { font-family: var(--mb-font-display); font-weight: 600; font-size: 22px; line-height: 1.26; letter-spacing: -.2px; font-variation-settings: 'SOFT' 0, 'WONK' 1; }
+.mb-heading-m { font-weight: 700; font-size: 20px; line-height: 1.32; }
+.mb-heading-s { font-weight: 700; font-size: 16px; line-height: 1.36; }
+.mb-body-l { font-weight: 400; font-size: 17px; line-height: 1.65; }
+.mb-body-m { font-weight: 400; font-size: 15px; line-height: 1.6; }
+.mb-body-s { font-weight: 400; font-size: 13px; line-height: 1.55; }
+.mb-label-l { font-weight: 700; font-size: 15px; line-height: 1.2; letter-spacing: .2px; }
+.mb-label-m { font-weight: 700; font-size: 13px; line-height: 1.2; letter-spacing: .3px; }
+.mb-label-s { font-weight: 600; font-size: 12px; line-height: 1.2; letter-spacing: .4px; }
+.mb-eyebrow { font-weight: 800; font-size: 10px; line-height: 1.2; letter-spacing: 1.8px; text-transform: uppercase; }
+.mb-mono-key { font-family: var(--mb-font-mono); font-weight: 700; font-size: 12px; line-height: 1.2; letter-spacing: .5px; text-transform: uppercase; }

@@ -6,7 +6,7 @@ const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chr
 try{
  const page=await browser.newPage({viewport:{width:1100,height:1000}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));
- await page.goto('http://127.0.0.1:4321/');await page.waitForFunction(()=>window.__ready,null,{timeout:240000});
+ await page.goto('http://127.0.0.1:4321/cafe?guest=1');await page.waitForFunction(()=>window.__ready,null,{timeout:240000});
  await page.evaluate(()=>{cafe.renderer.setAnimationLoop(null);cafe.cameraMode('walk');document.getElementById('labels').hidden=true;document.getElementById('welcome').hidden=true;window.qaCast={maya:cafe.maya,...Object.fromEntries(cafe.regulars.map(n=>[n.id,n.actor]))};for(const a of Object.values(qaCast)){a.group.visible=false;} });
  for(const id of (pass==='source'?[]:process.argv[3]?[process.argv[3]]:['maya','noah','claire','mara','jules'])){
   for(const [name,angle,distance,height]of [['close-front',0,1.1,1.48],['close-three-quarter',35,1.1,1.48],['close-side',90,1.1,1.48],['front',0,2.85,.86],['side',90,2.85,.86],['back',180,2.85,.86]]){

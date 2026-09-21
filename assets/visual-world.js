@@ -306,11 +306,15 @@ export function addVisualDetails(scene,layout){
   box('Oak framed wall art',[x,y,z],[w+.10,h+.10,.065],materials.wood);
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:t,roughness:1}));m.position.set(x,y,z+.038);group.add(m);
  }
- poster(2.75,2.30,-6.82,.72,1.15,'Good|Coffee|Brighter|Days','MAPLE BEAN');
+ // Hung on the clear wall between the menu board and the jar shelves.
+ // It used to sit at x=2.75, which is the middle of `games-door` in
+ // layout.json (x 2.26–2.94) — the frame was mounted across the opening.
+ // x=4.6 is no better: the community noticeboard occupies 3.4–6.0.
+ poster(-1.25,2.30,-6.82,.72,1.15,'Good|Coffee|Brighter|Days','MAPLE BEAN');
  poster(8.5,2.57,-6.82,.85,1.10,'Stay a|little|longer.','COFFEE · PEOPLE · STORIES');
  // The existing east study room and north games room retain all seat/route positions.
  poster(13.55,1.94,-6.22,.91,1.06,'One thing|at a time.','QUIET STUDY');
- poster(3.15,1.98,-14.20,1.02,1.18,'Play|together.','CHESS � CARDS � XO');
+ poster(3.15,1.98,-14.20,1.02,1.18,'Play|together.','CHESS � CARDS � XO');
  box('Dartboard oak backplate',[6.1,1.73,-14.30],[.88,1.08,.055],materials.wood);
  const acoustic=new THREE.MeshStandardMaterial({color:'#8c997d',map:surface('fabric'),roughness:1});
  for(const z of [-4.8,-3.5]){

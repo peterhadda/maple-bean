@@ -1,0 +1,87 @@
+/* The welcome tour card. Sits low in the frame so the room the speaker is
+ * describing stays visible above it — the whole point of the tour. */
+.tour {
+  position: absolute; inset: auto 0 0 0; z-index: 14;
+  display: flex; justify-content: center;
+  padding: 0 var(--mb-space-xl) var(--mb-space-xl);
+  font-family: var(--mb-font-ui); color: var(--mb-text-primary);
+  pointer-events: none;
+}
+.tour[hidden] { display: none !important; }
+
+.tour__card {
+  pointer-events: auto;
+  width: min(940px, 100%);
+  display: grid; grid-template-columns: 188px 1fr; gap: var(--mb-space-lg);
+  background: var(--mb-surface-raised);
+  border: 1.5px solid var(--mb-border-subtle);
+  border-radius: var(--mb-radius-xl);
+  box-shadow: var(--mb-elev-modal);
+  padding: var(--mb-space-xl) var(--mb-space-2xl) var(--mb-space-lg) var(--mb-space-lg);
+  animation: tour-rise .34s cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes tour-rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+
+/* The speaker stands on a warm disc, like a little spotlight on the floor.
+ * The portrait is a render of the real character (assets/ui/portraits), so it
+ * is let out of the card at the top rather than boxed in. */
+.tour__stage {
+  position: relative; align-self: end;
+  width: 188px; height: 186px; display: grid; place-items: end center;
+  border-radius: var(--mb-radius-lg);
+  background: radial-gradient(58% 44% at 50% 78%, var(--mb-surface-selected), var(--mb-surface-sunken) 70%, transparent 71%);
+}
+.tour__stage::after {
+  content: ''; position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
+  width: 108px; height: 16px; border-radius: 50%;
+  background: rgba(36, 22, 17, .18); filter: blur(5px);
+}
+.tour__portrait {
+  position: relative; z-index: 1; display: block;
+  height: 232px; width: auto; margin-bottom: 8px;
+  /* Taller than the stage: the head lifts above the card, like a visual novel. */
+  margin-top: -54px;
+  filter: drop-shadow(0 8px 14px rgba(36, 22, 17, .18));
+  animation: tour-breathe 4.2s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+/* A small nod while they are speaking; still when they stop. */
+.tour__stage[data-talking="true"] .tour__portrait { animation: tour-speak .58s ease-in-out infinite; }
+@keyframes tour-breathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-3px) scale(1.006); } }
+@keyframes tour-speak { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-2.5px) rotate(-.5deg); } }
+
+.tour__body { display: flex; flex-direction: column; padding-top: var(--mb-space-2xs); min-width: 0; }
+.tour__place { color: var(--mb-text-accent); }
+.tour__name { margin: 2px 0 0; }
+.tour__text {
+  margin: var(--mb-space-sm) 0 0; color: var(--mb-text-secondary);
+  min-height: 5.6em; cursor: pointer;
+}
+.tour__foot {
+  margin-top: auto; padding-top: var(--mb-space-md);
+  display: flex; align-items: center; gap: var(--mb-space-md); flex-wrap: wrap;
+}
+.tour__dots { display: flex; gap: 7px; }
+.tour__dot {
+  width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  background: var(--mb-border-subtle); transition: background-color .15s, transform .15s;
+}
+.tour__dot:hover { background: var(--mb-border-strong); }
+.tour__dot[aria-selected="true"] { background: var(--mb-surface-accent); transform: scale(1.35); }
+.tour__dot:focus-visible { outline: 3px solid var(--mb-border-focus); outline-offset: 3px; }
+.tour__actions { margin-left: auto; display: flex; align-items: center; gap: var(--mb-space-xs); }
+
+@media (max-width: 860px) {
+  .tour { padding: 0 var(--mb-space-sm) var(--mb-space-sm); }
+  .tour__card { grid-template-columns: 116px 1fr; gap: var(--mb-space-sm); padding: var(--mb-space-md); }
+  .tour__stage { width: 116px; height: 124px; }
+  .tour__portrait { height: 150px; margin-top: -32px; }
+  .tour__stage::after { width: 70px; bottom: 8px; }
+  .tour__text { font-size: 15px; min-height: 6.4em; }
+  .tour__actions { margin-left: 0; width: 100%; justify-content: space-between; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour__card { animation: none; }
+  .tour__dot { transition: none; }
+  .tour__portrait, .tour__stage[data-talking="true"] .tour__portrait { animation: none; }
+}
