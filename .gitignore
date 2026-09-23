@@ -5,3 +5,33 @@ __pycache__/
 node_modules/
 .env
 dist/
+
+# Ruflo local secrets and runtime data
+.env.local
+.env.*.local
+.claude-flow/data/
+.claude-flow/logs/
+.claude-flow/sessions/
+
+# Codex local configuration
+.codex/
+# Claude Flow runtime data
+# Environment variables
+
+# Unreal project: commit sources, scripts, config and source art only (Content is rebuilt by Scripts/*.py)
+mb_unreal_engine/Content/
+mb_unreal_engine/Saved/
+mb_unreal_engine/Intermediate/
+mb_unreal_engine/DerivedDataCache/
+mb_unreal_engine/Binaries/
+mb_unreal_engine/.vs/
+mb_unreal_engine/*.sln
+
+# Local tooling state
+graphify-out/
+.swarm/
+.claude-flow/
+.agents/
+.data/
+.mcp.json
+CLAUDE.md.pre-ruflo*
