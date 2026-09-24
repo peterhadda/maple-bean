@@ -19,7 +19,7 @@ void RE_Direct_MapleSkin(const in IncidentLight directLight,const in vec3 geomet
  });return gltf;
 }
 export async function loadCharacters(ids=['maya','claire','mara','jules','noah']){
- await Promise.all(ids.map(async id=>{if(!assets.has(id))assets.set(id,Promise.all([loader.loadAsync(`/assets/characters/${id}.glb?v=maple-final-20260919`).then(softenSkin),loader.loadAsync(`/assets/characters/${id}-lod.glb?v=maple-final-20260919`).then(softenSkin)]).catch(error=>{assets.delete(id);throw error;}));await assets.get(id);}));
+ await Promise.all(ids.map(async id=>{if(!assets.has(id))assets.set(id,Promise.all([loader.loadAsync(`/assets/characters/${id}.glb?v=maple-v2-20260923`).then(softenSkin),loader.loadAsync(`/assets/characters/${id}-lod.glb?v=maple-v2-20260923`).then(softenSkin)]).catch(error=>{assets.delete(id);throw error;}));await assets.get(id);}));
  for(const id of ids)assets.set(id,await assets.get(id));
 }
 // Calibrated against the approved cast sheet; one transform keeps eyes, hair and face registered.

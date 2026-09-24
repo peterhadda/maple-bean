@@ -112,8 +112,18 @@ def deform_object(obj, features=True, extra=None):
     targets = [kb.data for kb in keys] if keys else [me.vertices]
     for data in targets:
         for i, off in enumerate(offsets):
-            if off is not None:
+            if off is None:
+                continue
+            if not features and data is not targets[0]:
+                # Eyes: push each key through the (affine) head field itself, so the blink collapse
+                # stays flat after the 6% head scale (a shared basis offset would re-open it by 6%).
+                w = head_weight(obj, me.vertices[i])
+                k = mw @ data[i].co
+                data[i].co = mwi @ (k + (head_field(k) - k) * w)
+            else:
                 data[i].co = mwi @ ((mw @ data[i].co) + off)
+    if not features and keys:
+        obj["morph_deltas_scaled"] = True
     me.update()
     moved = sum(1 for o in offsets if o is not None)
     log(f"{obj.name}: {moved}/{len(offsets)} verts in head field, {len(targets)} shape layer(s)")

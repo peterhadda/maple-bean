@@ -142,7 +142,7 @@ const collisionGroup = new THREE.Group(); collisionGroup.visible = false; scene.
 let visualDetails;
 function addCafe(root) {
   root.updateMatrixWorld(true); const batches = new Map();
-  refineCafe(root, scene);
+  const envArt = refineCafe(root, scene);
   root.traverse(o => {
     if (!o.isMesh || o.userData.replaced || /Broad_living_leaf|Plant_frond/.test(o.name)) return;
     if (o.name === 'Menu_welcome') o.matrixWorld.elements[13] -= .34;
@@ -162,6 +162,7 @@ function addCafe(root) {
     if (obstruction) { geometry.computeBoundingBox(); m.userData.sightBounds = geometry.boundingBox.clone().expandByScalar(.25); obstructions.push(m); }
     m.castShadow = true; m.receiveShadow = true; (overhead ? beams : scene).add(m); if (!overhead) staticMeshes.push(m);
   }
+  return envArt;
 }
 
 // ------------------------------------------------------------------ camera: modes and activity framing

@@ -10,13 +10,14 @@ function pivot(rotation,x,y,z){return translation(x,y,z).multiply(rotation).mult
 export function poseMatrices({sit=0,walk=0,wave=0,sip=0,study=0,phase=0,time=0,seatHeight=.54,male=false}={}){
   const stride=WALK_STRIDE*walk*(1-sit);
   // Rise over the planted foot instead of holding a crouch for the whole step.
-  const reach=Math.max(Math.abs(stepOffset(phase)),Math.abs(stepOffset(phase+Math.PI)))*stride;
+  const reach=Math.min(.75,Math.hypot(stepOffset(phase),stepOffset(phase+Math.PI))*stride); // smooth (never below the longer leg's reach), so the body doesn't hitch at each foot switch
   const drop=(.70-seatHeight)*sit + (.006+.76-Math.sqrt(.76**2-reach**2))*walk*(1-sit);
   const root=translation(0,-drop,0),legs=[],arms=[];
   const gait=walk*(1-sit);
-  const pelvis=translation(-.028*Math.sin(phase)*gait,0,0).multiply(pivot(
-    new Matrix4().makeRotationY(.10*Math.cos(phase)*gait)
-      .multiply(new Matrix4().makeRotationZ(.035*Math.sin(phase)*gait)),
+  // Gentle hip motion: small side shift, yaw and roll (larger values read as a jiggle at café pace).
+  const pelvis=translation(-.022*Math.sin(phase)*gait,0,0).multiply(pivot(
+    new Matrix4().makeRotationY(.045*Math.cos(phase)*gait)
+      .multiply(new Matrix4().makeRotationZ(.016*Math.sin(phase)*gait)),
     0,.8-drop,0));
   for(const side of [-1,1]){
     const p=phase+(side<0?Math.PI:0);
